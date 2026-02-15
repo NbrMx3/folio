@@ -1,0 +1,148 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 1rem 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.navbar.scrolled {
+  background: var(--nav-bg);
+  box-shadow: var(--shadow-accent);
+  backdrop-filter: blur(12px);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.3s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s, background 0.3s, border-color 0.3s;
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent-strong);
+  background: var(--accent-weak);
+}
+
+.admin-icon {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 6px;
+  transition: color 0.3s, background 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.admin-icon:hover {
+  color: var(--accent);
+  background: var(--accent-weak);
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 260px;
+    height: 100vh;
+    background: var(--nav-bg);
+    flex-direction: column;
+    padding: 5rem 2rem 2rem;
+    gap: 1.5rem;
+    transition: right 0.35s ease;
+    border-left: 1px solid var(--card-border);
+  }
+
+  .nav-links.open {
+    right: 0;
+  }
+}
