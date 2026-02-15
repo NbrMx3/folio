@@ -1,3 +1,48 @@
+@media (max-width: 900px) {
+  .platform-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+  .device-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+  .analytics-section {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .analytics-dashboard {
+    gap: 0.7rem;
+  }
+  .analytics-section {
+    padding: 0.5rem;
+  }
+  .platform-card,
+  .device-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.7rem 0.5rem;
+    font-size: 0.97rem;
+  }
+  .platform-icon,
+  .device-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  .visitors-table th,
+  .visitors-table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.8rem;
+  }
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
 .analytics-dashboard {
   display: flex;
   flex-direction: column;

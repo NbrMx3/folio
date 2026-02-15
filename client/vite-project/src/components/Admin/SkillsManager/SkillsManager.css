@@ -1,3 +1,33 @@
+@media (max-width: 900px) {
+  .skills-list {
+    gap: 0.5rem;
+  }
+  .skill-form-card,
+  .skill-edit-card {
+    padding: 1rem 0.7rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .skill-form-card,
+  .skill-edit-card {
+    padding: 0.7rem 0.4rem;
+    font-size: 0.97rem;
+  }
+  .skill-edit-card {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .skill-edit-row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .skill-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+}
 .skills-manager {
   display: flex;
   flex-direction: column;

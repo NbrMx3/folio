@@ -1,3 +1,33 @@
+@media (max-width: 900px) {
+  .profile-card {
+    padding: 1.2rem 0.7rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-upload {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+  .profile-card {
+    padding: 0.7rem 0.4rem;
+    font-size: 0.97rem;
+  }
+  .avatar-preview {
+    width: 120px;
+    height: 120px;
+  }
+  .profile-field input,
+  .profile-field textarea {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.7rem;
+  }
+  .save-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 0.4rem;
+  }
+}
 .profile-upload {
   display: grid;
   grid-template-columns: 1fr 1fr;

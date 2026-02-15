@@ -1,3 +1,37 @@
+@media (max-width: 900px) {
+  .projects-list {
+    gap: 0.5rem;
+  }
+  .project-form-card,
+  .project-edit-card {
+    padding: 1rem 0.7rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .project-form-card,
+  .project-edit-card {
+    padding: 0.7rem 0.4rem;
+    font-size: 0.97rem;
+  }
+  .project-edit-card {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .project-edit-header {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .project-links-row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .project-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+}
 .projects-manager {
   display: flex;
   flex-direction: column;
