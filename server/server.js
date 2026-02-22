@@ -3,13 +3,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import authRoutes from './routes/auth.js';
-import profileRoutes from './routes/profile.js';
-import skillsRoutes from './routes/skills.js';
-import projectsRoutes from './routes/projects.js';
-import analyticsRoutes from './routes/analytics.js';
-import { trackVisitor } from './middleware/tracker.js';
-import { initDatabase } from './utils/db.js';
+import authRoutes from './src/data/routes/auth.js';
+import profileRoutes from './src/data/routes/profile.js';
+import skillsRoutes from './src/data/routes/skills.js';
+import projectsRoutes from './src/data/routes/projects.js';
+import analyticsRoutes from './src/data/routes/analytics.js';
+import { trackVisitor } from './src/data/routes/middleware/tracker.js';
+import { initDatabase } from './src/data/utils/db.js';
 
 dotenv.config();
 

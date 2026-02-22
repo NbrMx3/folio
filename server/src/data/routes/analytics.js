@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken } from '../middleware/auth.js';
+import { verifyToken } from '../routes/middleware/auth.js';
 import {
   getTotalViews,
   getViewsByTimeRange,

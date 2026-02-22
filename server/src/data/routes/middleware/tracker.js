@@ -1,4 +1,4 @@
-import { addVisitor } from '../utils/db.js';
+import { addVisitor } from '../../utils/db.js';
 import { v4 as uuidv4 } from 'uuid';
 import UAParser from 'ua-parser-js';
 
