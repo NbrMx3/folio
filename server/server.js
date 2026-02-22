@@ -25,8 +25,8 @@ app.use(morgan("dev"));
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads/profile', express.static(path.join(__dirname, 'uploads/profile')));
-app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
+// Serve uploaded files from the data uploads folder at /uploads
+app.use('/uploads', express.static(path.join(__dirname, 'src', 'data', 'uploads')));
 
 // Track every visit to the portfolio
 app.use('/api/track', trackVisitor);
