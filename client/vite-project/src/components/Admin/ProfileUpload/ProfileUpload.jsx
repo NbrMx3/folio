@@ -6,6 +6,14 @@ import './ProfileUpload.css';
 const ProfileUpload = () => {
   const [profile, setProfile] = useState({ picture: '', name: '', title: '', bio: '', github: '', linkedin: '', email: '' });
   const [preview, setPreview] = useState('');
+
+  // Helper to get absolute image URL in production
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const base = import.meta.env.VITE_API_BASE_URL || '';
+    return `${base}${path}`;
+  };
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const fileRef = useRef(null);
@@ -83,7 +91,7 @@ const ProfileUpload = () => {
             onClick={() => fileRef.current?.click()}
           >
             {preview ? (
-              <img src={preview} alt="Profile" />
+              <img src={getImageUrl(preview)} alt="Profile" />
             ) : (
               <div className="avatar-placeholder">
                 <FaUser />

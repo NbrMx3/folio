@@ -1,38 +1,26 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { verifyToken } from '../routes/middleware/auth.js';
 import { getProfile, updateProfile } from '../utils/db.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `profile-${Date.now()}${ext}`);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'folio-profile',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    transformation: [{ width: 400, height: 400, crop: 'limit' }],
   },
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif|webp/;
-    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-    const mime = allowed.test(file.mimetype);
-    if (ext && mime) return cb(null, true);
-    cb(new Error('Only image files are allowed'));
-  },
-});
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -49,21 +37,12 @@ router.get('/', async (req, res) => {
 // POST /api/profile/upload — admin only
 router.post('/upload', verifyToken, upload.single('picture'), async (req, res) => {
   try {
-    if (!req.file) {
+    if (!req.file || !req.file.path) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-
-    const profile = await getProfile();
-    // Delete old picture if exists
-    if (profile.picture) {
-      const oldPath = path.join(uploadsDir, path.basename(profile.picture));
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-    }
-
-    const picturePath = `/uploads/${req.file.filename}`;
-    await updateProfile({ picture: picturePath });
-
-    res.json({ picture: picturePath });
+    // req.file.path is the Cloudinary URL
+    await updateProfile({ picture: req.file.path });
+    res.json({ picture: req.file.path });
   } catch (error) {
     res.status(500).json({ error: 'Upload failed' });
   }
