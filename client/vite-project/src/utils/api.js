@@ -63,9 +63,10 @@ export async function updateProfile(data) {
 }
 
 export async function uploadProfilePicture(file) {
+  console.log("fetch image funtion runnig")
   const formData = new FormData();
   formData.append('picture', file);
-  return authFetch('/profile/upload', {
+  return authFetch(`/${API_BASE}/uploads/profile`, {
     method: 'POST',
     body: formData,
   });

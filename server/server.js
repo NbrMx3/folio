@@ -10,18 +10,23 @@ import projectsRoutes from './src/data/routes/projects.js';
 import analyticsRoutes from './src/data/routes/analytics.js';
 import { trackVisitor } from './src/data/routes/middleware/tracker.js';
 import { initDatabase } from './src/data/utils/db.js';
+import morgan from 'morgan';
 
 dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+app.use(morgan("dev"));
+
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads/profile', express.static(path.join(__dirname, 'uploads/profile')));
+app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
 
 // Track every visit to the portfolio
 app.use('/api/track', trackVisitor);
