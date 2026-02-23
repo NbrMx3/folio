@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './src/data/routes/auth.js';
@@ -12,7 +12,7 @@ import trackRouter from './src/data/routes/middleware/tracker.js';
 import { initDatabase } from './src/data/utils/db.js';
 import morgan from 'morgan';
 
-dotenv.config();
+// dotenv is loaded at module evaluation time via `import 'dotenv/config'` above
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,8 +41,18 @@ app.use('/api/analytics', analyticsRoutes);
 // Initialize database and start server
 initDatabase()
   .then(() => {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      if (err && err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Stop the process using it or set PORT to a different value and restart.`);
+        console.error('Hint: on Windows run `netstat -ano | findstr :<PORT>` to find the PID.');
+        process.exit(1);
+      }
+      console.error('Server error:', err);
+      process.exit(1);
     });
   })
   .catch((err) => {
