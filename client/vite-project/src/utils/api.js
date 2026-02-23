@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 export function getToken() {
   return localStorage.getItem('admin_token');
@@ -66,7 +66,7 @@ export async function uploadProfilePicture(file) {
   console.log("fetch image funtion runnig")
   const formData = new FormData();
   formData.append('picture', file);
-  return authFetch(`/${API_BASE}/uploads/profile`, {
+  return authFetch(`${API_BASE}/uploads/profile`, {
     method: 'POST',
     body: formData,
   });

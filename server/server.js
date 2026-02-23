@@ -8,7 +8,7 @@ import profileRoutes from './src/data/routes/profile.js';
 import skillsRoutes from './src/data/routes/skills.js';
 import projectsRoutes from './src/data/routes/projects.js';
 import analyticsRoutes from './src/data/routes/analytics.js';
-import { trackVisitor } from './src/data/routes/middleware/tracker.js';
+import trackRouter from './src/data/routes/middleware/tracker.js';
 import { initDatabase } from './src/data/utils/db.js';
 import morgan from 'morgan';
 
@@ -29,7 +29,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'src', 'data', 'uploads')));
 
 // Track every visit to the portfolio
-app.use('/api/track', trackVisitor);
+app.use('/api/track', trackRouter);
 
 // Routes
 app.use('/api/auth', authRoutes);
