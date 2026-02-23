@@ -56,6 +56,18 @@ initDatabase()
     });
   })
   .catch((err) => {
-    console.error('Failed to initialize database:', err);
-    process.exit(1);
+    console.warn('Database initialization failed; starting server with JSON fallback. Error:', err && err.message ? err.message : err);
+    const server = app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT} (JSON DB fallback)`);
+    });
+
+    server.on('error', (err) => {
+      if (err && err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Stop the process using it or set PORT to a different value and restart.`);
+        console.error('Hint: on Windows run `netstat -ano | findstr :<PORT>` to find the PID.');
+        process.exit(1);
+      }
+      console.error('Server error:', err);
+      process.exit(1);
+    });
   });
