@@ -22,7 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(morgan("dev"));
 
-// Allow requests from the Vercel frontend (set CLIENT_URL on Render)
+// Allow requests from the Vercel frontend and local dev
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -34,7 +34,11 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (curl, mobile apps, Render health checks)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow any Vercel deployment (*.vercel.app) and exact CLIENT_URL matches
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/[\w-]+(\.[\w-]+)*\.vercel\.app$/.test(origin)
+    ) return callback(null, true);
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
