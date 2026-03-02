@@ -28,6 +28,16 @@ app.use(express.json());
 // Serve uploaded files from the data uploads folder at /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'src', 'data', 'uploads')));
 
+// Root health-check (prevents 404 on GET /)
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Folio API server is running' });
+});
+
+// Chrome DevTools workspace discovery endpoint (prevents 404 + CSP console errors)
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+  res.json({});
+});
+
 // Track every visit to the portfolio
 app.use('/api/track', trackRouter);
 
