@@ -48,6 +48,9 @@ app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Folio API server is running' });
 });
 
+// Silence browser/Render favicon requests — API server has no icon
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Chrome DevTools workspace discovery endpoint (prevents 404 + CSP console errors)
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.json({});
