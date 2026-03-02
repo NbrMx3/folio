@@ -1,7 +1,18 @@
 // Production backend URL (Render). VITE_API_BASE env var overrides this at build time.
 const RENDER_BACKEND = 'https://folioo-dxty.onrender.com/api';
 const RENDER_ORIGIN = 'https://folioo-dxty.onrender.com';
-const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? RENDER_BACKEND : '/api');
+
+function buildApiBase() {
+  const env = import.meta.env.VITE_API_BASE;
+  if (env) {
+    // Normalize: ensure the base always ends with /api
+    const trimmed = env.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  }
+  return import.meta.env.PROD ? RENDER_BACKEND : '/api';
+}
+
+const API_BASE = buildApiBase();
 
 // Make relative /uploads/... paths absolute so they load correctly from Vercel.
 export function resolveAssetUrl(path) {
