@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   FaChartBar,
@@ -12,7 +12,8 @@ import {
   FaCode,
   FaProjectDiagram,
 } from 'react-icons/fa';
-import { verifyAuth, removeToken, getAnalyticsOverview } from '../../utils/api';
+import { verifyAuth, removeToken } from '../../utils/api';
+import { useAdminStore } from '../../store/useAdminStore';
 import ProfileUpload from '../../components/Admin/ProfileUpload/ProfileUpload';
 import AnalyticsDashboard from '../../components/Admin/AnalyticsDashboard/AnalyticsDashboard';
 import SkillsManager from '../../components/Admin/SkillsManager/SkillsManager';
@@ -20,9 +21,7 @@ import ProjectsManager from '../../components/Admin/ProjectsManager/ProjectsMana
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('analytics');
-  const [overview, setOverview] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { activeTab, overview, loading, setActiveTab, loadOverview, resetAdmin } = useAdminStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,16 +35,14 @@ const AdminDashboard = () => {
         navigate('/admin/login');
         return;
       }
-      const data = await getAnalyticsOverview();
-      setOverview(data);
+      await loadOverview();
     } catch {
       navigate('/admin/login');
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleLogout = () => {
+    resetAdmin();
     removeToken();
     navigate('/admin/login');
   };
