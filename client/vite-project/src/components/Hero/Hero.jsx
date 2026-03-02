@@ -54,6 +54,7 @@ const Hero = () => {
               src={profile.picture}
               alt={profile.name || 'Developer portrait'}
               className="hero-image"
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : (
             <div className="hero-image-placeholder"></div>

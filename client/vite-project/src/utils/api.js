@@ -1,6 +1,15 @@
 // Production backend URL (Render). VITE_API_BASE env var overrides this at build time.
 const RENDER_BACKEND = 'https://folioo-dxty.onrender.com/api';
+const RENDER_ORIGIN = 'https://folioo-dxty.onrender.com';
 const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? RENDER_BACKEND : '/api');
+
+// Make relative /uploads/... paths absolute so they load correctly from Vercel.
+export function resolveAssetUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  const base = import.meta.env.PROD ? RENDER_ORIGIN : '';
+  return `${base}${path}`;
+}
 
 export function getToken() {
   return localStorage.getItem('admin_token');
@@ -55,7 +64,10 @@ export async function verifyAuth() {
 export async function getProfile() {
   const res = await fetch(`${API_BASE}/profile`);
   if (!res.ok) throw new Error(`GET /profile failed: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  // Make profile picture URL absolute so it loads correctly from Vercel
+  if (data && data.picture) data.picture = resolveAssetUrl(data.picture);
+  return data;
 }
 
 export async function updateProfile(data) {

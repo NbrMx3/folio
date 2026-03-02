@@ -22,25 +22,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(morgan("dev"));
 
-// Allow requests from the Vercel frontend (set CLIENT_URL on Render)
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  process.env.CLIENT_URL,
-].filter(Boolean);
-
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (curl, mobile apps, Render health checks)
-    if (!origin) return callback(null, true);
-    // Allow all Vercel deployment URLs (production + previews)
-    if (origin.endsWith('.vercel.app')) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS: origin ${origin} not allowed`));
-  },
-  credentials: true,
-}));
+// Portfolio data is public — allow all origins.
+// Admin routes are protected by JWT so open CORS is safe here.
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 // Serve uploaded files from the data uploads folder at /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'src', 'data', 'uploads')));
