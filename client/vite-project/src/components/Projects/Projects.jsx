@@ -5,6 +5,7 @@ import './Projects.css';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadProjects();
@@ -13,9 +14,10 @@ const Projects = () => {
   const loadProjects = async () => {
     try {
       const data = await getProjectsList();
-      setProjects(data);
-    } catch {
-      // ignore
+      setProjects(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Projects fetch error:', err.message);
+      setError('Could not load projects. Backend may be unavailable.');
     }
   };
 
@@ -25,6 +27,7 @@ const Projects = () => {
         <h2 className="section-title">
           Featured <span className="highlight">Projects</span>
         </h2>
+        {error && <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>{error}</p>}
         <div className="projects-grid">
           {projects.map((project, index) => (
             <div className="project-card" key={project.id}>

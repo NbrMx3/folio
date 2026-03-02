@@ -13,9 +13,9 @@ const Hero = () => {
   const loadProfile = async () => {
     try {
       const data = await getProfile();
-      setProfile(data);
-    } catch {
-      // ignore
+      if (data && typeof data === 'object') setProfile(data);
+    } catch (err) {
+      console.error('Profile fetch error:', err.message);
     }
   };
 

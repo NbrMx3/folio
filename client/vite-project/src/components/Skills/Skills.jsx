@@ -33,6 +33,7 @@ const iconMap = {
 
 const Skills = () => {
   const [skills, setSkills] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadSkills();
@@ -41,9 +42,10 @@ const Skills = () => {
   const loadSkills = async () => {
     try {
       const data = await getSkills();
-      setSkills(data);
-    } catch {
-      // ignore
+      setSkills(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Skills fetch error:', err.message);
+      setError('Could not load skills. Backend may be unavailable.');
     }
   };
 
@@ -53,6 +55,7 @@ const Skills = () => {
         <h2 className="section-title">
           Technical <span className="highlight">Expertise</span>
         </h2>
+        {error && <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>{error}</p>}
         <div className="skills-grid">
           {skills.map((skill) => (
             <div className="skill-card" key={skill.id}>

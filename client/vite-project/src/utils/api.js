@@ -1,5 +1,16 @@
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
+// In production (non-localhost), VITE_API_BASE must be set to your Render backend URL.
+// If missing, all API calls will 404 because Vercel serves only the static frontend.
+if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE) {
+  console.error(
+    '[api] VITE_API_BASE is not set! ' +
+    'Go to Vercel → Project → Settings → Environment Variables and add:\n' +
+    'VITE_API_BASE = https://your-render-service.onrender.com/api\n' +
+    'Then redeploy. Without this, all data fetches will return 404.'
+  );
+}
+
 export function getToken() {
   return localStorage.getItem('admin_token');
 }
@@ -52,6 +63,7 @@ export async function verifyAuth() {
 // Profile
 export async function getProfile() {
   const res = await fetch(`${API_BASE}/profile`);
+  if (!res.ok) throw new Error(`GET /profile failed: ${res.status}`);
   return res.json();
 }
 
@@ -75,6 +87,7 @@ export async function uploadProfilePicture(file) {
 // Skills
 export async function getSkills() {
   const res = await fetch(`${API_BASE}/skills`);
+  if (!res.ok) throw new Error(`GET /skills failed: ${res.status}`);
   return res.json();
 }
 
@@ -101,6 +114,7 @@ export async function deleteSkill(id) {
 // Projects
 export async function getProjectsList() {
   const res = await fetch(`${API_BASE}/projects`);
+  if (!res.ok) throw new Error(`GET /projects failed: ${res.status}`);
   return res.json();
 }
 
