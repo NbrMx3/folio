@@ -1,15 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE || '/api';
-
-// In production (non-localhost), VITE_API_BASE must be set to your Render backend URL.
-// If missing, all API calls will 404 because Vercel serves only the static frontend.
-if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE) {
-  console.error(
-    '[api] VITE_API_BASE is not set! ' +
-    'Go to Vercel → Project → Settings → Environment Variables and add:\n' +
-    'VITE_API_BASE = https://your-render-service.onrender.com/api\n' +
-    'Then redeploy. Without this, all data fetches will return 404.'
-  );
-}
+// Production backend URL (Render). VITE_API_BASE env var overrides this at build time.
+const RENDER_BACKEND = 'https://folioo-dxty.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? RENDER_BACKEND : '/api');
 
 export function getToken() {
   return localStorage.getItem('admin_token');
