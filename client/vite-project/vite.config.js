@@ -37,9 +37,9 @@ export default defineConfig({
       '/uploads': 'http://localhost:5000',
     },
     headers: {
-      // Allow Chrome DevTools to probe localhost:5000 without CSP errors
+      // Allow Chrome DevTools to probe localhost:5000 and the Render backend without CSP errors
       'Content-Security-Policy':
-        "default-src 'self'; connect-src 'self' http://localhost:5000; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http://localhost:5000; font-src 'self' data:; worker-src 'self' blob:",
+        "default-src 'self'; connect-src 'self' http://localhost:5000 https://*.onrender.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http://localhost:5000 https://res.cloudinary.com https://*.onrender.com; font-src 'self' data:; worker-src 'self' blob:",
     },
   },
 })
