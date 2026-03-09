@@ -234,8 +234,9 @@ const AnalyticsDashboard = ({ overview }) => {
               <tr>
                 <th>Time</th>
                 <th>Source</th>
-                <th>Browser</th>
+                <th>Location</th>
                 <th>Device</th>
+                <th>Browser</th>
                 <th>OS</th>
                 <th>Page</th>
               </tr>
@@ -253,18 +254,23 @@ const AnalyticsDashboard = ({ overview }) => {
                           color: platformColors[v.source] || '#888',
                         }}
                       >
-                        {v.source}
+                        {platformIcons[v.source] || <FaGlobe />}{' '}{v.source}
                       </span>
                     </td>
+                    <td>
+                      {v.city && v.city !== 'Unknown'
+                        ? `${v.city}${v.region && v.region !== 'Unknown' ? `, ${v.region}` : ''}, ${v.country || '—'}`
+                        : (v.country && v.country !== 'Unknown' ? v.country : '—')}
+                    </td>
+                    <td style={{ textTransform: 'capitalize' }}>{v.device}</td>
                     <td>{v.browser}</td>
-                    <td>{v.device}</td>
                     <td>{v.os}</td>
                     <td>{v.page}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="no-data">
+                  <td colSpan="7" className="no-data">
                     No visitors recorded yet.
                   </td>
                 </tr>

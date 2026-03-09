@@ -5,58 +5,75 @@ import UAParser from 'ua-parser-js';
 
 const router = express.Router();
 
+// Private/loopback IP ranges that cannot be geolocated
+const PRIVATE_IP_RE = /^(::1|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|::ffff:127\.|fc|fd)/i;
+
+async function geolocate(ip) {
+  const cleanIp = ip.replace(/^::ffff:/, '');
+  if (!cleanIp || PRIVATE_IP_RE.test(cleanIp)) {
+    return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+  }
+  try {
+    // ip-api.com free tier: HTTP only, 45 req/min
+    const response = await fetch(
+      `http://ip-api.com/json/${encodeURIComponent(cleanIp)}?fields=status,country,regionName,city`,
+      { signal: AbortSignal.timeout(3000) }
+    );
+    if (!response.ok) return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+    const data = await response.json();
+    if (data.status !== 'success') return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+    return {
+      country: data.country || 'Unknown',
+      city: data.city || 'Unknown',
+      region: data.regionName || 'Unknown',
+    };
+  } catch {
+    return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+  }
+}
+
+function buildVisitorBase(req, referer, ua) {
+  const rawIp = req.headers['x-forwarded-for']?.split(',')[0].trim()
+    || req.socket.remoteAddress
+    || 'unknown';
+  return {
+    id: uuidv4(),
+    ip: rawIp,
+    timestamp: new Date().toISOString(),
+    source: detectPlatform(referer),
+    referrer: referer,
+    browser: ua.getBrowser().name || 'Unknown',
+    os: ua.getOS().name || 'Unknown',
+    device: ua.getDevice().type || 'desktop',
+    page: '/',
+  };
+}
+
 router.get('/', async (req, res) => {
+  res.json({ success: true }); // respond immediately, track async
   try {
     const ua = new UAParser(req.headers['user-agent']);
     const referer = req.query.ref || req.headers.referer || 'direct';
-    const source = detectPlatform(referer);
-
-    const visitor = {
-      id: uuidv4(),
-      ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown',
-      timestamp: new Date().toISOString(),
-      source,
-      referrer: referer,
-      browser: ua.getBrowser().name || 'Unknown',
-      os: ua.getOS().name || 'Unknown',
-      device: ua.getDevice().type || 'desktop',
-      country: req.query.country || 'Unknown',
-      page: req.query.page || '/',
-    };
-
-    addVisitor(visitor).catch(err => console.error('Tracking save error:', err));
-    res.json({ success: true });
+    const base = buildVisitorBase(req, referer, ua);
+    base.page = req.query.page || '/';
+    const geo = await geolocate(base.ip);
+    addVisitor({ ...base, ...geo }).catch(err => console.error('Tracking save error:', err));
   } catch (error) {
     console.error('Tracking error:', error);
-    res.json({ success: true });
   }
 });
 
 router.post('/', async (req, res) => {
-  // Allow POST tracking as well
+  res.json({ success: true }); // respond immediately, track async
   try {
     const ua = new UAParser(req.headers['user-agent']);
     const referer = req.body.ref || req.query.ref || req.headers.referer || 'direct';
-    const source = detectPlatform(referer);
-
-    const visitor = {
-      id: uuidv4(),
-      ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown',
-      timestamp: new Date().toISOString(),
-      source,
-      referrer: referer,
-      browser: ua.getBrowser().name || 'Unknown',
-      os: ua.getOS().name || 'Unknown',
-      device: ua.getDevice().type || 'desktop',
-      country: req.body.country || req.query.country || 'Unknown',
-      page: req.body.page || req.query.page || '/',
-    };
-
-    addVisitor(visitor).catch(err => console.error('Tracking save error:', err));
-    res.json({ success: true });
+    const base = buildVisitorBase(req, referer, ua);
+    base.page = req.body.page || req.query.page || '/';
+    const geo = await geolocate(base.ip);
+    addVisitor({ ...base, ...geo }).catch(err => console.error('Tracking save error:', err));
   } catch (error) {
     console.error('Tracking error:', error);
-    res.json({ success: true });
   }
 });
 

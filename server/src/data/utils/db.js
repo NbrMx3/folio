@@ -156,9 +156,21 @@ export async function initDatabase() {
             os TEXT,
             device TEXT DEFAULT 'desktop',
             country TEXT DEFAULT 'Unknown',
+            city TEXT DEFAULT 'Unknown',
+            region TEXT DEFAULT 'Unknown',
             page TEXT DEFAULT '/'
           )
         `);
+
+        // Migrate existing visitors table — add city/region columns if absent
+        for (const col of ['city', 'region']) {
+          await client.query(`
+            DO $$ BEGIN
+              ALTER TABLE visitors ADD COLUMN ${col} TEXT DEFAULT 'Unknown';
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$
+          `);
+        }
 
         // Create platform_stats table
         await client.query(`
@@ -418,12 +430,12 @@ export async function deleteProject(id) {
 
 // ─── Visitor queries ───────────────────────────────────────
 export async function addVisitor(visitor) {
-  const { id, ip, timestamp, source, referrer, browser, os, device, country, page } = visitor;
+  const { id, ip, timestamp, source, referrer, browser, os, device, country, city, region, page } = visitor;
   if (usingPostgres && pool) {
     await pool.query(
-      `INSERT INTO visitors (id, ip, timestamp, source, referrer, browser, os, device, country, page)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-      [id, ip, timestamp, source, referrer, browser, os, device, country, page]
+      `INSERT INTO visitors (id, ip, timestamp, source, referrer, browser, os, device, country, city, region, page)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [id, ip, timestamp, source, referrer, browser, os, device, country || 'Unknown', city || 'Unknown', region || 'Unknown', page]
     );
 
     // Update platform stats
@@ -440,7 +452,7 @@ export async function addVisitor(visitor) {
   const db = await readJsonDb();
   db.visitors = db.visitors || [];
   db.platformStats = db.platformStats || {};
-  db.visitors.push({ id, ip, timestamp, source, referrer, browser, os, device: device || 'desktop', country: country || 'Unknown', page: page || '/' });
+  db.visitors.push({ id, ip, timestamp, source, referrer, browser, os, device: device || 'desktop', country: country || 'Unknown', city: city || 'Unknown', region: region || 'Unknown', page: page || '/' });
   db.platformStats[source] = (db.platformStats[source] || 0) + 1;
   await writeJsonDb(db);
 }

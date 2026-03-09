@@ -52,11 +52,119 @@
       "device": "desktop",
       "country": "Unknown",
       "page": "/"
+    },
+    {
+      "id": "e877b799-3e98-4f5f-97fb-0e73bf298e98",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:25:41.376Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
+    },
+    {
+      "id": "f3b59850-4f60-433c-855e-2c942bf6dd51",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:26:17.915Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
+    },
+    {
+      "id": "c4b7100c-f771-4745-9998-0b0fafcc2970",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:26:24.088Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
+    },
+    {
+      "id": "890f79aa-7b0c-48da-a2b8-1702be57916f",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:26:24.119Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
+    },
+    {
+      "id": "a06cb5b1-c3c7-48a1-8afe-7bf103de47f3",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:33:51.686Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
+    },
+    {
+      "id": "6f8d7a70-5424-4c6e-9fea-98d41db05990",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:33:51.708Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
+    },
+    {
+      "id": "bc74d475-2a9e-4336-84a4-b9a32bbba251",
+      "ip": "::1",
+      "timestamp": "2026-03-04T04:34:06.123Z",
+      "source": "Direct",
+      "referrer": "direct",
+      "browser": "Chrome",
+      "os": "Windows",
+      "device": "desktop",
+      "country": "Unknown",
+      "page": "/"
     }
   ],
   "platformStats": {
-    "Direct": 2,
+    "Direct": 9,
     "Other": 2
   },
-  "totalViews": 4
+  "totalViews": 4,
+  "skills": [
+    {
+      "id": 1,
+      "icon": "FaCode",
+      "title": "Frontend Development",
+      "description": "React, Vue, HTML5, CSS3, JavaScript, TypeScript",
+      "sort_order": 0
+    },
+    {
+      "id": 2,
+      "icon": "FaNodeJs",
+      "title": "Backend Development",
+      "description": "Node.js, Python, MongoDB, REST APIs, GraphQL",
+      "sort_order": 1
+    },
+    {
+      "id": 3,
+      "icon": "FaReact",
+      "title": "Modern Frameworks",
+      "description": "React, Next.js, Vite, Express, TailwindCSS",
+      "sort_order": 2
+    }
+  ],
+  "projects": []
 }
