@@ -55,37 +55,38 @@ const AnalyticsDashboard = ({ overview }) => {
   const [visitorPage, setVisitorPage] = useState(1);
   const [visitorPages, setVisitorPages] = useState(1);
   const [filterSource, setFilterSource] = useState('all');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+    const loadData = async () => {
+      try {
+        const [chart, plat] = await Promise.all([getChartData(), getPlatforms()]);
+        if (cancelled) return;
+        setChartData(chart);
+        setPlatforms(plat);
+      } catch {
+        // ignore
+      }
+    };
     loadData();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const loadVisitors = async () => {
+      try {
+        const data = await getVisitors(visitorPage, filterSource);
+        if (cancelled) return;
+        setVisitors(data.visitors);
+        setVisitorPages(data.pages);
+      } catch {
+        // ignore
+      }
+    };
     loadVisitors();
+    return () => { cancelled = true; };
   }, [visitorPage, filterSource]);
-
-  const loadData = async () => {
-    try {
-      const [chart, plat] = await Promise.all([getChartData(), getPlatforms()]);
-      setChartData(chart);
-      setPlatforms(plat);
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadVisitors = async () => {
-    try {
-      const data = await getVisitors(visitorPage, filterSource);
-      setVisitors(data.visitors);
-      setVisitorPages(data.pages);
-    } catch {
-      // ignore
-    }
-  };
 
   const maxViews = Math.max(...chartData.map((d) => d.views), 1);
 
