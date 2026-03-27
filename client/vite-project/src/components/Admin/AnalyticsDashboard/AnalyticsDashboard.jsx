@@ -277,7 +277,12 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
               <tr>
                 <th>Time</th>
                 <th>Source</th>
-                <th>Location</th>
+                <th>Continent</th>
+                <th>Country</th>
+                <th>Region</th>
+                <th>County</th>
+                <th>District</th>
+                <th>Division</th>
                 <th>Device</th>
                 <th>Browser</th>
                 <th>OS</th>
@@ -301,10 +306,13 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                       </span>
                     </td>
                     <td>
-                      {v.city && v.city !== 'Unknown'
-                        ? `${v.city}${v.region && v.region !== 'Unknown' ? `, ${v.region}` : ''}, ${v.country || '—'}`
-                        : (v.country && v.country !== 'Unknown' ? v.country : '—')}
+                      {v.continent && v.continent !== 'Unknown' ? v.continent : '—'}
                     </td>
+                    <td>{v.country && v.country !== 'Unknown' ? v.country : '—'}</td>
+                    <td>{v.region && v.region !== 'Unknown' ? v.region : '—'}</td>
+                    <td>{v.county && v.county !== 'Unknown' ? v.county : '—'}</td>
+                    <td>{v.district && v.district !== 'Unknown' ? v.district : '—'}</td>
+                    <td>{v.division && v.division !== 'Unknown' ? v.division : '—'}</td>
                     <td style={{ textTransform: 'capitalize' }}>{v.device}</td>
                     <td>{v.browser}</td>
                     <td>{v.os}</td>
@@ -313,7 +321,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="no-data">
+                  <td colSpan="12" className="no-data">
                     No visitors recorded yet.
                   </td>
                 </tr>

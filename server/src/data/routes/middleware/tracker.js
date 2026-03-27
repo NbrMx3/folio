@@ -8,27 +8,103 @@ const router = express.Router();
 // Private/loopback IP ranges that cannot be geolocated
 const PRIVATE_IP_RE = /^(::1|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|::ffff:127\.|fc|fd)/i;
 
+function unknownGeo() {
+  return {
+    continent: 'Unknown',
+    country: 'Unknown',
+    region: 'Unknown',
+    county: 'Unknown',
+    district: 'Unknown',
+    division: 'Unknown',
+    city: 'Unknown',
+    latitude: null,
+    longitude: null,
+  };
+}
+
+async function reverseGeocode(latitude, longitude) {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&zoom=12&addressdetails=1`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'folio-analytics-tracker/1.0',
+        },
+        signal: AbortSignal.timeout(3000),
+      }
+    );
+
+    if (!response.ok) return unknownGeo();
+
+    const data = await response.json();
+    const address = data.address || {};
+
+    return {
+      continent: unknownGeo().continent,
+      country: address.country || unknownGeo().country,
+      region: address.state || address.region || unknownGeo().region,
+      county: address.county || unknownGeo().county,
+      district: address.city_district || address.state_district || address.suburb || unknownGeo().district,
+      division: address.municipality || address.borough || address.township || unknownGeo().division,
+      city: address.city || address.town || address.village || unknownGeo().city,
+      latitude: Number.isFinite(Number(latitude)) ? Number(latitude) : null,
+      longitude: Number.isFinite(Number(longitude)) ? Number(longitude) : null,
+    };
+  } catch {
+    return unknownGeo();
+  }
+}
+
 async function geolocate(ip) {
   const cleanIp = ip.replace(/^::ffff:/, '');
   if (!cleanIp || PRIVATE_IP_RE.test(cleanIp)) {
-    return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+    return unknownGeo();
   }
+
   try {
     // ip-api.com free tier: HTTP only, 45 req/min
     const response = await fetch(
-      `http://ip-api.com/json/${encodeURIComponent(cleanIp)}?fields=status,country,regionName,city`,
+      `http://ip-api.com/json/${encodeURIComponent(cleanIp)}?fields=status,continent,country,regionName,city,district,lat,lon`,
       { signal: AbortSignal.timeout(3000) }
     );
-    if (!response.ok) return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+    if (!response.ok) return unknownGeo();
+
     const data = await response.json();
-    if (data.status !== 'success') return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
-    return {
+
+    if (data.status !== 'success') return unknownGeo();
+
+    const base = {
+      continent: data.continent || 'Unknown',
       country: data.country || 'Unknown',
-      city: data.city || 'Unknown',
       region: data.regionName || 'Unknown',
+      county: 'Unknown',
+      district: data.district || 'Unknown',
+      division: 'Unknown',
+      city: data.city || 'Unknown',
+      latitude: Number.isFinite(Number(data.lat)) ? Number(data.lat) : null,
+      longitude: Number.isFinite(Number(data.lon)) ? Number(data.lon) : null,
+    };
+
+    if (base.latitude === null || base.longitude === null) {
+      return base;
+    }
+
+    const detailed = await reverseGeocode(base.latitude, base.longitude);
+
+    return {
+      continent: base.continent,
+      country: base.country,
+      region: base.region,
+      county: detailed.county !== 'Unknown' ? detailed.county : base.county,
+      district: detailed.district !== 'Unknown' ? detailed.district : base.district,
+      division: detailed.division !== 'Unknown' ? detailed.division : base.division,
+      city: detailed.city !== 'Unknown' ? detailed.city : base.city,
+      latitude: base.latitude,
+      longitude: base.longitude,
     };
   } catch {
-    return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+    return unknownGeo();
   }
 }
 
