@@ -169,7 +169,9 @@ const AdminDashboard = () => {
         )}
 
         {/* Tab Content */}
-        {activeTab === 'analytics' && <AnalyticsDashboard overview={overview} />}
+        {activeTab === 'analytics' && (
+          <AnalyticsDashboard overview={overview} onAnalyticsCleared={loadOverview} />
+        )}
         {activeTab === 'profile' && <ProfileUpload />}
         {activeTab === 'skills' && <SkillsManager />}
         {activeTab === 'projects' && <ProjectsManager />}

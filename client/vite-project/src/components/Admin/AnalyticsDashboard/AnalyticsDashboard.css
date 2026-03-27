@@ -181,7 +181,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 1rem;
+}
+
+.visitors-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .visitors-filter {
@@ -200,6 +208,31 @@
   font-family: inherit;
   font-size: 0.85rem;
   outline: none;
+}
+
+.clear-analytics-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 70, 70, 0.45);
+  background: rgba(255, 70, 70, 0.1);
+  color: #ff6b6b;
+  padding: 0.45rem 0.8rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-analytics-btn:hover:not(:disabled) {
+  background: rgba(255, 70, 70, 0.18);
+  border-color: rgba(255, 70, 70, 0.65);
+}
+
+.clear-analytics-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .visitors-table-wrapper {
@@ -320,6 +353,17 @@
   .visitors-table td {
     padding: 0.5rem 0.3rem;
     font-size: 0.8rem;
+  }
+
+  @media (max-width: 768px) {
+    .visitors-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .visitors-actions {
+      justify-content: space-between;
+    }
   }
 
   .pagination {

@@ -12,6 +12,11 @@ const Portfolio = () => {
     // Track visitor on portfolio load
     const ref = document.referrer || 'direct';
     trackVisit(ref, window.location.pathname);
+
+    // Show a quick greeting when someone lands on the portfolio.
+    setTimeout(() => {
+      window.alert('Hello there?😍');
+    }, 300);
   }, []);
 
   return (

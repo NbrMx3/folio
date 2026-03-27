@@ -8,6 +8,7 @@ import {
   getVisitors,
   getChartData,
   getPlatformDetails,
+  clearAnalyticsData,
 } from '../utils/db.js';
 
 const router = express.Router();
@@ -65,6 +66,17 @@ router.get('/platforms', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Platforms error:', error);
     res.status(500).json({ error: 'Failed to fetch platforms' });
+  }
+});
+
+// DELETE /api/analytics/clear — admin only
+router.delete('/clear', verifyToken, async (req, res) => {
+  try {
+    await clearAnalyticsData();
+    res.json({ success: true, message: 'Analytics cleared successfully' });
+  } catch (error) {
+    console.error('Clear analytics error:', error);
+    res.status(500).json({ error: 'Failed to clear analytics' });
   }
 });
 

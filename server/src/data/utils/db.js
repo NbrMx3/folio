@@ -608,3 +608,27 @@ export async function getPlatformDetails() {
   });
   return platforms;
 }
+
+export async function clearAnalyticsData() {
+  if (usingPostgres && pool) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM visitors');
+      await client.query('DELETE FROM platform_stats');
+      await client.query('COMMIT');
+      return;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  const db = await readJsonDb();
+  db.visitors = [];
+  db.platformStats = {};
+  db.totalViews = 0;
+  await writeJsonDb(db);
+}

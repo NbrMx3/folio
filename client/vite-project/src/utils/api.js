@@ -169,6 +169,12 @@ export async function getPlatforms() {
   return authFetch('/analytics/platforms');
 }
 
+export async function clearAnalytics() {
+  return authFetch('/analytics/clear', {
+    method: 'DELETE',
+  });
+}
+
 // Track a visit (called from portfolio)
 export async function trackVisit(ref = 'direct', page = '/') {
   try {

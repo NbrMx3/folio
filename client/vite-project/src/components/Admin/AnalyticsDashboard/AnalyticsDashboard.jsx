@@ -13,9 +13,15 @@ import {
   FaMobile,
   FaTablet,
   FaFilter,
+  FaTrash,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
-import { getChartData, getVisitors, getPlatforms } from '../../../utils/api';
+import {
+  getChartData,
+  getVisitors,
+  getPlatforms,
+  clearAnalytics,
+} from '../../../utils/api';
 import './AnalyticsDashboard.css';
 
 const platformIcons = {
@@ -48,13 +54,14 @@ const platformColors = {
   Other: '#888',
 };
 
-const AnalyticsDashboard = ({ overview }) => {
+const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
   const [chartData, setChartData] = useState([]);
   const [visitors, setVisitors] = useState([]);
   const [platforms, setPlatforms] = useState({});
   const [visitorPage, setVisitorPage] = useState(1);
   const [visitorPages, setVisitorPages] = useState(1);
   const [filterSource, setFilterSource] = useState('all');
+  const [isClearing, setIsClearing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,6 +96,31 @@ const AnalyticsDashboard = ({ overview }) => {
   }, [visitorPage, filterSource]);
 
   const maxViews = Math.max(...chartData.map((d) => d.views), 1);
+
+  const handleClearAnalytics = async () => {
+    const shouldClear = window.confirm(
+      'Are you sure you want to clear all analytics data? This action cannot be undone.'
+    );
+
+    if (!shouldClear || isClearing) return;
+
+    try {
+      setIsClearing(true);
+      await clearAnalytics();
+      setChartData([]);
+      setPlatforms({});
+      setVisitors([]);
+      setVisitorPage(1);
+      setVisitorPages(1);
+      if (onAnalyticsCleared) {
+        await onAnalyticsCleared();
+      }
+    } catch {
+      window.alert('Failed to clear analytics. Please try again.');
+    } finally {
+      setIsClearing(false);
+    }
+  };
 
   return (
     <div className="analytics-dashboard">
@@ -208,25 +240,35 @@ const AnalyticsDashboard = ({ overview }) => {
       <div className="analytics-section">
         <div className="visitors-header">
           <h3>Recent Visitors</h3>
-          <div className="visitors-filter">
-            <FaFilter />
-            <select
-              value={filterSource}
-              onChange={(e) => {
-                setFilterSource(e.target.value);
-                setVisitorPage(1);
-              }}
+          <div className="visitors-actions">
+            <div className="visitors-filter">
+              <FaFilter />
+              <select
+                value={filterSource}
+                onChange={(e) => {
+                  setFilterSource(e.target.value);
+                  setVisitorPage(1);
+                }}
+              >
+                <option value="all">All Platforms</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="GitHub">GitHub</option>
+                <option value="Twitter/X">Twitter/X</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Google">Google</option>
+                <option value="Direct">Direct</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              className="clear-analytics-btn"
+              onClick={handleClearAnalytics}
+              disabled={isClearing}
             >
-              <option value="all">All Platforms</option>
-              <option value="LinkedIn">LinkedIn</option>
-              <option value="GitHub">GitHub</option>
-              <option value="Twitter/X">Twitter/X</option>
-              <option value="Facebook">Facebook</option>
-              <option value="Instagram">Instagram</option>
-              <option value="Google">Google</option>
-              <option value="Direct">Direct</option>
-              <option value="Other">Other</option>
-            </select>
+              <FaTrash /> {isClearing ? 'Clearing...' : 'Clear Analytics'}
+            </button>
           </div>
         </div>
         <div className="visitors-table-wrapper">
