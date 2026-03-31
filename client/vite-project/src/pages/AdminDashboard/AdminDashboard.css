@@ -243,7 +243,12 @@
 
   .sidebar-nav {
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .sidebar-link {
+    width: auto;
   }
 
   .stats-grid {

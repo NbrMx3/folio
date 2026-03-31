@@ -63,6 +63,35 @@ if (rawDatabaseUrl) {
 
 export { pool };
 
+const DEFAULT_ADMIN_RECOVERY_EMAIL = process.env.ADMIN_RECOVERY_EMAIL || 'kipkemoi386@gmail.com';
+
+function getDefaultAdminAuth() {
+  return {
+    email: process.env.ADMIN_EMAIL || 'admin@yourdomain.com',
+    recoveryEmail: DEFAULT_ADMIN_RECOVERY_EMAIL,
+    passwordHash: '',
+    resetTokenHash: '',
+    resetTokenExpiresAt: null,
+    updatedAt: null,
+  };
+}
+
+function normalizeAdminAuth(record = {}) {
+  const defaults = getDefaultAdminAuth();
+
+  return {
+    email: record.email ?? defaults.email,
+    recoveryEmail: record.recoveryEmail ?? record.recovery_email ?? defaults.recoveryEmail,
+    passwordHash: record.passwordHash ?? record.password_hash ?? defaults.passwordHash,
+    resetTokenHash: record.resetTokenHash ?? record.reset_token_hash ?? defaults.resetTokenHash,
+    resetTokenExpiresAt:
+      record.resetTokenExpiresAt ??
+      record.reset_token_expires_at ??
+      defaults.resetTokenExpiresAt,
+    updatedAt: record.updatedAt ?? record.updated_at ?? defaults.updatedAt,
+  };
+}
+
 // JSON DB helpers
 const DB_JSON_PATH = path.join(__dirname, '..', 'db.json');
 
@@ -197,6 +226,18 @@ export async function initDatabase() {
           )
         `);
 
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS admin_auth (
+            id INTEGER PRIMARY KEY,
+            email TEXT NOT NULL,
+            recovery_email TEXT NOT NULL,
+            password_hash TEXT DEFAULT '',
+            reset_token_hash TEXT DEFAULT '',
+            reset_token_expires_at TIMESTAMP NULL,
+            updated_at TIMESTAMP DEFAULT NOW()
+          )
+        `);
+
         // Insert default profile if not exists
         const profileExists = await client.query('SELECT id FROM profile LIMIT 1');
         if (profileExists.rows.length === 0) {
@@ -231,6 +272,19 @@ export async function initDatabase() {
           `);
         }
 
+        const defaultAdminAuth = getDefaultAdminAuth();
+        await client.query(
+          `
+            INSERT INTO admin_auth (id, email, recovery_email)
+            VALUES (1, $1, $2)
+            ON CONFLICT (id) DO UPDATE
+            SET
+              email = COALESCE(NULLIF(admin_auth.email, ''), EXCLUDED.email),
+              recovery_email = COALESCE(NULLIF(admin_auth.recovery_email, ''), EXCLUDED.recovery_email)
+          `,
+          [defaultAdminAuth.email, defaultAdminAuth.recoveryEmail]
+        );
+
         await client.query('COMMIT');
         console.log('Database initialized successfully');
       } catch (error) {
@@ -259,6 +313,7 @@ export async function initDatabase() {
       if (!db.projects) db.projects = [];
       if (!db.visitors) db.visitors = [];
       if (!db.platformStats) db.platformStats = {};
+      db.adminAuth = normalizeAdminAuth(db.adminAuth);
       await writeJsonDb(db);
       console.log('JSON DB initialized for local fallback');
     }
@@ -268,6 +323,74 @@ export async function initDatabase() {
 }
 
 // ─── Profile queries ───────────────────────────────────────
+export async function getAdminAuth() {
+  if (usingPostgres && pool) {
+    const result = await pool.query(
+      `
+        SELECT email, recovery_email, password_hash, reset_token_hash, reset_token_expires_at, updated_at
+        FROM admin_auth
+        WHERE id = 1
+        LIMIT 1
+      `
+    );
+
+    return normalizeAdminAuth(result.rows[0]);
+  }
+
+  const db = await readJsonDb();
+  return normalizeAdminAuth(db.adminAuth);
+}
+
+export async function updateAdminAuth(data) {
+  if (usingPostgres && pool) {
+    const columnMap = {
+      email: 'email',
+      recoveryEmail: 'recovery_email',
+      passwordHash: 'password_hash',
+      resetTokenHash: 'reset_token_hash',
+      resetTokenExpiresAt: 'reset_token_expires_at',
+    };
+
+    const updates = [];
+    const values = [];
+    let index = 1;
+
+    for (const [key, column] of Object.entries(columnMap)) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        updates.push(`${column} = $${index++}`);
+        values.push(key === 'resetTokenExpiresAt' && data[key] ? new Date(data[key]) : data[key]);
+      }
+    }
+
+    if (updates.length === 0) {
+      return getAdminAuth();
+    }
+
+    updates.push('updated_at = NOW()');
+    values.push(1);
+
+    const result = await pool.query(
+      `
+        UPDATE admin_auth
+        SET ${updates.join(', ')}
+        WHERE id = $${index}
+        RETURNING email, recovery_email, password_hash, reset_token_hash, reset_token_expires_at, updated_at
+      `,
+      values
+    );
+
+    return normalizeAdminAuth(result.rows[0]);
+  }
+
+  const db = await readJsonDb();
+  db.adminAuth = normalizeAdminAuth({
+    ...db.adminAuth,
+    ...data,
+  });
+  await writeJsonDb(db);
+  return db.adminAuth;
+}
+
 export async function getProfile() {
   if (usingPostgres && pool) {
     const result = await pool.query('SELECT picture, name, title, bio, github, linkedin, email FROM profile LIMIT 1');

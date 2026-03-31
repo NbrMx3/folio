@@ -18,3 +18,21 @@
 
 ## Backend (Express API)
 Vercel is not designed for persistent Node.js servers. Deploy your backend separately (e.g., Render, Railway, Heroku) and set your frontend API URL accordingly.
+
+### SMTP (Forgot Password)
+To enable admin password reset emails, configure these server environment variables:
+
+```
+ADMIN_RECOVERY_EMAIL=kipkemoi386@gmail.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-gmail-app-password
+SMTP_FROM=your-email@gmail.com
+```
+
+Notes:
+- Use a Gmail App Password for `SMTP_PASS` (not your normal Gmail password).
+- `ADMIN_RECOVERY_EMAIL` is the only inbox allowed to request forgot-password.
+- In production on Render, set these in service environment variables (already declared in `render.yaml`).

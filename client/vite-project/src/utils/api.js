@@ -67,8 +67,42 @@ export async function login(email, password) {
   return res.json();
 }
 
+export async function getRecoveryInfo() {
+  const res = await fetch(`${API_BASE}/auth/recovery-info`);
+  return res.json();
+}
+
+export async function requestPasswordReset(email) {
+  const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  return res.json();
+}
+
+export async function resetPassword(token, newPassword) {
+  const res = await fetch(`${API_BASE}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, newPassword }),
+  });
+  return res.json();
+}
+
 export async function verifyAuth() {
   return authFetch('/auth/verify');
+}
+
+export async function getAuthSettings() {
+  return authFetch('/auth/settings');
+}
+
+export async function changeAdminPassword(currentPassword, newPassword) {
+  return authFetch('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
 }
 
 // Profile

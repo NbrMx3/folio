@@ -18,6 +18,8 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
+      - key: ADMIN_RECOVERY_EMAIL
+        sync: false
       - key: DATABASE_URL
         sync: false
       - key: CLOUDINARY_CLOUD_NAME
@@ -28,4 +30,17 @@ services:
         sync: false
       # Set this to your Vercel frontend URL, e.g. https://your-app.vercel.app
       - key: CLIENT_URL
+        sync: false
+      # SMTP settings for forgot-password email delivery
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
         sync: false

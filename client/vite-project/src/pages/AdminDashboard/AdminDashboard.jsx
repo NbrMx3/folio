@@ -10,6 +10,7 @@ import {
   FaCalendarDay,
   FaCalendarWeek,
   FaCode,
+  FaKey,
   FaProjectDiagram,
 } from 'react-icons/fa';
 import { verifyAuth, removeToken } from '../../utils/api';
@@ -18,6 +19,7 @@ import ProfileUpload from '../../components/Admin/ProfileUpload/ProfileUpload';
 import AnalyticsDashboard from '../../components/Admin/AnalyticsDashboard/AnalyticsDashboard';
 import SkillsManager from '../../components/Admin/SkillsManager/SkillsManager';
 import ProjectsManager from '../../components/Admin/ProjectsManager/ProjectsManager';
+import AuthenticationSettings from '../../components/Admin/AuthenticationSettings/AuthenticationSettings';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -53,6 +55,7 @@ const AdminDashboard = () => {
       case 'profile': return 'Profile Settings';
       case 'skills': return 'Skills Management';
       case 'projects': return 'Projects Management';
+      case 'authentication': return 'Authentication';
       default: return 'Dashboard';
     }
   };
@@ -100,6 +103,12 @@ const AdminDashboard = () => {
             onClick={() => setActiveTab('projects')}
           >
             <FaProjectDiagram /> Projects
+          </button>
+          <button
+            className={`sidebar-link ${activeTab === 'authentication' ? 'active' : ''}`}
+            onClick={() => setActiveTab('authentication')}
+          >
+            <FaKey /> Authentication
           </button>
           <Link to="/" className="sidebar-link">
             <FaHome /> View Site
@@ -175,6 +184,7 @@ const AdminDashboard = () => {
         {activeTab === 'profile' && <ProfileUpload />}
         {activeTab === 'skills' && <SkillsManager />}
         {activeTab === 'projects' && <ProjectsManager />}
+        {activeTab === 'authentication' && <AuthenticationSettings />}
       </main>
     </div>
   );

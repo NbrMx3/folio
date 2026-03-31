@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Portfolio from './pages/Portfolio';
 import AdminLogin from './pages/AdminLogin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import AdminResetPassword from './pages/AdminResetPassword/AdminResetPassword';
 import './App.css';
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Portfolio />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </div>
