@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  publicDir: 'src/public',
   plugins: [
     react(),
     VitePWA({
@@ -18,12 +19,12 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/vite.svg',
+            src: '/dk_portfolio_logo_light.svg',
             sizes: '192x192',
             type: 'image/svg+xml',
           },
           {
-            src: '/vite.svg',
+            src: '/dk_portfolio_logo_light.svg',
             sizes: '512x512',
             type: 'image/svg+xml',
           },
