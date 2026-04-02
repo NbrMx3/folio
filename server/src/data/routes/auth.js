@@ -21,13 +21,33 @@ function hashResetToken(token) {
 }
 
 async function verifyAdminPassword(candidatePassword, adminAuth) {
-  if (!candidatePassword) return false;
+  const candidate = String(candidatePassword || '');
+  if (!candidate) return false;
 
   if (adminAuth.passwordHash) {
-    return bcrypt.compare(candidatePassword, adminAuth.passwordHash);
+    try {
+      const hashMatches = await bcrypt.compare(candidate, adminAuth.passwordHash);
+      if (hashMatches) return true;
+    } catch {
+      // Ignore malformed/legacy hash values and continue with env fallback.
+    }
   }
 
-  return candidatePassword === process.env.ADMIN_PASSWORD;
+  // Keep env password as a recovery path in case the stored hash is stale/unknown.
+  const configuredAdminPassword = String(process.env.ADMIN_PASSWORD || '');
+  return configuredAdminPassword !== '' && candidate === configuredAdminPassword;
+}
+
+function verifyAdminEmail(candidateEmail, adminAuth) {
+  const normalizedCandidateEmail = normalizeEmail(candidateEmail);
+  if (!normalizedCandidateEmail) return false;
+
+  if (normalizedCandidateEmail === normalizeEmail(adminAuth.email)) {
+    return true;
+  }
+
+  const configuredAdminEmail = normalizeEmail(process.env.ADMIN_EMAIL);
+  return configuredAdminEmail !== '' && normalizedCandidateEmail === configuredAdminEmail;
 }
 
 function getUrlOrigin(candidate) {
@@ -140,10 +160,11 @@ router.get('/recovery-info', async (_req, res) => {
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email || '');
+    const password = String(req.body.password || '');
     const adminAuth = await getAdminAuth();
 
-    if (email !== adminAuth.email) {
+    if (!verifyAdminEmail(email, adminAuth)) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -152,13 +173,24 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    const configuredAdminEmail = String(process.env.ADMIN_EMAIL || '').trim();
+    const canonicalAdminEmail = configuredAdminEmail || String(adminAuth.email || '').trim() || normalizeEmail(email);
+
+    // Self-heal old DB rows where admin email drifted from current env configuration.
+    if (
+      configuredAdminEmail &&
+      normalizeEmail(adminAuth.email) !== normalizeEmail(configuredAdminEmail)
+    ) {
+      await updateAdminAuth({ email: configuredAdminEmail });
+    }
+
     const token = jwt.sign(
-      { email, role: 'admin' },
+      { email: canonicalAdminEmail, role: 'admin' },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    res.json({ token, user: { email, role: 'admin' } });
+    res.json({ token, user: { email: canonicalAdminEmail, role: 'admin' } });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
