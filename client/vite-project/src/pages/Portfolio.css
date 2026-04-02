@@ -1,0 +1,31 @@
+.portfolio-welcome-toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1200;
+  max-width: min(24rem, calc(100vw - 2rem));
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  background: var(--card);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-accent);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  transition: opacity 240ms ease, transform 240ms ease;
+  pointer-events: none;
+}
+
+.portfolio-welcome-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .portfolio-welcome-toast {
+    right: 0.75rem;
+    left: 0.75rem;
+    max-width: none;
+  }
+}
