@@ -12,6 +12,10 @@ const router = express.Router();
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 const MIN_PASSWORD_LENGTH = 8;
 
+function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
 function hashResetToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
@@ -26,9 +30,34 @@ async function verifyAdminPassword(candidatePassword, adminAuth) {
   return candidatePassword === process.env.ADMIN_PASSWORD;
 }
 
+function getUrlOrigin(candidate) {
+  if (!candidate) return '';
+  const raw = String(candidate).trim();
+  try {
+    const parsed = new URL(raw);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return '';
+    if (parsed.username || parsed.password) return '';
+
+    const canonicalPrefix = `${parsed.protocol}//${parsed.host}`.toLowerCase();
+    if (!raw.toLowerCase().startsWith(canonicalPrefix)) return '';
+
+    return parsed.origin.replace(/\/+$/, '');
+  } catch {
+    return '';
+  }
+}
+
 function buildClientUrl(req) {
-  const requestOrigin = req.get('origin');
-  return (requestOrigin || process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, '');
+  const requestOrigin = getUrlOrigin(req.get('origin'));
+  if (requestOrigin) return requestOrigin;
+
+  const refererOrigin = getUrlOrigin(req.get('referer'));
+  if (refererOrigin) return refererOrigin;
+
+  const configuredClientUrl = getUrlOrigin(process.env.CLIENT_URL);
+  if (configuredClientUrl) return configuredClientUrl;
+
+  return 'http://localhost:5173';
 }
 
 async function sendResetEmail({ to, resetUrl }) {
@@ -102,7 +131,7 @@ function buildResetResponse(adminAuth, resetUrl, emailResult) {
 router.get('/recovery-info', async (_req, res) => {
   try {
     const adminAuth = await getAdminAuth();
-    res.json({ recoveryEmail: adminAuth.recoveryEmail });
+    res.json({ recoveryEmail: String(adminAuth.recoveryEmail || '').trim() });
   } catch (error) {
     res.status(500).json({ error: 'Unable to load recovery email.' });
   }
@@ -138,12 +167,20 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/forgot-password
 router.post('/forgot-password', async (req, res) => {
   try {
-    const requestedEmail = String(req.body.email || '').trim().toLowerCase();
+    const requestedEmail = normalizeEmail(req.body.email);
     const adminAuth = await getAdminAuth();
+    const recoveryEmail = String(adminAuth.recoveryEmail || '').trim();
+    const normalizedRecoveryEmail = normalizeEmail(recoveryEmail);
 
-    if (requestedEmail !== adminAuth.recoveryEmail.toLowerCase()) {
+    if (!normalizedRecoveryEmail) {
+      return res.status(500).json({
+        error: 'Recovery email is not configured for this admin account.',
+      });
+    }
+
+    if (requestedEmail !== normalizedRecoveryEmail) {
       return res.status(400).json({
-        error: `Password recovery is only enabled for ${adminAuth.recoveryEmail}.`,
+        error: `Password recovery is only enabled for ${recoveryEmail}.`,
       });
     }
 
@@ -158,11 +195,11 @@ router.post('/forgot-password', async (req, res) => {
     });
 
     const emailResult = await sendResetEmail({
-      to: adminAuth.recoveryEmail,
+      to: recoveryEmail,
       resetUrl,
     });
 
-    res.json(buildResetResponse(adminAuth, resetUrl, emailResult));
+    res.json(buildResetResponse({ ...adminAuth, recoveryEmail }, resetUrl, emailResult));
   } catch (error) {
     console.error('Forgot password error:', error.message);
     res.status(500).json({ error: 'Unable to start password reset.' });
