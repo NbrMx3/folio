@@ -27,21 +27,32 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    let isActive = true;
 
-  const checkAuth = async () => {
-    try {
-      const res = await verifyAuth();
-      if (!res.valid) {
-        navigate('/admin/login');
-        return;
+    const checkAuth = async () => {
+      try {
+        const res = await verifyAuth();
+        if (!isActive) return;
+
+        if (!res.valid) {
+          navigate('/admin/login');
+          return;
+        }
+
+        await loadOverview();
+      } catch {
+        if (isActive) {
+          navigate('/admin/login');
+        }
       }
-      await loadOverview();
-    } catch {
-      navigate('/admin/login');
-    }
-  };
+    };
+
+    void checkAuth();
+
+    return () => {
+      isActive = false;
+    };
+  }, [loadOverview, navigate]);
 
   const handleLogout = () => {
     resetAdmin();

@@ -8,18 +8,25 @@ const Projects = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadProjects();
-  }, []);
+    let isMounted = true;
 
-  const loadProjects = async () => {
-    try {
-      const data = await getProjectsList();
-      setProjects(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Projects fetch error:', err.message);
-      setError('Could not load projects. Backend may be unavailable.');
-    }
-  };
+    getProjectsList()
+      .then((data) => {
+        if (isMounted) {
+          setProjects(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch((err) => {
+        console.error('Projects fetch error:', err.message);
+        if (isMounted) {
+          setError('Could not load projects. Backend may be unavailable.');
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section className="projects" id="projects">

@@ -36,18 +36,25 @@ const Skills = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadSkills();
-  }, []);
+    let isMounted = true;
 
-  const loadSkills = async () => {
-    try {
-      const data = await getSkills();
-      setSkills(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Skills fetch error:', err.message);
-      setError('Could not load skills. Backend may be unavailable.');
-    }
-  };
+    getSkills()
+      .then((data) => {
+        if (isMounted) {
+          setSkills(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch((err) => {
+        console.error('Skills fetch error:', err.message);
+        if (isMounted) {
+          setError('Could not load skills. Backend may be unavailable.');
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section className="skills" id="skills">

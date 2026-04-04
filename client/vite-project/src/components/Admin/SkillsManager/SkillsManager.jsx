@@ -87,7 +87,7 @@ const SkillsManager = () => {
     }
   };
 
-  const showMessage = (msg, isError = false) => {
+  const showMessage = (msg) => {
     setMessage(msg);
     setTimeout(() => setMessage(''), 3000);
   };

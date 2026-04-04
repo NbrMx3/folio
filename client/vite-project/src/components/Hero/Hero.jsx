@@ -13,17 +13,22 @@ const Hero = () => {
   ];
 
   useEffect(() => {
-    loadProfile();
-  }, []);
+    let isMounted = true;
 
-  const loadProfile = async () => {
-    try {
-      const data = await getProfile();
-      if (data && typeof data === 'object') setProfile(data);
-    } catch (err) {
-      console.error('Profile fetch error:', err.message);
-    }
-  };
+    getProfile()
+      .then((data) => {
+        if (isMounted && data && typeof data === 'object') {
+          setProfile(data);
+        }
+      })
+      .catch((err) => {
+        console.error('Profile fetch error:', err.message);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const titleWords = (profile.title || 'Full-Stack Developer').trim().split(/\s+/);
   const titleLead = titleWords.length > 1 ? titleWords.slice(0, -1).join(' ') : 'Full-Stack';
