@@ -1,3 +1,76 @@
 .app {
   min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(123, 220, 255, 0.24), transparent 26%),
+    radial-gradient(circle at 86% 16%, rgba(255, 176, 105, 0.2), transparent 28%),
+    radial-gradient(circle at 74% 72%, rgba(129, 225, 255, 0.18), transparent 24%),
+    linear-gradient(122deg, #010715 0%, #04224d 46%, #0b4d86 64%, #020b1b 100%);
+}
+
+.app::before {
+  content: '';
+  position: fixed;
+  inset: -10% -8%;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  background:
+    repeating-linear-gradient(96deg, rgba(123, 220, 255, 0.18) 0 2px, transparent 2px 16px),
+    repeating-linear-gradient(96deg, rgba(255, 176, 105, 0.16) 0 1px, transparent 1px 24px),
+    radial-gradient(circle at 14% 26%, rgba(255, 255, 255, 0.22) 0 2.4%, transparent 10%),
+    radial-gradient(circle at 28% 56%, rgba(124, 219, 255, 0.26) 0 2.8%, transparent 11%),
+    radial-gradient(circle at 64% 24%, rgba(255, 255, 255, 0.24) 0 2.6%, transparent 10%),
+    radial-gradient(circle at 84% 42%, rgba(255, 168, 102, 0.22) 0 2.8%, transparent 11%);
+  filter: blur(0.8px);
+  animation: data-stream-shift 20s linear infinite;
+}
+
+.app::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.48;
+  background:
+    linear-gradient(90deg, transparent 4%, rgba(189, 235, 255, 0.14) 50%, transparent 96%),
+    linear-gradient(rgba(188, 233, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(188, 233, 255, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 38px 38px, 38px 38px;
+  animation: data-grid-pulse 9s ease-in-out infinite;
+}
+
+@keyframes data-stream-shift {
+  0% {
+    transform: translate3d(-5%, 0, 0) scale(1.02);
+  }
+
+  100% {
+    transform: translate3d(5%, 0, 0) scale(1.08);
+  }
+}
+
+@keyframes data-grid-pulse {
+  0%,
+  100% {
+    opacity: 0.34;
+  }
+
+  50% {
+    opacity: 0.56;
+  }
+}
+
+@media (max-width: 768px) {
+  .app::before {
+    opacity: 0.58;
+  }
+
+  .app::after {
+    opacity: 0.36;
+    background-size: 100% 100%, 28px 28px, 28px 28px;
+  }
 }

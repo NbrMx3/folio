@@ -1,6 +1,9 @@
 .footer {
   padding: 3rem 2rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--card-border);
+  background:
+    linear-gradient(180deg, rgba(2, 9, 20, 0.9), rgba(2, 11, 26, 0.78)),
+    radial-gradient(circle at 70% 6%, rgba(98, 217, 255, 0.14), transparent 36%);
 }
 
 .footer-container {
@@ -30,14 +33,17 @@
 }
 
 .footer-logo {
-  font-size: 1.3rem;
+  font-size: 1.45rem;
+  font-family: 'Rajdhani', 'Space Grotesk', sans-serif;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-strong);
   text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .footer-logo span {
-  color: #00ff41;
+  color: var(--accent);
 }
 
 .footer-socials {
@@ -46,24 +52,24 @@
 }
 
 .footer-socials a {
-  color: #666;
+  color: var(--text-muted);
   font-size: 1.2rem;
   transition: color 0.3s, transform 0.2s;
 }
 
 .footer-socials a:hover {
-  color: #00ff41;
+  color: var(--accent);
   transform: translateY(-2px);
 }
 
 .footer-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card-border);
   margin-bottom: 1.5rem;
 }
 
 .footer-copy {
-  color: #555;
+  color: var(--text-muted-2);
   font-size: 0.85rem;
   text-align: center;
   margin: 0;

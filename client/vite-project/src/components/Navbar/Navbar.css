@@ -5,12 +5,14 @@
   width: 100%;
   z-index: 1000;
   padding: 1rem 0;
-  transition: background 0.3s, box-shadow 0.3s;
+  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+  border-bottom: 1px solid transparent;
 }
 
 .navbar.scrolled {
   background: var(--nav-bg);
   box-shadow: var(--shadow-accent);
+  border-color: var(--card-border);
   backdrop-filter: blur(12px);
 }
 
@@ -24,11 +26,13 @@
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  font-family: 'Rajdhani', 'Space Grotesk', sans-serif;
   font-weight: 700;
   color: var(--text-strong);
   text-decoration: none;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .logo span {
@@ -47,7 +51,8 @@
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   transition: color 0.3s;
   position: relative;
 }
@@ -78,7 +83,7 @@
 }
 
 .theme-toggle {
-  background: none;
+  background: var(--card-soft);
   border: 1px solid var(--card-border);
   color: var(--text-muted);
   font-size: 0.95rem;
@@ -87,24 +92,25 @@
   border-radius: 8px;
   display: flex;
   align-items: center;
-  transition: color 0.3s, background 0.3s, border-color 0.3s;
+  transition: color 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 .theme-toggle:hover {
   color: var(--accent);
   border-color: var(--accent-strong);
   background: var(--accent-weak);
+  box-shadow: 0 8px 24px rgba(17, 128, 194, 0.24);
 }
 
 .admin-icon {
-  background: none;
-  border: none;
+  background: var(--card-soft);
+  border: 1px solid transparent;
   color: var(--text-muted);
   font-size: 1.05rem;
   cursor: pointer;
-  padding: 0.35rem;
-  border-radius: 6px;
-  transition: color 0.3s, background 0.3s;
+  padding: 0.38rem;
+  border-radius: 8px;
+  transition: color 0.3s, background 0.3s, border-color 0.3s;
   display: flex;
   align-items: center;
 }
@@ -112,6 +118,7 @@
 .admin-icon:hover {
   color: var(--accent);
   background: var(--accent-weak);
+  border-color: var(--accent-strong);
 }
 
 .menu-toggle {
@@ -134,12 +141,13 @@
     right: -100%;
     width: 260px;
     height: 100vh;
-    background: var(--nav-bg);
+    background: rgba(3, 19, 42, 0.92);
     flex-direction: column;
     padding: 5rem 2rem 2rem;
     gap: 1.5rem;
     transition: right 0.35s ease;
     border-left: 1px solid var(--card-border);
+    backdrop-filter: blur(16px);
   }
 
   .nav-links.open {

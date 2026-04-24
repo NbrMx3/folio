@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -5,38 +7,40 @@
 }
 
 :root {
-  --bg: #0a0a0a;
-  --text: #e0e0e0;
-  --text-strong: #ffffff;
-  --text-muted: #888888;
-  --text-muted-2: #666666;
-  --card: rgba(255, 255, 255, 0.03);
-  --card-soft: rgba(255, 255, 255, 0.02);
-  --card-border: rgba(255, 255, 255, 0.06);
-  --overlay: rgba(0, 0, 0, 0.6);
-  --accent: #00ff41;
-  --accent-weak: rgba(0, 255, 65, 0.1);
-  --accent-strong: rgba(0, 255, 65, 0.2);
-  --nav-bg: rgba(10, 10, 10, 0.95);
-  --shadow-accent: 0 2px 20px rgba(0, 255, 65, 0.08);
+  --bg: #020918;
+  --text: #d2ecff;
+  --text-strong: #f4fbff;
+  --text-muted: #8faec8;
+  --text-muted-2: #7292af;
+  --card: rgba(5, 25, 52, 0.56);
+  --card-soft: rgba(6, 28, 60, 0.42);
+  --card-border: rgba(130, 217, 255, 0.24);
+  --overlay: rgba(2, 10, 24, 0.68);
+  --accent: #5edcff;
+  --accent-weak: rgba(94, 220, 255, 0.14);
+  --accent-strong: rgba(94, 220, 255, 0.36);
+  --accent-warm: #ffb36b;
+  --nav-bg: rgba(3, 18, 41, 0.74);
+  --shadow-accent: 0 14px 45px rgba(15, 116, 173, 0.28);
   color-scheme: dark;
 }
 
 [data-theme="light"] {
-  --bg: #f6f8fb;
-  --text: #0f172a;
-  --text-strong: #0b1120;
-  --text-muted: #4b5563;
-  --text-muted-2: #6b7280;
-  --card: #ffffff;
-  --card-soft: #f8fafc;
-  --card-border: #e5e7eb;
-  --overlay: rgba(0, 0, 0, 0.05);
-  --accent: #0fa34d;
-  --accent-weak: rgba(15, 163, 77, 0.1);
-  --accent-strong: rgba(15, 163, 77, 0.2);
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --shadow-accent: 0 2px 20px rgba(15, 163, 77, 0.08);
+  --bg: #eff6ff;
+  --text: #0f2136;
+  --text-strong: #091426;
+  --text-muted: #47688d;
+  --text-muted-2: #5f7ea3;
+  --card: rgba(255, 255, 255, 0.82);
+  --card-soft: rgba(239, 247, 255, 0.92);
+  --card-border: rgba(14, 83, 143, 0.18);
+  --overlay: rgba(6, 36, 69, 0.08);
+  --accent: #0e8ac7;
+  --accent-weak: rgba(14, 138, 199, 0.12);
+  --accent-strong: rgba(14, 138, 199, 0.24);
+  --accent-warm: #dd7d2e;
+  --nav-bg: rgba(255, 255, 255, 0.88);
+  --shadow-accent: 0 12px 32px rgba(14, 113, 173, 0.16);
   color-scheme: light;
 }
 
@@ -45,18 +49,18 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 9px;
 }
 
 ::-webkit-scrollbar-track {
@@ -65,7 +69,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--accent-weak);
-  border-radius: 4px;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -82,7 +86,9 @@ body {
 }
 
 .section-title {
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+  font-family: 'Rajdhani', 'Space Grotesk', sans-serif;
+  letter-spacing: 0.04em;
   font-weight: 700;
   margin: 0 0 3rem;
   color: var(--text-strong);
