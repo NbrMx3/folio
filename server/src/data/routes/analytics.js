@@ -10,7 +10,7 @@ import {
   getPlatformDetails,
   clearAnalyticsData,
 } from '../utils/db.js';
-import { getTraccarOverview } from '../services/traccar.js';
+import { getTraccarHealth, getTraccarOverview } from '../services/traccar.js';
 
 const router = express.Router();
 
@@ -89,6 +89,17 @@ router.get('/traccar/overview', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Traccar overview error:', error);
     res.status(500).json({ error: 'Failed to fetch Traccar analytics' });
+  }
+});
+
+// GET /api/analytics/traccar/health — admin only
+router.get('/traccar/health', verifyToken, async (req, res) => {
+  try {
+    const health = await getTraccarHealth();
+    res.json(health);
+  } catch (error) {
+    console.error('Traccar health error:', error);
+    res.status(500).json({ error: 'Failed to fetch Traccar health diagnostics' });
   }
 });
 

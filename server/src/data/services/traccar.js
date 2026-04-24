@@ -67,6 +67,23 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function getMissingTraccarConfig() {
+  const missing = [];
+  if (!TRACCAR_BASE_URL) missing.push('TRACCAR_BASE_URL');
+  if (!TRACCAR_USERNAME) missing.push('TRACCAR_USERNAME');
+  if (!TRACCAR_PASSWORD) missing.push('TRACCAR_PASSWORD');
+  return missing;
+}
+
+function errorMessage(error) {
+  if (!error) return 'Unknown error';
+  const message = String(error?.message || error);
+  if (message.includes('This operation was aborted')) {
+    return `Request timeout after ${TRACCAR_TIMEOUT_MS}ms`;
+  }
+  return message;
+}
+
 async function requestJson(path, options = {}) {
   const {
     method = 'GET',
@@ -206,7 +223,7 @@ async function getEventSummary24h() {
 }
 
 export async function getTraccarOverview() {
-  if (!TRACCAR_BASE_URL || !TRACCAR_USERNAME || !TRACCAR_PASSWORD) {
+  if (getMissingTraccarConfig().length > 0) {
     return getDefaultOverview({
       configured: false,
       enabled: false,
@@ -279,5 +296,86 @@ export async function getTraccarOverview() {
       connected: false,
       error: error?.message || 'Unable to reach Traccar API',
     });
+  }
+}
+
+export async function getTraccarHealth() {
+  const missing = getMissingTraccarConfig();
+  const result = {
+    configured: missing.length === 0,
+    connected: false,
+    fetchedAt: new Date().toISOString(),
+    config: {
+      baseUrl: TRACCAR_BASE_URL || null,
+      usernameSet: Boolean(TRACCAR_USERNAME),
+      passwordSet: Boolean(TRACCAR_PASSWORD),
+      sessionPath: TRACCAR_SESSION_PATH,
+      timeoutMs: TRACCAR_TIMEOUT_MS,
+      missing,
+    },
+    checks: {
+      basicAuthDevices: null,
+      sessionLogin: null,
+      sessionCookieDevices: null,
+    },
+    authMode: null,
+    error: null,
+  };
+
+  if (missing.length > 0) {
+    result.error = `Missing required variables: ${missing.join(', ')}`;
+    return result;
+  }
+
+  try {
+    const direct = await requestJson('/api/devices');
+    result.checks.basicAuthDevices = {
+      ok: direct.response.ok,
+      status: direct.response.status,
+      contentType: direct.response.headers.get('content-type') || null,
+      deviceCount: Array.isArray(direct.payload) ? direct.payload.length : null,
+    };
+
+    if (direct.response.ok) {
+      result.connected = true;
+      result.authMode = 'basic';
+      return result;
+    }
+
+    if (direct.response.status !== 401) {
+      result.error = `Traccar /api/devices returned ${direct.response.status}`;
+      return result;
+    }
+
+    const sessionOk = await refreshSessionCookie();
+    result.checks.sessionLogin = {
+      ok: sessionOk,
+      path: TRACCAR_SESSION_PATH,
+    };
+
+    if (!sessionOk) {
+      result.error = 'Session login failed. Check TRACCAR_USERNAME/TRACCAR_PASSWORD and session path.';
+      return result;
+    }
+
+    const retry = await requestJson('/api/devices', { useSessionCookie: true });
+    result.checks.sessionCookieDevices = {
+      ok: retry.response.ok,
+      status: retry.response.status,
+      contentType: retry.response.headers.get('content-type') || null,
+      deviceCount: Array.isArray(retry.payload) ? retry.payload.length : null,
+    };
+
+    if (retry.response.ok) {
+      result.connected = true;
+      result.authMode = 'session-cookie';
+      return result;
+    }
+
+    result.error = `Traccar session-authenticated /api/devices returned ${retry.response.status}`;
+    return result;
+  } catch (error) {
+    result.error = errorMessage(error);
+    return result;
   }
 }
