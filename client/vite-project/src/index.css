@@ -19,7 +19,7 @@
   --accent: #73e6ff;
   --accent-weak: rgba(115, 230, 255, 0.16);
   --accent-strong: rgba(115, 230, 255, 0.38);
-  --accent-warm: #ffb672;
+  --accent-warm: #6ec9ff;
   --nav-bg: rgba(3, 20, 45, 0.78);
   --shadow-accent: 0 16px 48px rgba(12, 111, 171, 0.34);
   color-scheme: dark;
@@ -38,7 +38,7 @@
   --accent: #0e8ac7;
   --accent-weak: rgba(14, 138, 199, 0.12);
   --accent-strong: rgba(14, 138, 199, 0.24);
-  --accent-warm: #dd7d2e;
+  --accent-warm: #2f88d5;
   --nav-bg: rgba(255, 255, 255, 0.88);
   --shadow-accent: 0 12px 32px rgba(14, 113, 173, 0.16);
   color-scheme: light;
