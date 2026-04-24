@@ -79,3 +79,10 @@
       linear-gradient(180deg, transparent 55%, rgba(40, 114, 236, 0.14) 62%, rgba(9, 32, 90, 0.2) 79%, transparent 100%);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .app::before,
+  .app::after {
+    animation: none;
+  }
+}

@@ -1,7 +1,7 @@
 .portfolio-welcome-toast {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
   z-index: 1200;
   max-width: min(24rem, calc(100vw - 2rem));
   padding: 0.75rem 1rem;
@@ -24,8 +24,8 @@
 
 @media (max-width: 640px) {
   .portfolio-welcome-toast {
-    right: 0.75rem;
-    left: 0.75rem;
+    right: max(0.75rem, env(safe-area-inset-right));
+    left: max(0.75rem, env(safe-area-inset-left));
     max-width: none;
   }
 }

@@ -22,6 +22,9 @@
   --accent-warm: #6ec9ff;
   --nav-bg: rgba(3, 20, 45, 0.78);
   --shadow-accent: 0 16px 48px rgba(12, 111, 171, 0.34);
+  --container-max: 1200px;
+  --page-gutter: clamp(0.9rem, 2.8vw, 2rem);
+  --section-pad-y: clamp(3.4rem, 8vw, 6rem);
   color-scheme: dark;
 }
 
@@ -57,6 +60,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 ::-webkit-scrollbar {
