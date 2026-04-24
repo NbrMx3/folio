@@ -1,8 +1,29 @@
-const TRACCAR_BASE_URL = (process.env.TRACCAR_BASE_URL || '').replace(/\/+$/, '');
-const TRACCAR_USERNAME = process.env.TRACCAR_USERNAME || '';
-const TRACCAR_PASSWORD = process.env.TRACCAR_PASSWORD || '';
-const TRACCAR_SESSION_PATH = process.env.TRACCAR_SESSION_PATH || '/api/session';
-const TRACCAR_TIMEOUT_MS = Number.parseInt(process.env.TRACCAR_TIMEOUT_MS || '7000', 10);
+function sanitize(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeBaseUrl(value) {
+  const raw = sanitize(value).replace(/\/+$/, '');
+  if (!raw) return '';
+
+  // Many users paste a Traccar URL ending with /api. Endpoints below already include /api.
+  const withoutApiSuffix = raw.replace(/\/api$/i, '');
+
+  try {
+    const parsed = new URL(withoutApiSuffix);
+    if (!/^https?:$/i.test(parsed.protocol)) return '';
+    return parsed.toString().replace(/\/+$/, '');
+  } catch {
+    return '';
+  }
+}
+
+const TRACCAR_BASE_URL = normalizeBaseUrl(process.env.TRACCAR_BASE_URL || '');
+const TRACCAR_USERNAME = sanitize(process.env.TRACCAR_USERNAME || '');
+const TRACCAR_PASSWORD = sanitize(process.env.TRACCAR_PASSWORD || '');
+const TRACCAR_SESSION_PATH = sanitize(process.env.TRACCAR_SESSION_PATH || '/api/session') || '/api/session';
+const parsedTimeout = Number.parseInt(process.env.TRACCAR_TIMEOUT_MS || '7000', 10);
+const TRACCAR_TIMEOUT_MS = Number.isFinite(parsedTimeout) && parsedTimeout > 0 ? parsedTimeout : 7000;
 
 let sessionCookie = '';
 let sessionExpiresAt = 0;
@@ -189,7 +210,7 @@ export async function getTraccarOverview() {
     return getDefaultOverview({
       configured: false,
       enabled: false,
-      message: 'Set TRACCAR_BASE_URL, TRACCAR_USERNAME, and TRACCAR_PASSWORD to enable Traccar integration.',
+      message: 'Set valid TRACCAR_BASE_URL, TRACCAR_USERNAME, and TRACCAR_PASSWORD to enable Traccar integration.',
     });
   }
 

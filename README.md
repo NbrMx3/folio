@@ -50,4 +50,5 @@ TRACCAR_TIMEOUT_MS=7000
 
 Notes:
 - Integration is optional. If these variables are not set, local analytics still works as before.
+- Use `TRACCAR_BASE_URL` as your host only (for example `https://demo.traccar.org`), not `.../api`.
 - `TRACCAR_SESSION_PATH` and `TRACCAR_TIMEOUT_MS` are optional overrides.

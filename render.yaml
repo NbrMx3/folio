@@ -44,3 +44,14 @@ services:
         sync: false
       - key: SMTP_FROM
         sync: false
+      # Traccar telemetry integration (optional)
+      - key: TRACCAR_BASE_URL
+        sync: false
+      - key: TRACCAR_USERNAME
+        sync: false
+      - key: TRACCAR_PASSWORD
+        sync: false
+      - key: TRACCAR_SESSION_PATH
+        sync: false
+      - key: TRACCAR_TIMEOUT_MS
+        sync: false
