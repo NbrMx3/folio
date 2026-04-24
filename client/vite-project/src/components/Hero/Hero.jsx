@@ -1,10 +1,28 @@
 import { useState, useEffect } from 'react';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import {
+  FaGithub,
+  FaLinkedin,
+  FaTwitter,
+  FaFacebook,
+  FaInstagram,
+} from 'react-icons/fa';
+import { SiTiktok } from 'react-icons/si';
 import { getProfile } from '../../utils/api';
 import './Hero.css';
 
 const Hero = () => {
-  const [profile, setProfile] = useState({ name: '', title: '', bio: '', picture: '', github: '', linkedin: '' });
+  const [profile, setProfile] = useState({
+    name: '',
+    title: '',
+    bio: '',
+    picture: '',
+    github: '',
+    linkedin: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+  });
   const heroSnippet = [
     'const buildExperience = async () => {',
     "  const stack = ['React', 'Node', 'Security'];",
@@ -18,7 +36,7 @@ const Hero = () => {
     getProfile()
       .then((data) => {
         if (isMounted && data && typeof data === 'object') {
-          setProfile(data);
+          setProfile((prev) => ({ ...prev, ...data }));
         }
       })
       .catch((err) => {
@@ -33,6 +51,14 @@ const Hero = () => {
   const titleWords = (profile.title || 'Full-Stack Developer').trim().split(/\s+/);
   const titleLead = titleWords.length > 1 ? titleWords.slice(0, -1).join(' ') : 'Full-Stack';
   const titleAccent = titleWords.length > 1 ? titleWords[titleWords.length - 1] : titleWords[0];
+  const socialLinks = [
+    { label: 'GitHub', href: profile.github || 'https://github.com', icon: <FaGithub /> },
+    { label: 'LinkedIn', href: profile.linkedin || 'https://linkedin.com', icon: <FaLinkedin /> },
+    { label: 'X', href: profile.twitter || 'https://x.com', icon: <FaTwitter /> },
+    { label: 'Facebook', href: profile.facebook || 'https://facebook.com', icon: <FaFacebook /> },
+    { label: 'Instagram', href: profile.instagram || 'https://instagram.com', icon: <FaInstagram /> },
+    { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok /> },
+  ];
 
   return (
     <section className="hero" id="home">
@@ -52,12 +78,11 @@ const Hero = () => {
           <div className="hero-actions">
             <a href="#contact" className="btn-primary">Let's Connect</a>
             <div className="hero-socials">
-              <a href={profile.github || 'https://github.com'} target="_blank" rel="noreferrer" aria-label="GitHub">
-                <FaGithub />
-              </a>
-              <a href={profile.linkedin || 'https://linkedin.com'} target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                <FaLinkedin />
-              </a>
+              {socialLinks.map((social) => (
+                <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
+                  {social.icon}
+                </a>
+              ))}
             </div>
           </div>
           <div className="hero-metrics">

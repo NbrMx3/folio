@@ -256,6 +256,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 <option value="Twitter/X">Twitter/X</option>
                 <option value="Facebook">Facebook</option>
                 <option value="Instagram">Instagram</option>
+                <option value="TikTok">TikTok</option>
                 <option value="Google">Google</option>
                 <option value="Direct">Direct</option>
                 <option value="Other">Other</option>

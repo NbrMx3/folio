@@ -1,10 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaCamera, FaSave, FaUser, FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import {
+  FaCamera,
+  FaSave,
+  FaUser,
+  FaGithub,
+  FaLinkedin,
+  FaTwitter,
+  FaFacebook,
+  FaInstagram,
+  FaEnvelope,
+} from 'react-icons/fa';
+import { SiTiktok } from 'react-icons/si';
 import { getProfile, updateProfile, uploadProfilePicture } from '../../../utils/api';
 import './ProfileUpload.css';
 
 const ProfileUpload = () => {
-  const [profile, setProfile] = useState({ picture: '', name: '', title: '', bio: '', github: '', linkedin: '', email: '' });
+  const [profile, setProfile] = useState({
+    picture: '',
+    name: '',
+    title: '',
+    bio: '',
+    github: '',
+    linkedin: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+    email: '',
+  });
   const [preview, setPreview] = useState('');
 
   // Helper to get absolute image URL in production
@@ -25,7 +48,7 @@ const ProfileUpload = () => {
   const loadProfile = async () => {
     try {
       const data = await getProfile();
-      setProfile(data);
+      setProfile((prev) => ({ ...prev, ...data }));
       if (data.picture) {
         setPreview(data.picture);
       }
@@ -68,6 +91,10 @@ const ProfileUpload = () => {
         bio: profile.bio,
         github: profile.github,
         linkedin: profile.linkedin,
+        twitter: profile.twitter,
+        facebook: profile.facebook,
+        instagram: profile.instagram,
+        tiktok: profile.tiktok,
         email: profile.email,
       });
       setMessage('Profile saved!');
@@ -163,6 +190,42 @@ const ProfileUpload = () => {
             value={profile.linkedin || ''}
             onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
             placeholder="https://linkedin.com/in/yourusername"
+          />
+        </div>
+        <div className="profile-field">
+          <label><FaTwitter /> X (Twitter) URL</label>
+          <input
+            type="text"
+            value={profile.twitter || ''}
+            onChange={(e) => setProfile({ ...profile, twitter: e.target.value })}
+            placeholder="https://x.com/yourusername"
+          />
+        </div>
+        <div className="profile-field">
+          <label><FaFacebook /> Facebook URL</label>
+          <input
+            type="text"
+            value={profile.facebook || ''}
+            onChange={(e) => setProfile({ ...profile, facebook: e.target.value })}
+            placeholder="https://facebook.com/yourusername"
+          />
+        </div>
+        <div className="profile-field">
+          <label><FaInstagram /> Instagram URL</label>
+          <input
+            type="text"
+            value={profile.instagram || ''}
+            onChange={(e) => setProfile({ ...profile, instagram: e.target.value })}
+            placeholder="https://instagram.com/yourusername"
+          />
+        </div>
+        <div className="profile-field">
+          <label><SiTiktok /> TikTok URL</label>
+          <input
+            type="text"
+            value={profile.tiktok || ''}
+            onChange={(e) => setProfile({ ...profile, tiktok: e.target.value })}
+            placeholder="https://tiktok.com/@yourusername"
           />
         </div>
         <div className="profile-field">

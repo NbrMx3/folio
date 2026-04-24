@@ -130,13 +130,26 @@ export async function initDatabase() {
             bio TEXT DEFAULT '',
             github TEXT DEFAULT '',
             linkedin TEXT DEFAULT '',
+            twitter TEXT DEFAULT '',
+            facebook TEXT DEFAULT '',
+            instagram TEXT DEFAULT '',
+            tiktok TEXT DEFAULT '',
             email TEXT DEFAULT '',
             updated_at TIMESTAMP DEFAULT NOW()
           )
         `);
 
         // Add columns if they don't exist (for existing databases)
-        const profileCols = ['bio', 'github', 'linkedin', 'email'];
+        const profileCols = [
+          'bio',
+          'github',
+          'linkedin',
+          'twitter',
+          'facebook',
+          'instagram',
+          'tiktok',
+          'email',
+        ];
         for (const col of profileCols) {
           await client.query(`
             DO $$ BEGIN
@@ -242,8 +255,20 @@ export async function initDatabase() {
         const profileExists = await client.query('SELECT id FROM profile LIMIT 1');
         if (profileExists.rows.length === 0) {
           await client.query(`
-            INSERT INTO profile (picture, name, title, bio, github, linkedin, email) 
-            VALUES ('', 'CyberDev', 'Full-Stack Developer', '', '', '', '')
+            INSERT INTO profile (
+              picture,
+              name,
+              title,
+              bio,
+              github,
+              linkedin,
+              twitter,
+              facebook,
+              instagram,
+              tiktok,
+              email
+            )
+            VALUES ('', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '')
           `);
         }
 
@@ -304,7 +329,20 @@ export async function initDatabase() {
   if (!usingPostgres) {
     async function ensureJsonDefaults() {
       const db = await readJsonDb();
-      if (!db.profile) db.profile = { picture: '', name: 'CyberDev', title: 'Full-Stack Developer', bio: '', github: '', linkedin: '', email: '' };
+      const defaultProfile = {
+        picture: '',
+        name: 'CyberDev',
+        title: 'Full-Stack Developer',
+        bio: '',
+        github: '',
+        linkedin: '',
+        twitter: '',
+        facebook: '',
+        instagram: '',
+        tiktok: '',
+        email: '',
+      };
+      db.profile = { ...defaultProfile, ...(db.profile || {}) };
       if (!db.skills) db.skills = [
         { id: 1, icon: 'FaCode', title: 'Frontend Development', description: 'React, Vue, HTML5, CSS3, JavaScript, TypeScript', sort_order: 0 },
         { id: 2, icon: 'FaNodeJs', title: 'Backend Development', description: 'Node.js, Python, MongoDB, REST APIs, GraphQL', sort_order: 1 },
@@ -393,17 +431,58 @@ export async function updateAdminAuth(data) {
 
 export async function getProfile() {
   if (usingPostgres && pool) {
-    const result = await pool.query('SELECT picture, name, title, bio, github, linkedin, email FROM profile LIMIT 1');
-    return result.rows[0] || { picture: '', name: 'CyberDev', title: 'Full-Stack Developer', bio: '', github: '', linkedin: '', email: '' };
+    const result = await pool.query(
+      'SELECT picture, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, email FROM profile LIMIT 1'
+    );
+    return (
+      result.rows[0] || {
+        picture: '',
+        name: 'CyberDev',
+        title: 'Full-Stack Developer',
+        bio: '',
+        github: '',
+        linkedin: '',
+        twitter: '',
+        facebook: '',
+        instagram: '',
+        tiktok: '',
+        email: '',
+      }
+    );
   }
 
   const db = await readJsonDb();
-  return db.profile || { picture: '', name: 'CyberDev', title: 'Full-Stack Developer', bio: '', github: '', linkedin: '', email: '' };
+  const defaultProfile = {
+    picture: '',
+    name: 'CyberDev',
+    title: 'Full-Stack Developer',
+    bio: '',
+    github: '',
+    linkedin: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+    email: '',
+  };
+  return { ...defaultProfile, ...(db.profile || {}) };
 }
 
 export async function updateProfile(data) {
   if (usingPostgres && pool) {
-    const { picture, name, title, bio, github, linkedin, email } = data;
+    const {
+      picture,
+      name,
+      title,
+      bio,
+      github,
+      linkedin,
+      twitter,
+      facebook,
+      instagram,
+      tiktok,
+      email,
+    } = data;
     const updates = [];
     const values = [];
     let paramCount = 1;
@@ -414,6 +493,10 @@ export async function updateProfile(data) {
     if (bio !== undefined) { updates.push(`bio = $${paramCount++}`); values.push(bio); }
     if (github !== undefined) { updates.push(`github = $${paramCount++}`); values.push(github); }
     if (linkedin !== undefined) { updates.push(`linkedin = $${paramCount++}`); values.push(linkedin); }
+    if (twitter !== undefined) { updates.push(`twitter = $${paramCount++}`); values.push(twitter); }
+    if (facebook !== undefined) { updates.push(`facebook = $${paramCount++}`); values.push(facebook); }
+    if (instagram !== undefined) { updates.push(`instagram = $${paramCount++}`); values.push(instagram); }
+    if (tiktok !== undefined) { updates.push(`tiktok = $${paramCount++}`); values.push(tiktok); }
     if (email !== undefined) { updates.push(`email = $${paramCount++}`); values.push(email); }
 
     if (updates.length > 0) {
@@ -427,7 +510,19 @@ export async function updateProfile(data) {
   }
 
   const db = await readJsonDb();
-  db.profile = db.profile || { picture: '', name: 'CyberDev', title: 'Full-Stack Developer', bio: '', github: '', linkedin: '', email: '' };
+  db.profile = db.profile || {
+    picture: '',
+    name: 'CyberDev',
+    title: 'Full-Stack Developer',
+    bio: '',
+    github: '',
+    linkedin: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+    email: '',
+  };
   db.profile = { ...db.profile, ...data };
   await writeJsonDb(db);
   return db.profile;

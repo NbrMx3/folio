@@ -145,6 +145,7 @@
 .hero-socials {
   display: flex;
   gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .hero-socials a {

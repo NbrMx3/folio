@@ -51,8 +51,30 @@ router.post('/upload', verifyToken, upload.single('picture'), async (req, res) =
 // PUT /api/profile — admin only
 router.put('/', verifyToken, async (req, res) => {
   try {
-    const { name, title, bio, github, linkedin, email } = req.body;
-    const updated = await updateProfile({ name, title, bio, github, linkedin, email });
+    const {
+      name,
+      title,
+      bio,
+      github,
+      linkedin,
+      twitter,
+      facebook,
+      instagram,
+      tiktok,
+      email,
+    } = req.body;
+    const updated = await updateProfile({
+      name,
+      title,
+      bio,
+      github,
+      linkedin,
+      twitter,
+      facebook,
+      instagram,
+      tiktok,
+      email,
+    });
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Update failed' });
