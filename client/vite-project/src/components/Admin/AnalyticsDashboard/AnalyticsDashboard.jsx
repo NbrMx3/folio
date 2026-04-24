@@ -20,6 +20,7 @@ import {
   getChartData,
   getVisitors,
   getPlatforms,
+  getTraccarOverview,
   clearAnalytics,
 } from '../../../utils/api';
 import './AnalyticsDashboard.css';
@@ -58,6 +59,8 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
   const [chartData, setChartData] = useState([]);
   const [visitors, setVisitors] = useState([]);
   const [platforms, setPlatforms] = useState({});
+  const [traccarOverview, setTraccarOverview] = useState(null);
+  const [traccarLoading, setTraccarLoading] = useState(true);
   const [visitorPage, setVisitorPage] = useState(1);
   const [visitorPages, setVisitorPages] = useState(1);
   const [filterSource, setFilterSource] = useState('all');
@@ -67,12 +70,19 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
     let cancelled = false;
     const loadData = async () => {
       try {
-        const [chart, plat] = await Promise.all([getChartData(), getPlatforms()]);
+        const [chartResult, platformResult, traccarResult] = await Promise.allSettled([
+          getChartData(),
+          getPlatforms(),
+          getTraccarOverview(),
+        ]);
         if (cancelled) return;
-        setChartData(chart);
-        setPlatforms(plat);
+        setChartData(chartResult.status === 'fulfilled' && Array.isArray(chartResult.value) ? chartResult.value : []);
+        setPlatforms(platformResult.status === 'fulfilled' && platformResult.value ? platformResult.value : {});
+        setTraccarOverview(traccarResult.status === 'fulfilled' ? traccarResult.value : null);
       } catch {
         // ignore
+      } finally {
+        if (!cancelled) setTraccarLoading(false);
       }
     };
     loadData();
@@ -96,6 +106,13 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
   }, [visitorPage, filterSource]);
 
   const maxViews = Math.max(...chartData.map((d) => d.views), 1);
+
+  const traccarSummary = traccarOverview?.summary || {
+    deviceCount: 0,
+    onlineCount: 0,
+    movingCount: 0,
+    stoppedCount: 0,
+  };
 
   const handleClearAnalytics = async () => {
     const shouldClear = window.confirm(
@@ -167,6 +184,86 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
             </p>
           )}
         </div>
+      </div>
+
+      {/* Traccar GPRS Integration */}
+      <div className="analytics-section">
+        <h3>GPRS Traccar API</h3>
+        <p className="section-hint">
+          Live tracker metrics from your Traccar API configuration.
+        </p>
+        {traccarLoading ? (
+          <p className="no-data">Loading Traccar metrics...</p>
+        ) : !traccarOverview?.configured ? (
+          <p className="no-data">
+            Traccar is not configured on the server yet. Add
+            `TRACCAR_BASE_URL`, `TRACCAR_USERNAME`, and `TRACCAR_PASSWORD`.
+          </p>
+        ) : !traccarOverview?.connected ? (
+          <p className="no-data">
+            Could not connect to Traccar. {traccarOverview?.error || 'Check API URL and credentials.'}
+          </p>
+        ) : (
+          <>
+            <div className="traccar-summary-grid">
+              <article className="traccar-summary-card">
+                <span>Total Devices</span>
+                <strong>{traccarSummary.deviceCount || 0}</strong>
+              </article>
+              <article className="traccar-summary-card">
+                <span>Online</span>
+                <strong>{traccarSummary.onlineCount || 0}</strong>
+              </article>
+              <article className="traccar-summary-card">
+                <span>Moving</span>
+                <strong>{traccarSummary.movingCount || 0}</strong>
+              </article>
+              <article className="traccar-summary-card">
+                <span>Stopped</span>
+                <strong>{traccarSummary.stoppedCount || 0}</strong>
+              </article>
+            </div>
+
+            <div className="traccar-table-wrapper">
+              <table className="traccar-table">
+                <thead>
+                  <tr>
+                    <th>Device</th>
+                    <th>Status</th>
+                    <th>Speed (km/h)</th>
+                    <th>Last Update</th>
+                    <th>Coordinates</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(traccarOverview?.devices) && traccarOverview.devices.length > 0 ? (
+                    traccarOverview.devices.slice(0, 15).map((device) => (
+                      <tr key={device.id}>
+                        <td>{device.name}</td>
+                        <td style={{ textTransform: 'capitalize' }}>{device.status || 'unknown'}</td>
+                        <td>{device.speedKph ?? 0}</td>
+                        <td>
+                          {device.lastUpdate ? new Date(device.lastUpdate).toLocaleString() : '-'}
+                        </td>
+                        <td>
+                          {device.latitude != null && device.longitude != null
+                            ? `${Number(device.latitude).toFixed(5)}, ${Number(device.longitude).toFixed(5)}`
+                            : '-'}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="no-data">
+                        No Traccar devices returned by API.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Views Chart */}

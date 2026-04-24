@@ -10,6 +10,7 @@ import {
   getPlatformDetails,
   clearAnalyticsData,
 } from '../utils/db.js';
+import { getTraccarOverview } from '../services/traccar.js';
 
 const router = express.Router();
 
@@ -77,6 +78,17 @@ router.delete('/clear', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Clear analytics error:', error);
     res.status(500).json({ error: 'Failed to clear analytics' });
+  }
+});
+
+// GET /api/analytics/traccar/overview — admin only
+router.get('/traccar/overview', verifyToken, async (req, res) => {
+  try {
+    const overview = await getTraccarOverview();
+    res.json(overview);
+  } catch (error) {
+    console.error('Traccar overview error:', error);
+    res.status(500).json({ error: 'Failed to fetch Traccar analytics' });
   }
 });
 

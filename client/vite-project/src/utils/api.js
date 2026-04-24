@@ -203,6 +203,10 @@ export async function getPlatforms() {
   return authFetch('/analytics/platforms');
 }
 
+export async function getTraccarOverview() {
+  return authFetch('/analytics/traccar/overview');
+}
+
 export async function clearAnalytics() {
   return authFetch('/analytics/clear', {
     method: 'DELETE',

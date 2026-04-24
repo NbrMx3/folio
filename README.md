@@ -36,3 +36,18 @@ Notes:
 - Use a Gmail App Password for `SMTP_PASS` (not your normal Gmail password).
 - `ADMIN_RECOVERY_EMAIL` is the only inbox allowed to request forgot-password.
 - In production on Render, set these in service environment variables (already declared in `render.yaml`).
+
+### Optional: Traccar (GPRS) Analytics Integration
+To pull live telemetry metrics into the Admin Analytics dashboard, set:
+
+```
+TRACCAR_BASE_URL=https://your-traccar-host
+TRACCAR_USERNAME=admin@example.com
+TRACCAR_PASSWORD=your-password
+TRACCAR_SESSION_PATH=/api/session
+TRACCAR_TIMEOUT_MS=7000
+```
+
+Notes:
+- Integration is optional. If these variables are not set, local analytics still works as before.
+- `TRACCAR_SESSION_PATH` and `TRACCAR_TIMEOUT_MS` are optional overrides.

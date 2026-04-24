@@ -151,6 +151,74 @@
   box-shadow: 0 0 11px rgba(0, 234, 255, 0.34);
 }
 
+.traccar-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.traccar-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding: 0.78rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 234, 255, 0.18);
+  background:
+    linear-gradient(160deg, rgba(0, 234, 255, 0.08), transparent 46%),
+    rgba(3, 10, 20, 0.74);
+}
+
+.traccar-summary-card span {
+  color: var(--cyber-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.traccar-summary-card strong {
+  color: var(--cyber-text);
+  font-size: 1.35rem;
+}
+
+.traccar-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid rgba(0, 234, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(3, 10, 20, 0.64);
+}
+
+.traccar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.traccar-table th {
+  text-align: left;
+  color: #95dff3;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.72rem 0.74rem;
+  border-bottom: 1px solid rgba(0, 234, 255, 0.17);
+  background: linear-gradient(180deg, rgba(0, 234, 255, 0.08), rgba(0, 234, 255, 0.02));
+  white-space: nowrap;
+}
+
+.traccar-table td {
+  padding: 0.65rem 0.74rem;
+  color: #b2d6e3;
+  font-size: 0.8rem;
+  border-bottom: 1px solid rgba(0, 234, 255, 0.08);
+  white-space: nowrap;
+}
+
+.traccar-table tr:hover td {
+  background: rgba(0, 234, 255, 0.06);
+}
+
 .chart-container {
   margin-top: 0.9rem;
   overflow-x: auto;
@@ -429,7 +497,9 @@
   }
 
   .visitors-table th,
-  .visitors-table td {
+  .visitors-table td,
+  .traccar-table th,
+  .traccar-table td {
     padding: 0.47rem 0.35rem;
     font-size: 0.76rem;
   }
