@@ -194,6 +194,10 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
         </p>
         {traccarLoading ? (
           <p className="no-data">Loading Traccar metrics...</p>
+        ) : traccarOverview?.routeMissing ? (
+          <p className="no-data">
+            {traccarOverview?.error || 'Traccar endpoint is missing on the API server. Redeploy backend and verify VITE_API_BASE.'}
+          </p>
         ) : !traccarOverview?.configured ? (
           <p className="no-data">
             Traccar is not configured on the server yet. Add

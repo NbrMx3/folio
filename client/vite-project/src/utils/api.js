@@ -222,8 +222,9 @@ export async function getTraccarOverview() {
     const message = String(error?.message || error);
     if (message.includes('(404)')) {
       return {
-        configured: false,
+        configured: true,
         connected: false,
+        routeMissing: true,
         error: 'Traccar endpoint not found on API server (404). Redeploy backend and verify VITE_API_BASE points to the correct server.',
         devices: [],
         summary: {
