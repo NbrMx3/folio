@@ -3,29 +3,28 @@
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at 18% 18%, rgba(123, 220, 255, 0.24), transparent 26%),
-    radial-gradient(circle at 86% 16%, rgba(255, 176, 105, 0.2), transparent 28%),
-    radial-gradient(circle at 74% 72%, rgba(129, 225, 255, 0.18), transparent 24%),
-    linear-gradient(122deg, #010715 0%, #04224d 46%, #0b4d86 64%, #020b1b 100%);
+    radial-gradient(78% 72% at 83% 47%, rgba(145, 235, 255, 0.46) 0%, rgba(90, 194, 255, 0.26) 24%, rgba(20, 76, 156, 0.1) 50%, transparent 74%),
+    radial-gradient(46% 42% at 15% 56%, rgba(8, 45, 108, 0.56) 0%, rgba(5, 28, 72, 0.36) 46%, transparent 76%),
+    linear-gradient(108deg, #010713 0%, #03204e 35%, #0a4f8d 58%, #031635 82%, #010713 100%);
 }
 
 .app::before {
   content: '';
   position: fixed;
-  inset: -10% -8%;
+  inset: -22% -28%;
   z-index: -2;
   pointer-events: none;
-  opacity: 0.75;
+  opacity: 0.86;
   mix-blend-mode: screen;
+  transform: perspective(1300px) rotateY(-18deg) scale(1.3);
+  transform-origin: right center;
   background:
-    repeating-linear-gradient(96deg, rgba(123, 220, 255, 0.18) 0 2px, transparent 2px 16px),
-    repeating-linear-gradient(96deg, rgba(255, 176, 105, 0.16) 0 1px, transparent 1px 24px),
-    radial-gradient(circle at 14% 26%, rgba(255, 255, 255, 0.22) 0 2.4%, transparent 10%),
-    radial-gradient(circle at 28% 56%, rgba(124, 219, 255, 0.26) 0 2.8%, transparent 11%),
-    radial-gradient(circle at 64% 24%, rgba(255, 255, 255, 0.24) 0 2.6%, transparent 10%),
-    radial-gradient(circle at 84% 42%, rgba(255, 168, 102, 0.22) 0 2.8%, transparent 11%);
-  filter: blur(0.8px);
-  animation: data-stream-shift 20s linear infinite;
+    repeating-linear-gradient(92deg, rgba(169, 234, 255, 0.42) 0 2px, transparent 2px 16px),
+    repeating-linear-gradient(92deg, rgba(111, 210, 255, 0.28) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(92deg, rgba(255, 173, 102, 0.22) 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(92deg, rgba(16, 56, 132, 0.3) 0 3px, transparent 3px 24px);
+  filter: blur(0.7px);
+  animation: stream-rush 12s linear infinite;
 }
 
 .app::after {
@@ -34,43 +33,51 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.48;
+  opacity: 0.62;
   background:
-    linear-gradient(90deg, transparent 4%, rgba(189, 235, 255, 0.14) 50%, transparent 96%),
-    linear-gradient(rgba(188, 233, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(188, 233, 255, 0.05) 1px, transparent 1px);
-  background-size: 100% 100%, 38px 38px, 38px 38px;
-  animation: data-grid-pulse 9s ease-in-out infinite;
+    radial-gradient(circle at 6% 36%, rgba(255, 158, 88, 0.4) 0 2%, transparent 9%),
+    radial-gradient(circle at 12% 25%, rgba(255, 186, 119, 0.38) 0 1.6%, transparent 8%),
+    radial-gradient(circle at 16% 44%, rgba(255, 174, 105, 0.3) 0 1.6%, transparent 8%),
+    radial-gradient(circle at 20% 30%, rgba(119, 228, 255, 0.3) 0 1.7%, transparent 8%),
+    radial-gradient(circle at 74% 18%, rgba(140, 231, 255, 0.38) 0 1.4%, transparent 8%),
+    radial-gradient(circle at 66% 66%, rgba(102, 220, 255, 0.3) 0 1.9%, transparent 8%),
+    linear-gradient(90deg, transparent 2%, rgba(220, 246, 255, 0.14) 52%, transparent 98%),
+    linear-gradient(rgba(196, 236, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 236, 255, 0.06) 1px, transparent 1px);
+  background-size: auto, auto, auto, auto, auto, auto, 100% 100%, 34px 34px, 34px 34px;
+  animation: ambient-flicker 6s ease-in-out infinite;
 }
 
-@keyframes data-stream-shift {
+@keyframes stream-rush {
   0% {
-    transform: translate3d(-5%, 0, 0) scale(1.02);
+    background-position: 0 0, 0 0, 0 0, 0 0;
   }
 
   100% {
-    transform: translate3d(5%, 0, 0) scale(1.08);
+    background-position: 260px 0, 340px 0, 400px 0, 300px 0;
   }
 }
 
-@keyframes data-grid-pulse {
+@keyframes ambient-flicker {
   0%,
   100% {
-    opacity: 0.34;
+    opacity: 0.52;
   }
 
   50% {
-    opacity: 0.56;
+    opacity: 0.7;
   }
 }
 
 @media (max-width: 768px) {
   .app::before {
-    opacity: 0.58;
+    opacity: 0.62;
+    transform: perspective(900px) rotateY(-12deg) scale(1.18);
+    animation-duration: 16s;
   }
 
   .app::after {
-    opacity: 0.36;
-    background-size: 100% 100%, 28px 28px, 28px 28px;
+    opacity: 0.48;
+    background-size: auto, auto, auto, auto, auto, auto, 100% 100%, 24px 24px, 24px 24px;
   }
 }

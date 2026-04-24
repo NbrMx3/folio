@@ -7,21 +7,21 @@
 }
 
 :root {
-  --bg: #020918;
-  --text: #d2ecff;
+  --bg: #010713;
+  --text: #d8f0ff;
   --text-strong: #f4fbff;
-  --text-muted: #8faec8;
-  --text-muted-2: #7292af;
-  --card: rgba(5, 25, 52, 0.56);
-  --card-soft: rgba(6, 28, 60, 0.42);
-  --card-border: rgba(130, 217, 255, 0.24);
-  --overlay: rgba(2, 10, 24, 0.68);
-  --accent: #5edcff;
-  --accent-weak: rgba(94, 220, 255, 0.14);
-  --accent-strong: rgba(94, 220, 255, 0.36);
-  --accent-warm: #ffb36b;
-  --nav-bg: rgba(3, 18, 41, 0.74);
-  --shadow-accent: 0 14px 45px rgba(15, 116, 173, 0.28);
+  --text-muted: #90b1cc;
+  --text-muted-2: #6f92b2;
+  --card: rgba(5, 27, 58, 0.54);
+  --card-soft: rgba(5, 29, 64, 0.4);
+  --card-border: rgba(138, 222, 255, 0.27);
+  --overlay: rgba(2, 11, 27, 0.7);
+  --accent: #73e6ff;
+  --accent-weak: rgba(115, 230, 255, 0.16);
+  --accent-strong: rgba(115, 230, 255, 0.38);
+  --accent-warm: #ffb672;
+  --nav-bg: rgba(3, 20, 45, 0.78);
+  --shadow-accent: 0 16px 48px rgba(12, 111, 171, 0.34);
   color-scheme: dark;
 }
 
