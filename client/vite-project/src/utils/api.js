@@ -54,6 +54,18 @@ async function authFetch(url, options = {}) {
     throw new Error('Unauthorized');
   }
 
+  if (!res.ok) {
+    let details = '';
+    try {
+      const body = await res.json();
+      details = body?.error || body?.message || '';
+    } catch {
+      // ignore non-JSON error payloads
+    }
+    const suffix = details ? `: ${details}` : '';
+    throw new Error(`Request failed (${res.status}) for ${url}${suffix}`);
+  }
+
   return res.json();
 }
 
@@ -204,7 +216,28 @@ export async function getPlatforms() {
 }
 
 export async function getTraccarOverview() {
-  return authFetch('/analytics/traccar/overview');
+  try {
+    return await authFetch('/analytics/traccar/overview');
+  } catch (error) {
+    const message = String(error?.message || error);
+    if (message.includes('(404)')) {
+      return {
+        configured: false,
+        connected: false,
+        error: 'Traccar endpoint not found on API server (404). Redeploy backend and verify VITE_API_BASE points to the correct server.',
+        devices: [],
+        summary: {
+          deviceCount: 0,
+          onlineCount: 0,
+          offlineCount: 0,
+          unknownCount: 0,
+          movingCount: 0,
+          stoppedCount: 0,
+        },
+      };
+    }
+    throw error;
+  }
 }
 
 export async function clearAnalytics() {

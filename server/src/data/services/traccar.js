@@ -81,6 +81,19 @@ function errorMessage(error) {
   if (message.includes('This operation was aborted')) {
     return `Request timeout after ${TRACCAR_TIMEOUT_MS}ms`;
   }
+  if (message === 'fetch failed') {
+    const code = error?.cause?.code;
+    if (code === 'ENOTFOUND') {
+      return 'Could not resolve TRACCAR_BASE_URL host. Verify the domain and protocol.';
+    }
+    if (code === 'ECONNREFUSED') {
+      return 'Connection refused by Traccar host. Verify server/port and network access.';
+    }
+    if (code === 'CERT_HAS_EXPIRED' || code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
+      return 'TLS certificate error when connecting to Traccar. Verify HTTPS certificate on the Traccar host.';
+    }
+    return 'Network request to Traccar failed. Verify TRACCAR_BASE_URL and that the Traccar server is reachable.';
+  }
   return message;
 }
 
@@ -294,7 +307,7 @@ export async function getTraccarOverview() {
   } catch (error) {
     return getDefaultOverview({
       connected: false,
-      error: error?.message || 'Unable to reach Traccar API',
+      error: errorMessage(error),
     });
   }
 }
