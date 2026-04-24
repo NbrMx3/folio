@@ -7,7 +7,13 @@ function buildApiBase() {
   if (env) {
     // Normalize: ensure the base always ends with /api
     const trimmed = env.replace(/\/+$/, '');
-    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+    const normalized = trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+    // Production must use an absolute URL. If env is accidentally set to a relative path,
+    // fall back to the known Render backend to avoid Vercel /api 404s.
+    if (import.meta.env.PROD && !/^https?:\/\//i.test(normalized)) {
+      return RENDER_BACKEND;
+    }
+    return normalized;
   }
   return import.meta.env.PROD ? RENDER_BACKEND : '/api';
 }
