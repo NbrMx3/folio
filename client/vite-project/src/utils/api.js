@@ -5,17 +5,22 @@ const RENDER_ORIGIN = 'https://folioo-dxty.onrender.com';
 function buildApiBase() {
   const env = import.meta.env.VITE_API_BASE;
   if (env) {
-    // Normalize: ensure the base always ends with /api
-    const trimmed = env.replace(/\/+$/, '');
-    const normalized = trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
-    // Production must use an absolute URL. If env is accidentally set to a relative path,
-    // fall back to the known Render backend to avoid Vercel /api 404s.
-    if (import.meta.env.PROD && !/^https?:\/\//i.test(normalized)) {
-      return RENDER_BACKEND;
+    const trimmed = env.trim().replace(/\/+$/, '');
+
+    // In production we want same-origin /api so Vercel rewrites can proxy to Render.
+    // Absolute URLs are still supported for explicit overrides.
+    if (trimmed === '/api') return '/api';
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
     }
-    return normalized;
+
+    if (trimmed.startsWith('/')) {
+      return import.meta.env.PROD ? '/api' : trimmed;
+    }
+
+    return import.meta.env.PROD ? '/api' : `/${trimmed}`;
   }
-  return import.meta.env.PROD ? RENDER_BACKEND : '/api';
+  return '/api';
 }
 
 const API_BASE = buildApiBase();
