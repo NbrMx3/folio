@@ -3,7 +3,7 @@ import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { verifyToken } from '../routes/middleware/auth.js';
-import { getProfile, updateProfile } from '../utils/db.js';
+import { getDefaultProfile, getProfile, updateProfile } from '../utils/db.js';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -30,7 +30,8 @@ router.get('/', async (req, res) => {
     const profile = await getProfile();
     res.json(profile);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    console.error('Profile fetch error:', error);
+    res.json(getDefaultProfile());
   }
 });
 

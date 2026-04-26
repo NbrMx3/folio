@@ -18,6 +18,24 @@ function normalizeBaseUrl(value) {
   }
 }
 
+function isPlaceholderBaseUrl(url) {
+  if (!url) return true;
+
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host.startsWith('your-') ||
+      host.includes('example') ||
+      host.includes('placeholder') ||
+      host.includes('todo') ||
+      host === 'localhost'
+    );
+  } catch {
+    return true;
+  }
+}
+
 const TRACCAR_BASE_URL = normalizeBaseUrl(process.env.TRACCAR_BASE_URL || '');
 const TRACCAR_USERNAME = sanitize(process.env.TRACCAR_USERNAME || '');
 const TRACCAR_PASSWORD = sanitize(process.env.TRACCAR_PASSWORD || '');
@@ -69,7 +87,7 @@ function toNumber(value, fallback = 0) {
 
 function getMissingTraccarConfig() {
   const missing = [];
-  if (!TRACCAR_BASE_URL) missing.push('TRACCAR_BASE_URL');
+  if (!TRACCAR_BASE_URL || isPlaceholderBaseUrl(TRACCAR_BASE_URL)) missing.push('TRACCAR_BASE_URL');
   if (!TRACCAR_USERNAME) missing.push('TRACCAR_USERNAME');
   if (!TRACCAR_PASSWORD) missing.push('TRACCAR_PASSWORD');
   return missing;

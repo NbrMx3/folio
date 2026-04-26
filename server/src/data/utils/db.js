@@ -92,6 +92,22 @@ function normalizeAdminAuth(record = {}) {
   };
 }
 
+export function getDefaultProfile() {
+  return {
+    picture: '',
+    name: 'CyberDev',
+    title: 'Full-Stack Developer',
+    bio: '',
+    github: '',
+    linkedin: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+    email: '',
+  };
+}
+
 // JSON DB helpers
 const DB_JSON_PATH = path.join(__dirname, '..', 'db.json');
 
@@ -431,41 +447,18 @@ export async function updateAdminAuth(data) {
 
 export async function getProfile() {
   if (usingPostgres && pool) {
-    const result = await pool.query(
-      'SELECT picture, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, email FROM profile LIMIT 1'
-    );
-    return (
-      result.rows[0] || {
-        picture: '',
-        name: 'CyberDev',
-        title: 'Full-Stack Developer',
-        bio: '',
-        github: '',
-        linkedin: '',
-        twitter: '',
-        facebook: '',
-        instagram: '',
-        tiktok: '',
-        email: '',
-      }
-    );
+    try {
+      const result = await pool.query(
+        'SELECT picture, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, email FROM profile LIMIT 1'
+      );
+      return result.rows[0] || getDefaultProfile();
+    } catch (error) {
+      console.warn('Postgres profile read failed, falling back to JSON DB:', error.message);
+    }
   }
 
   const db = await readJsonDb();
-  const defaultProfile = {
-    picture: '',
-    name: 'CyberDev',
-    title: 'Full-Stack Developer',
-    bio: '',
-    github: '',
-    linkedin: '',
-    twitter: '',
-    facebook: '',
-    instagram: '',
-    tiktok: '',
-    email: '',
-  };
-  return { ...defaultProfile, ...(db.profile || {}) };
+  return { ...getDefaultProfile(), ...(db.profile || {}) };
 }
 
 export async function updateProfile(data) {
