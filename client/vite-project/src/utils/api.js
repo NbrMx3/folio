@@ -226,11 +226,135 @@ export async function getPlatforms() {
   return authFetch('/analytics/platforms');
 }
 
+function toEpoch(value) {
+  if (!value) return 0;
+  const t = new Date(value).getTime();
+  return Number.isFinite(t) ? t : 0;
+}
+
+function mapTraccarOverviewFromRaw(devices, positions) {
+  const deviceRows = Array.isArray(devices) ? devices : [];
+  const positionRows = Array.isArray(positions) ? positions : [];
+
+  const latestPositionByDeviceId = new Map();
+  for (const position of positionRows) {
+    const key = String(position?.deviceId ?? '');
+    if (!key) continue;
+    const current = latestPositionByDeviceId.get(key);
+    const nextTs = toEpoch(position?.fixTime || position?.deviceTime || position?.serverTime);
+    const currentTs = toEpoch(current?.fixTime || current?.deviceTime || current?.serverTime);
+    if (!current || nextTs >= currentTs) {
+      latestPositionByDeviceId.set(key, position);
+    }
+  }
+
+  let onlineCount = 0;
+  let offlineCount = 0;
+  let unknownCount = 0;
+  let movingCount = 0;
+  let stoppedCount = 0;
+
+  const mappedDevices = deviceRows.map((device) => {
+    const status = String(device?.status || 'unknown').toLowerCase();
+    const position = latestPositionByDeviceId.get(String(device?.id ?? '')) || null;
+    const speedKnots = Number(position?.speed || 0);
+    const speedKph = Number.isFinite(speedKnots) ? speedKnots * 1.852 : 0;
+    const isMoving = speedKph > 1;
+
+    if (status === 'online') onlineCount += 1;
+    else if (status === 'offline') offlineCount += 1;
+    else unknownCount += 1;
+
+    if (isMoving) movingCount += 1;
+    else stoppedCount += 1;
+
+    return {
+      id: device?.id,
+      name: device?.name || `Device ${device?.id ?? ''}`,
+      uniqueId: device?.uniqueId || '',
+      status,
+      disabled: Boolean(device?.disabled),
+      speedKph: Number(speedKph.toFixed(1)),
+      latitude: position?.latitude ?? null,
+      longitude: position?.longitude ?? null,
+      lastUpdate: device?.lastUpdate || position?.deviceTime || position?.fixTime || position?.serverTime || null,
+    };
+  });
+
+  mappedDevices.sort((a, b) => {
+    const aOnline = a.status === 'online' ? 1 : 0;
+    const bOnline = b.status === 'online' ? 1 : 0;
+    if (aOnline !== bOnline) return bOnline - aOnline;
+    return String(a.name).localeCompare(String(b.name));
+  });
+
+  return {
+    configured: true,
+    connected: true,
+    devices: mappedDevices,
+    summary: {
+      deviceCount: mappedDevices.length,
+      onlineCount,
+      offlineCount,
+      unknownCount,
+      movingCount,
+      stoppedCount,
+    },
+  };
+}
+
 export async function getTraccarOverview() {
   try {
-    return await authFetch('/analytics/traccar/overview');
+    const [devicesResponse, positionsResponse] = await Promise.all([
+      authFetch('/traccar/devices'),
+      authFetch('/traccar/positions'),
+    ]);
+    return mapTraccarOverviewFromRaw(devicesResponse?.devices, positionsResponse?.positions);
   } catch (error) {
     const message = String(error?.message || error);
+
+    if (message.includes('/traccar/devices') || message.includes('/traccar/positions')) {
+      if (message.includes('(404)')) {
+        return {
+          configured: true,
+          connected: false,
+          routeMissing: true,
+          error: 'Traccar endpoints are missing on the API server (404). Redeploy backend and verify VITE_API_BASE points to the correct server.',
+          devices: [],
+          summary: {
+            deviceCount: 0,
+            onlineCount: 0,
+            offlineCount: 0,
+            unknownCount: 0,
+            movingCount: 0,
+            stoppedCount: 0,
+          },
+        };
+      }
+
+      const missingConfig =
+        message.includes('TRACCAR_BASE_URL') ||
+        message.includes('TRACCAR_USERNAME') ||
+        message.includes('TRACCAR_PASSWORD') ||
+        message.includes('missing or invalid') ||
+        message.includes(' is missing');
+
+      return {
+        configured: !missingConfig,
+        connected: false,
+        error: message,
+        devices: [],
+        summary: {
+          deviceCount: 0,
+          onlineCount: 0,
+          offlineCount: 0,
+          unknownCount: 0,
+          movingCount: 0,
+          stoppedCount: 0,
+        },
+      };
+    }
+
     if (message.includes('(404)')) {
       return {
         configured: true,
