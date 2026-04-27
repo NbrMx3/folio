@@ -305,21 +305,50 @@ function mapTraccarOverviewFromRaw(devices, positions) {
 
 export async function getTraccarOverview() {
   try {
-    const [devicesResponse, positionsResponse] = await Promise.all([
-      authFetch('/traccar/devices'),
-      authFetch('/traccar/positions'),
-    ]);
-    return mapTraccarOverviewFromRaw(devicesResponse?.devices, positionsResponse?.positions);
-  } catch (error) {
-    const message = String(error?.message || error);
+    // Prefer the long-lived analytics endpoint to avoid 404s on older backend deploys.
+    return await authFetch('/analytics/traccar/overview');
+  } catch (analyticsError) {
+    const analyticsMessage = String(analyticsError?.message || analyticsError);
 
-    if (message.includes('/traccar/devices') || message.includes('/traccar/positions')) {
-      if (message.includes('(404)')) {
+    // If analytics endpoint is missing, fall back to direct Traccar routes on newer backends.
+    if (analyticsMessage.includes('(404)')) {
+      try {
+        const [devicesResponse, positionsResponse] = await Promise.all([
+          authFetch('/traccar/devices'),
+          authFetch('/traccar/positions'),
+        ]);
+        return mapTraccarOverviewFromRaw(devicesResponse?.devices, positionsResponse?.positions);
+      } catch (routesError) {
+        const routesMessage = String(routesError?.message || routesError);
+        if (routesMessage.includes('(404)')) {
+          return {
+            configured: true,
+            connected: false,
+            routeMissing: true,
+            error: 'Traccar endpoints are missing on the API server (404). Redeploy backend and verify VITE_API_BASE points to the correct server.',
+            devices: [],
+            summary: {
+              deviceCount: 0,
+              onlineCount: 0,
+              offlineCount: 0,
+              unknownCount: 0,
+              movingCount: 0,
+              stoppedCount: 0,
+            },
+          };
+        }
+
+        const missingConfig =
+          routesMessage.includes('TRACCAR_BASE_URL') ||
+          routesMessage.includes('TRACCAR_USERNAME') ||
+          routesMessage.includes('TRACCAR_PASSWORD') ||
+          routesMessage.includes('missing or invalid') ||
+          routesMessage.includes(' is missing');
+
         return {
-          configured: true,
+          configured: !missingConfig,
           connected: false,
-          routeMissing: true,
-          error: 'Traccar endpoints are missing on the API server (404). Redeploy backend and verify VITE_API_BASE points to the correct server.',
+          error: routesMessage,
           devices: [],
           summary: {
             deviceCount: 0,
@@ -331,48 +360,9 @@ export async function getTraccarOverview() {
           },
         };
       }
-
-      const missingConfig =
-        message.includes('TRACCAR_BASE_URL') ||
-        message.includes('TRACCAR_USERNAME') ||
-        message.includes('TRACCAR_PASSWORD') ||
-        message.includes('missing or invalid') ||
-        message.includes(' is missing');
-
-      return {
-        configured: !missingConfig,
-        connected: false,
-        error: message,
-        devices: [],
-        summary: {
-          deviceCount: 0,
-          onlineCount: 0,
-          offlineCount: 0,
-          unknownCount: 0,
-          movingCount: 0,
-          stoppedCount: 0,
-        },
-      };
     }
 
-    if (message.includes('(404)')) {
-      return {
-        configured: true,
-        connected: false,
-        routeMissing: true,
-        error: 'Traccar endpoint not found on API server (404). Redeploy backend and verify VITE_API_BASE points to the correct server.',
-        devices: [],
-        summary: {
-          deviceCount: 0,
-          onlineCount: 0,
-          offlineCount: 0,
-          unknownCount: 0,
-          movingCount: 0,
-          stoppedCount: 0,
-        },
-      };
-    }
-    throw error;
+    throw analyticsError;
   }
 }
 
