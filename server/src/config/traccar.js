@@ -29,6 +29,7 @@ export const traccarConfig = {
   baseUrl: normalizeBaseUrl(process.env.TRACCAR_BASE_URL || ''),
   username: sanitize(process.env.TRACCAR_USERNAME || ''),
   password: sanitize(process.env.TRACCAR_PASSWORD || ''),
+  sessionPath: sanitize(process.env.TRACCAR_SESSION_PATH || '/api/session') || '/api/session',
   timeoutMs: Number.isFinite(parsedTimeout) && parsedTimeout > 0 ? parsedTimeout : 7000,
 };
 
