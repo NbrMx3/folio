@@ -3,7 +3,6 @@ import Navbar from '../components/Navbar/Navbar';
 import Hero from '../components/Hero/Hero';
 import Skills from '../components/Skills/Skills';
 import Projects from '../components/Projects/Projects';
-import GalleryPreview from '../components/GalleryPreview/GalleryPreview';
 import Contact from '../components/Contact/Contact';
 import Footer from '../components/Footer/Footer';
 import { trackVisit } from '../utils/api';
@@ -44,7 +43,6 @@ const Portfolio = () => {
       <Hero />
       <Skills />
       <Projects />
-      <GalleryPreview />
       <Contact />
       <Footer />
     </>
