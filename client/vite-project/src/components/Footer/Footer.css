@@ -63,6 +63,30 @@
   transform: translateY(-2px);
 }
 
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.footer-social-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.gallery-link {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.gallery-link:hover {
+  border-color: var(--accent);
+}
+
 .footer-divider {
   height: 1px;
   background: var(--card-border);

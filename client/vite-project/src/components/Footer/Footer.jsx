@@ -47,7 +47,7 @@ const Footer = () => {
     { label: 'Facebook', href: profile.facebook || 'https://facebook.com', icon: <FaFacebook />, isExternal: true },
     { label: 'Instagram', href: profile.instagram || 'https://instagram.com', icon: <FaInstagram />, isExternal: true },
     { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok />, isExternal: true },
-    { label: 'Gallery', href: '/gallery', icon: <FaImages />, isExternal: false },
+    { label: "Nbr's Gallery", href: '/gallery', icon: <FaImages />, isExternal: false, showLabel: true },
   ];
 
   return (
@@ -60,12 +60,25 @@ const Footer = () => {
           <div className="footer-socials">
             {socialLinks.map((social) => (
               social.isExternal ? (
-                <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={social.label}
+                  className="footer-social-link"
+                >
                   {social.icon}
                 </a>
               ) : (
-                <Link key={social.label} to={social.href} aria-label={social.label}>
+                <Link
+                  key={social.label}
+                  to={social.href}
+                  aria-label={social.label}
+                  className="footer-social-link gallery-link"
+                >
                   {social.icon}
+                  {social.showLabel && <span className="footer-social-label">{social.label}</span>}
                 </Link>
               )
             ))}
