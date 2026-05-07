@@ -38,7 +38,7 @@ const Gallery = () => {
       <Navbar />
       <section className="gallery-section">
         <div className="gallery-container">
-          <h1 className="gallery-title">Gallery</h1>
+          <h1 className="gallery-title">Nbr's Gallery</h1>
           <p className="gallery-description">Explore my photos and videos</p>
 
           {loading ? (

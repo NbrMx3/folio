@@ -29,7 +29,7 @@ const GalleryPreview = () => {
         <div className="gallery-preview-header">
           <div className="gallery-preview-title">
             <FaImages className="gallery-preview-icon" />
-            <h2>Gallery</h2>
+            <h2>Nbr's Gallery</h2>
           </div>
           <p className="gallery-preview-subtitle">Explore my photos and videos</p>
         </div>
