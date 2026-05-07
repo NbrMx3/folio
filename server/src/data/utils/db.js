@@ -202,6 +202,19 @@ export async function initDatabase() {
           )
         `);
 
+        // Create gallery table
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS gallery (
+            id SERIAL PRIMARY KEY,
+            url TEXT NOT NULL,
+            type TEXT DEFAULT 'photo',
+            title TEXT DEFAULT '',
+            description TEXT DEFAULT '',
+            sort_order INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT NOW()
+          )
+        `);
+
         // Create visitors table
         await client.query(`
           CREATE TABLE IF NOT EXISTS visitors (
@@ -365,6 +378,7 @@ export async function initDatabase() {
         { id: 3, icon: 'FaReact', title: 'Modern Frameworks', description: 'React, Next.js, Vite, Express, TailwindCSS', sort_order: 2 }
       ];
       if (!db.projects) db.projects = [];
+      if (!db.gallery) db.gallery = [];
       if (!db.visitors) db.visitors = [];
       if (!db.platformStats) db.platformStats = {};
       db.adminAuth = normalizeAdminAuth(db.adminAuth);
@@ -652,6 +666,64 @@ export async function deleteProject(id) {
   }
   const db = await readJsonDb();
   db.projects = (db.projects || []).filter(p => String(p.id) !== String(id));
+  await writeJsonDb(db);
+}
+
+// ─── Gallery queries ───────────────────────────────────────
+export async function getGallery() {
+  if (usingPostgres && pool) {
+    const result = await pool.query('SELECT * FROM gallery ORDER BY sort_order ASC, id ASC');
+    return result.rows;
+  }
+  const db = await readJsonDb();
+  return (db.gallery || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+}
+
+export async function createGalleryItem(data) {
+  if (usingPostgres && pool) {
+    const { url, type, title, description, sort_order } = data;
+    const result = await pool.query(
+      'INSERT INTO gallery (url, type, title, description, sort_order) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [url, type || 'photo', title || '', description || '', sort_order || 0]
+    );
+    return result.rows[0];
+  }
+
+  const db = await readJsonDb();
+  db.gallery = db.gallery || [];
+  const nextId = db.gallery.length ? Math.max(...db.gallery.map(g => g.id || 0)) + 1 : 1;
+  const item = { id: nextId, url: data.url, type: data.type || 'photo', title: data.title || '', description: data.description || '', sort_order: data.sort_order || 0 };
+  db.gallery.push(item);
+  await writeJsonDb(db);
+  return item;
+}
+
+export async function updateGalleryItem(id, data) {
+  if (usingPostgres && pool) {
+    const { url, type, title, description, sort_order } = data;
+    const result = await pool.query(
+      'UPDATE gallery SET url = COALESCE($1, url), type = COALESCE($2, type), title = COALESCE($3, title), description = COALESCE($4, description), sort_order = COALESCE($5, sort_order) WHERE id = $6 RETURNING *',
+      [url, type, title, description, sort_order, id]
+    );
+    return result.rows[0];
+  }
+
+  const db = await readJsonDb();
+  db.gallery = db.gallery || [];
+  const idx = db.gallery.findIndex(g => String(g.id) === String(id));
+  if (idx === -1) return null;
+  db.gallery[idx] = { ...db.gallery[idx], ...data };
+  await writeJsonDb(db);
+  return db.gallery[idx];
+}
+
+export async function deleteGalleryItem(id) {
+  if (usingPostgres && pool) {
+    await pool.query('DELETE FROM gallery WHERE id = $1', [id]);
+    return;
+  }
+  const db = await readJsonDb();
+  db.gallery = (db.gallery || []).filter(g => String(g.id) !== String(id));
   await writeJsonDb(db);
 }
 

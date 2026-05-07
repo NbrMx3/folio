@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FaGithub,
   FaLinkedin,
   FaTwitter,
   FaFacebook,
   FaInstagram,
+  FaImages,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
 import { getProfile } from '../../utils/api';
@@ -39,12 +41,13 @@ const Footer = () => {
   }, []);
 
   const socialLinks = [
-    { label: 'GitHub', href: profile.github || 'https://github.com', icon: <FaGithub /> },
-    { label: 'LinkedIn', href: profile.linkedin || 'https://linkedin.com', icon: <FaLinkedin /> },
-    { label: 'X', href: profile.twitter || 'https://x.com', icon: <FaTwitter /> },
-    { label: 'Facebook', href: profile.facebook || 'https://facebook.com', icon: <FaFacebook /> },
-    { label: 'Instagram', href: profile.instagram || 'https://instagram.com', icon: <FaInstagram /> },
-    { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok /> },
+    { label: 'GitHub', href: profile.github || 'https://github.com', icon: <FaGithub />, isExternal: true },
+    { label: 'LinkedIn', href: profile.linkedin || 'https://linkedin.com', icon: <FaLinkedin />, isExternal: true },
+    { label: 'X', href: profile.twitter || 'https://x.com', icon: <FaTwitter />, isExternal: true },
+    { label: 'Facebook', href: profile.facebook || 'https://facebook.com', icon: <FaFacebook />, isExternal: true },
+    { label: 'Instagram', href: profile.instagram || 'https://instagram.com', icon: <FaInstagram />, isExternal: true },
+    { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok />, isExternal: true },
+    { label: 'Gallery', href: '/gallery', icon: <FaImages />, isExternal: false },
   ];
 
   return (
@@ -56,9 +59,15 @@ const Footer = () => {
           </a>
           <div className="footer-socials">
             {socialLinks.map((social) => (
-              <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
-                {social.icon}
-              </a>
+              social.isExternal ? (
+                <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
+                  {social.icon}
+                </a>
+              ) : (
+                <Link key={social.label} to={social.href} aria-label={social.label}>
+                  {social.icon}
+                </Link>
+              )
             ))}
           </div>
         </div>

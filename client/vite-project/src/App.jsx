@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Portfolio from './pages/Portfolio';
+import Gallery from './pages/Gallery/Gallery';
 import AdminLogin from './pages/AdminLogin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import AdminResetPassword from './pages/AdminResetPassword/AdminResetPassword';
@@ -10,6 +11,7 @@ function App() {
     <div className="app">
       <Routes>
         <Route path="/" element={<Portfolio />} />
+        <Route path="/gallery" element={<Gallery />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/reset-password" element={<AdminResetPassword />} />
         <Route path="/admin" element={<AdminDashboard />} />

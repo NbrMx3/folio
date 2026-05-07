@@ -380,3 +380,42 @@ export async function trackVisit(ref = 'direct', page = '/') {
     // Silently fail tracking
   }
 }
+
+// Gallery
+export async function getGallery() {
+  const res = await fetch(`${API_BASE}/gallery`);
+  if (!res.ok) throw new Error(`GET /gallery failed: ${res.status}`);
+  const items = await res.json();
+  // Make gallery URLs absolute so they load correctly from Vercel
+  return items.map(item => ({
+    ...item,
+    url: resolveAssetUrl(item.url)
+  }));
+}
+
+export async function uploadGalleryMedia(file, title = '', description = '', type = null) {
+  const formData = new FormData();
+  formData.append('media', file);
+  if (title) formData.append('title', title);
+  if (description) formData.append('description', description);
+  if (type) formData.append('type', type);
+  
+  return authFetch('/gallery/upload', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function updateGalleryItem(id, data) {
+  return authFetch(`/gallery/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteGalleryItem(id) {
+  return authFetch(`/gallery/${id}`, {
+    method: 'DELETE',
+  });
+}
+

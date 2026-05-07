@@ -12,6 +12,7 @@ import {
   FaCode,
   FaKey,
   FaProjectDiagram,
+  FaImages,
 } from 'react-icons/fa';
 import { verifyAuth, removeToken } from '../../utils/api';
 import { useAdminStore } from '../../store/useAdminStore';
@@ -19,6 +20,7 @@ import ProfileUpload from '../../components/Admin/ProfileUpload/ProfileUpload';
 import AnalyticsDashboard from '../../components/Admin/AnalyticsDashboard/AnalyticsDashboard';
 import SkillsManager from '../../components/Admin/SkillsManager/SkillsManager';
 import ProjectsManager from '../../components/Admin/ProjectsManager/ProjectsManager';
+import GalleryManager from '../../components/Admin/GalleryManager/GalleryManager';
 import AuthenticationSettings from '../../components/Admin/AuthenticationSettings/AuthenticationSettings';
 import './AdminDashboard.css';
 
@@ -66,6 +68,7 @@ const AdminDashboard = () => {
       case 'profile': return 'Profile Settings';
       case 'skills': return 'Skills Management';
       case 'projects': return 'Projects Management';
+      case 'gallery': return 'Gallery Management';
       case 'authentication': return 'Authentication';
       default: return 'Dashboard';
     }
@@ -114,6 +117,12 @@ const AdminDashboard = () => {
             onClick={() => setActiveTab('projects')}
           >
             <FaProjectDiagram /> Projects
+          </button>
+          <button
+            className={`sidebar-link ${activeTab === 'gallery' ? 'active' : ''}`}
+            onClick={() => setActiveTab('gallery')}
+          >
+            <FaImages /> Gallery
           </button>
           <button
             className={`sidebar-link ${activeTab === 'authentication' ? 'active' : ''}`}
@@ -195,6 +204,7 @@ const AdminDashboard = () => {
         {activeTab === 'profile' && <ProfileUpload />}
         {activeTab === 'skills' && <SkillsManager />}
         {activeTab === 'projects' && <ProjectsManager />}
+        {activeTab === 'gallery' && <GalleryManager />}
         {activeTab === 'authentication' && <AuthenticationSettings />}
       </main>
     </div>
