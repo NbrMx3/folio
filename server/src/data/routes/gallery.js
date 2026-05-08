@@ -60,15 +60,17 @@ router.get('/', async (req, res) => {
 // POST /api/gallery/upload — admin only
 router.post('/upload', verifyToken, uploadSingleMedia, async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
+    const rawUrl = req.file?.secure_url || req.file?.path || req.file?.url || '';
+    if (!rawUrl) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
     const { title, description, type } = req.body;
     const mediaType = type || (req.file.resource_type === 'video' ? 'video' : 'photo');
+    const mediaUrl = rawUrl.startsWith('http://') ? rawUrl.replace('http://', 'https://') : rawUrl;
 
     const item = await createGalleryItem({
-      url: req.file.path,
+      url: mediaUrl,
       type: mediaType,
       title: title || '',
       description: description || '',

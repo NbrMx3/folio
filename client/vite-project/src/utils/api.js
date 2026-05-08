@@ -28,6 +28,9 @@ const API_BASE = buildApiBase();
 // Make relative /uploads/... paths absolute so they load correctly from Vercel.
 export function resolveAssetUrl(path) {
   if (!path) return '';
+  if (path.startsWith('http://') && path.includes('cloudinary.com')) {
+    return path.replace('http://', 'https://');
+  }
   if (path.startsWith('http')) return path;
   const base = import.meta.env.PROD ? RENDER_ORIGIN : '';
   return `${base}${path}`;
