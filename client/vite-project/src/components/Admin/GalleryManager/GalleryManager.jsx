@@ -13,7 +13,7 @@ const GalleryManager = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({});
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [newItem, setNewItem] = useState({
     title: '',
     description: '',
@@ -35,33 +35,53 @@ const GalleryManager = () => {
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
+    const picked = Array.from(e.target.files || []);
+    if (picked.length === 0) return;
+
+    const valid = [];
+    for (const selectedFile of picked) {
+      const isMedia = selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/');
+      if (!isMedia) {
+        showMsg('Only image and video files are allowed.', true);
+        continue;
+      }
       if (selectedFile.size > MAX_MEDIA_BYTES) {
         showMsg(`File too large. Max size is ${MAX_MEDIA_MB}MB.`, true);
-        e.target.value = '';
-        setFile(null);
-        return;
+        continue;
       }
-      setFile(selectedFile);
+      valid.push(selectedFile);
     }
+
+    if (valid.length === 0) {
+      e.target.value = '';
+      setFiles([]);
+      return;
+    }
+
+    setFiles(valid);
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      showMsg('Please select a file', true);
+    if (files.length === 0) {
+      showMsg('Please select at least one file', true);
       return;
     }
 
     setUploading(true);
     try {
-      const response = await uploadGalleryMedia(file, newItem.title, newItem.description);
+      const uploaded = [];
+      for (const selectedFile of files) {
+        const response = await uploadGalleryMedia(selectedFile, newItem.title, newItem.description);
+        if (response?.item) uploaded.push(response.item);
+      }
 
-      setItems((prev) => [...prev, response.item]);
-      setFile(null);
+      if (uploaded.length > 0) {
+        setItems((prev) => [...prev, ...uploaded]);
+      }
+      setFiles([]);
       setNewItem({ title: '', description: '' });
       setShowAdd(false);
-      showMsg('Media uploaded successfully!');
+      showMsg(`Uploaded ${uploaded.length} file${uploaded.length === 1 ? '' : 's'} successfully!`);
     } catch (error) {
       showMsg(`Upload failed: ${error.message}`, true);
     } finally {
@@ -131,11 +151,16 @@ const GalleryManager = () => {
               id="media-file"
               type="file"
               accept="image/*,video/*"
+              multiple
               onChange={handleFileChange}
               disabled={uploading}
             />
             <p className="form-hint">Max file size: {MAX_MEDIA_MB}MB</p>
-            {file && <p className="file-selected">✓ {file.name}</p>}
+            {files.length > 0 && (
+              <p className="file-selected">
+                ✓ {files.length} file{files.length === 1 ? '' : 's'} selected
+              </p>
+            )}
           </div>
 
           <div className="form-group">
@@ -166,7 +191,7 @@ const GalleryManager = () => {
             <button
               className="btn-save"
               onClick={handleUpload}
-              disabled={uploading || !file}
+              disabled={uploading || files.length === 0}
             >
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
@@ -174,7 +199,7 @@ const GalleryManager = () => {
               className="btn-cancel"
               onClick={() => {
                 setShowAdd(false);
-                setFile(null);
+                setFiles([]);
                 setNewItem({ title: '', description: '' });
               }}
               disabled={uploading}
