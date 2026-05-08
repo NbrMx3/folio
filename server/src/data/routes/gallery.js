@@ -13,10 +13,24 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'folio-gallery',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv', 'webm'],
-    resource_type: 'auto',
+  params: (req, file) => {
+    const mimeType = file?.mimetype || '';
+    const isVideo = mimeType.startsWith('video/');
+    const params = {
+      folder: 'folio-gallery',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv', 'webm'],
+      resource_type: 'auto',
+    };
+
+    if (isVideo) {
+      return {
+        ...params,
+        eager: [{ width: 1920, height: 1080, crop: 'limit', quality: 'auto:best', fetch_format: 'auto' }],
+        eager_async: true,
+      };
+    }
+
+    return params;
   },
 });
 
