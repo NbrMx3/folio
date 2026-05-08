@@ -43,6 +43,12 @@
   margin-bottom: 40px;
 }
 
+.gallery-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .gallery-item {
   position: relative;
   overflow: hidden;
@@ -88,6 +94,26 @@
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
+  margin: 0;
+}
+
+.gallery-item-caption {
+  background: rgba(15, 20, 40, 0.8);
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+.gallery-caption-title {
+  color: #f7fafc;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.gallery-caption-description {
+  color: #cbd5e0;
+  font-size: 0.95rem;
   margin: 0;
 }
 

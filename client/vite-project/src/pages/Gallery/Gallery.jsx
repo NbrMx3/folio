@@ -48,28 +48,37 @@ const Gallery = () => {
           ) : (
             <div className="gallery-grid">
               {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="gallery-item"
-                  onClick={() => handleItemClick(item)}
-                >
-                  {item.type === 'video' ? (
-                    <video
-                      src={item.playbackUrl || item.url}
-                      className="gallery-media"
-                      controls
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  ) : (
-                    <img
-                      src={item.url}
-                      alt={item.title || 'Gallery item'}
-                      className="gallery-media"
-                    />
-                  )}
-                  {item.title && (
-                    <div className="gallery-item-overlay">
-                      <p className="gallery-item-title">{item.title}</p>
+                <div key={item.id} className="gallery-card">
+                  <div
+                    className="gallery-item"
+                    onClick={() => handleItemClick(item)}
+                  >
+                    {item.type === 'video' ? (
+                      <video
+                        src={item.playbackUrl || item.url}
+                        className="gallery-media"
+                        controls
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <img
+                        src={item.url}
+                        alt={item.title || 'Gallery item'}
+                        className="gallery-media"
+                      />
+                    )}
+                    {item.title && (
+                      <div className="gallery-item-overlay">
+                        <p className="gallery-item-title">{item.title}</p>
+                      </div>
+                    )}
+                  </div>
+                  {(item.title || item.description) && (
+                    <div className="gallery-item-caption">
+                      {item.title && <p className="gallery-caption-title">{item.title}</p>}
+                      {item.description && (
+                        <p className="gallery-caption-description">{item.description}</p>
+                      )}
                     </div>
                   )}
                 </div>
