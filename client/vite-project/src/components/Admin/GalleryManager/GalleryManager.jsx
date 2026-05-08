@@ -4,6 +4,8 @@ import { getGallery, uploadGalleryMedia, updateGalleryItem, deleteGalleryItem } 
 import './GalleryManager.css';
 
 const GalleryManager = () => {
+  const MAX_MEDIA_BYTES = 20 * 1024 * 1024;
+  const MAX_MEDIA_MB = 20;
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -35,6 +37,12 @@ const GalleryManager = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      if (selectedFile.size > MAX_MEDIA_BYTES) {
+        showMsg(`File too large. Max size is ${MAX_MEDIA_MB}MB.`, true);
+        e.target.value = '';
+        setFile(null);
+        return;
+      }
       setFile(selectedFile);
     }
   };
@@ -47,13 +55,9 @@ const GalleryManager = () => {
 
     setUploading(true);
     try {
-      const response = await uploadGalleryMedia(
-        file,
-        newItem.title,
-        newItem.description
-      );
+      const response = await uploadGalleryMedia(file, newItem.title, newItem.description);
 
-      setItems([...items, response.item]);
+      setItems((prev) => [...prev, response.item]);
       setFile(null);
       setNewItem({ title: '', description: '' });
       setShowAdd(false);
@@ -130,6 +134,7 @@ const GalleryManager = () => {
               onChange={handleFileChange}
               disabled={uploading}
             />
+            <p className="form-hint">Max file size: {MAX_MEDIA_MB}MB</p>
             {file && <p className="file-selected">✓ {file.name}</p>}
           </div>
 

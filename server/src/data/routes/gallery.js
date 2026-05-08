@@ -20,7 +20,29 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage });
+const MAX_GALLERY_UPLOAD_BYTES = 20 * 1024 * 1024;
+
+const upload = multer({
+  storage,
+  limits: { fileSize: MAX_GALLERY_UPLOAD_BYTES },
+  fileFilter: (req, file, cb) => {
+    const isMedia = file.mimetype?.startsWith('image/') || file.mimetype?.startsWith('video/');
+    if (!isMedia) {
+      return cb(new Error('Only image and video files are allowed'));
+    }
+    return cb(null, true);
+  },
+});
+
+const uploadSingleMedia = (req, res, next) => {
+  upload.single('media')(req, res, (err) => {
+    if (!err) return next();
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(413).json({ error: 'File too large. Max size is 20MB.' });
+    }
+    return res.status(400).json({ error: err.message || 'Invalid upload' });
+  });
+};
 
 const router = express.Router();
 
@@ -36,7 +58,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/gallery/upload — admin only
-router.post('/upload', verifyToken, upload.single('media'), async (req, res) => {
+router.post('/upload', verifyToken, uploadSingleMedia, async (req, res) => {
   try {
     if (!req.file || !req.file.path) {
       return res.status(400).json({ error: 'No file uploaded' });
