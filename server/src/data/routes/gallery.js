@@ -66,7 +66,9 @@ router.post('/upload', verifyToken, uploadSingleMedia, async (req, res) => {
     }
 
     const { title, description, type } = req.body;
-    const mediaType = type || (req.file.resource_type === 'video' ? 'video' : 'photo');
+    const mimeType = req.file.mimetype || '';
+    const isVideo = req.file.resource_type === 'video' || mimeType.startsWith('video/');
+    const mediaType = type || (isVideo ? 'video' : 'photo');
     const mediaUrl = rawUrl.startsWith('http://') ? rawUrl.replace('http://', 'https://') : rawUrl;
 
     const item = await createGalleryItem({

@@ -392,8 +392,23 @@ export async function getGallery() {
   // Make gallery URLs absolute so they load correctly from Vercel
   return items.map(item => ({
     ...item,
-    url: resolveAssetUrl(item.url)
+    url: resolveAssetUrl(item.url),
+    type: normalizeGalleryType(item)
   }));
+}
+
+function normalizeGalleryType(item) {
+  const current = String(item?.type || '').toLowerCase();
+  const inferred = inferTypeFromUrl(item?.url);
+  if (inferred) return inferred;
+  if (current === 'video' || current === 'photo') return current;
+  return 'photo';
+}
+
+function inferTypeFromUrl(url) {
+  if (!url) return '';
+  const cleaned = String(url).split('?')[0].split('#')[0].toLowerCase();
+  return /\.(mp4|mov|webm|mkv|avi)$/.test(cleaned) ? 'video' : '';
 }
 
 export async function uploadGalleryMedia(file, title = '', description = '', type = null) {
