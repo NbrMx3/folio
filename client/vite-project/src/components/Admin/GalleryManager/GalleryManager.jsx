@@ -256,7 +256,7 @@ const GalleryManager = () => {
                   <div className="item-preview">
                     {item.type === 'video' ? (
                       <video
-                        src={item.url}
+                        src={item.playbackUrl || item.url}
                         className="preview-media"
                         controls
                       />

@@ -46,7 +46,7 @@ const GalleryPreview = () => {
               <div key={item.id} className="gallery-preview-item">
                 {item.type === 'video' ? (
                   <video
-                    src={item.url}
+                    src={item.playbackUrl || item.url}
                     className="gallery-preview-media"
                   />
                 ) : (

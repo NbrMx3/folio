@@ -55,7 +55,7 @@ const Gallery = () => {
                 >
                   {item.type === 'video' ? (
                     <video
-                      src={item.url}
+                      src={item.playbackUrl || item.url}
                       className="gallery-media"
                       controls
                       onClick={(e) => e.stopPropagation()}
@@ -87,7 +87,7 @@ const Gallery = () => {
             </button>
             {selectedItem.type === 'video' ? (
               <video
-                src={selectedItem.url}
+                src={selectedItem.playbackUrl || selectedItem.url}
                 className="gallery-modal-media"
                 controls
                 autoPlay

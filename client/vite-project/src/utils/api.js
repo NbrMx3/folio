@@ -393,7 +393,8 @@ export async function getGallery() {
   return items.map(item => ({
     ...item,
     url: resolveAssetUrl(item.url),
-    type: normalizeGalleryType(item)
+    type: normalizeGalleryType({ ...item, url: resolveAssetUrl(item.url) }),
+    playbackUrl: buildGalleryPlaybackUrl({ ...item, url: resolveAssetUrl(item.url) })
   }));
 }
 
@@ -409,6 +410,29 @@ function inferTypeFromUrl(url) {
   if (!url) return '';
   const cleaned = String(url).split('?')[0].split('#')[0].toLowerCase();
   return /\.(mp4|mov|webm|mkv|avi)$/.test(cleaned) ? 'video' : '';
+}
+
+function buildGalleryPlaybackUrl(item) {
+  const normalizedType = normalizeGalleryType(item);
+  if (normalizedType !== 'video') return '';
+  return buildCloudinaryVideoUrl(item?.url) || item?.url || '';
+}
+
+function buildCloudinaryVideoUrl(url) {
+  if (!url || !url.includes('res.cloudinary.com')) return '';
+  const [base, query] = String(url).split('?');
+  const uploadToken = '/upload/';
+  const idx = base.indexOf(uploadToken);
+  if (idx === -1) return '';
+
+  const prefix = base.slice(0, idx + uploadToken.length);
+  const rest = base.slice(idx + uploadToken.length);
+  const firstSegment = rest.split('/')[0] || '';
+  if (firstSegment.includes(',')) return url;
+
+  const transform = 'q_auto:best,f_auto,c_limit,w_1920,h_1080';
+  const transformed = `${prefix}${transform}/${rest}`;
+  return query ? `${transformed}?${query}` : transformed;
 }
 
 export async function uploadGalleryMedia(file, title = '', description = '', type = null) {
