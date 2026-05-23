@@ -8,6 +8,10 @@ const Gallery = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 3;
+  const ZOOM_STEP = 0.2;
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -25,12 +29,38 @@ const Gallery = () => {
     void fetchGallery();
   }, []);
 
+  useEffect(() => {
+    if (selectedItem) {
+      setZoomLevel(1);
+    }
+  }, [selectedItem]);
+
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
 
   const handleCloseModal = () => {
     setSelectedItem(null);
+  };
+
+  const clampZoom = (value) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => clampZoom(prev + ZOOM_STEP));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => clampZoom(prev - ZOOM_STEP));
+  };
+
+  const handleZoomReset = () => {
+    setZoomLevel(1);
+  };
+
+  const handleWheelZoom = (event) => {
+    event.preventDefault();
+    const direction = event.deltaY > 0 ? -1 : 1;
+    setZoomLevel((prev) => clampZoom(prev + direction * ZOOM_STEP));
   };
 
   return (
@@ -94,6 +124,34 @@ const Gallery = () => {
             <button className="gallery-modal-close" onClick={handleCloseModal}>
               ×
             </button>
+            {selectedItem.type !== 'video' && (
+              <div className="gallery-modal-toolbar">
+                <div className="gallery-zoom-controls">
+                  <button
+                    className="gallery-zoom-button"
+                    onClick={handleZoomOut}
+                    aria-label="Zoom out"
+                  >
+                    −
+                  </button>
+                  <span className="gallery-zoom-level">{Math.round(zoomLevel * 100)}%</span>
+                  <button
+                    className="gallery-zoom-button"
+                    onClick={handleZoomIn}
+                    aria-label="Zoom in"
+                  >
+                    +
+                  </button>
+                  <button
+                    className="gallery-zoom-button"
+                    onClick={handleZoomReset}
+                    aria-label="Reset zoom"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            )}
             {selectedItem.type === 'video' ? (
               <video
                 src={selectedItem.playbackUrl || selectedItem.url}
@@ -102,11 +160,14 @@ const Gallery = () => {
                 autoPlay
               />
             ) : (
-              <img
-                src={selectedItem.url}
-                alt={selectedItem.title || 'Gallery item'}
-                className="gallery-modal-media"
-              />
+              <div className="gallery-modal-media-wrapper" onWheel={handleWheelZoom}>
+                <img
+                  src={selectedItem.url}
+                  alt={selectedItem.title || 'Gallery item'}
+                  className="gallery-modal-media"
+                  style={{ transform: `scale(${zoomLevel})` }}
+                />
+              </div>
             )}
             {selectedItem.title && (
               <div className="gallery-modal-info">
