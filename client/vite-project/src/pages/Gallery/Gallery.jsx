@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { getGallery } from '../../utils/api';
@@ -8,10 +8,14 @@ const Gallery = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const MIN_ZOOM = 1;
   const MAX_ZOOM = 3;
   const ZOOM_STEP = 0.2;
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const SWIPE_THRESHOLD = 50;
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -35,12 +39,48 @@ const Gallery = () => {
     }
   }, [selectedItem]);
 
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    if (items.length === 0) return;
+    if (selectedIndex >= items.length) {
+      setSelectedIndex(null);
+      setSelectedItem(null);
+      return;
+    }
+    setSelectedItem(items[selectedIndex]);
+  }, [items, selectedIndex]);
+
   const handleItemClick = (item) => {
+    const index = items.findIndex((entry) => entry.id === item.id);
+    setSelectedIndex(index === -1 ? 0 : index);
     setSelectedItem(item);
   };
 
   const handleCloseModal = () => {
     setSelectedItem(null);
+    setSelectedIndex(null);
+  };
+
+  const normalizeIndex = (index) => {
+    if (items.length === 0) return 0;
+    return (index + items.length) % items.length;
+  };
+
+  const goToIndex = (index) => {
+    if (items.length === 0) return;
+    const normalized = normalizeIndex(index);
+    setSelectedIndex(normalized);
+    setSelectedItem(items[normalized]);
+  };
+
+  const handlePrev = () => {
+    if (selectedIndex === null) return;
+    goToIndex(selectedIndex - 1);
+  };
+
+  const handleNext = () => {
+    if (selectedIndex === null) return;
+    goToIndex(selectedIndex + 1);
   };
 
   const clampZoom = (value) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
@@ -61,6 +101,25 @@ const Gallery = () => {
     event.preventDefault();
     const direction = event.deltaY > 0 ? -1 : 1;
     setZoomLevel((prev) => clampZoom(prev + direction * ZOOM_STEP));
+  };
+
+  const handleTouchStart = (event) => {
+    touchStartX.current = event.touches[0]?.clientX || 0;
+    touchEndX.current = touchStartX.current;
+  };
+
+  const handleTouchMove = (event) => {
+    touchEndX.current = event.touches[0]?.clientX || 0;
+  };
+
+  const handleTouchEnd = () => {
+    const deltaX = touchEndX.current - touchStartX.current;
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+    if (deltaX > 0) {
+      handlePrev();
+    } else {
+      handleNext();
+    }
   };
 
   return (
@@ -120,10 +179,34 @@ const Gallery = () => {
 
       {selectedItem && (
         <div className="gallery-modal" onClick={handleCloseModal}>
-          <div className="gallery-modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="gallery-modal-content"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <button className="gallery-modal-close" onClick={handleCloseModal}>
               ×
             </button>
+            {items.length > 1 && (
+              <>
+                <button
+                  className="gallery-nav-button gallery-nav-prev"
+                  onClick={handlePrev}
+                  aria-label="Previous item"
+                >
+                  ‹
+                </button>
+                <button
+                  className="gallery-nav-button gallery-nav-next"
+                  onClick={handleNext}
+                  aria-label="Next item"
+                >
+                  ›
+                </button>
+              </>
+            )}
             {selectedItem.type !== 'video' && (
               <div className="gallery-modal-toolbar">
                 <div className="gallery-zoom-controls">
