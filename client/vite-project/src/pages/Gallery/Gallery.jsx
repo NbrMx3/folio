@@ -218,8 +218,17 @@ const Gallery = () => {
                 </button>
               </>
             )}
-            {selectedItem.type !== 'video' && (
-              <div className="gallery-modal-toolbar">
+            <div className="gallery-modal-toolbar">
+              <a
+                className="gallery-download-button"
+                href={selectedItem.url}
+                download
+                target="_blank"
+                rel="noreferrer"
+              >
+                Download
+              </a>
+              {selectedItem.type !== 'video' && (
                 <div className="gallery-zoom-controls">
                   <button
                     className="gallery-zoom-button"
@@ -244,8 +253,8 @@ const Gallery = () => {
                     Reset
                   </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
             {selectedItem.type === 'video' ? (
               <video
                 src={selectedItem.playbackUrl || selectedItem.url}

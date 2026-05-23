@@ -209,8 +209,29 @@
 
 .gallery-modal-toolbar {
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 12px;
   margin-bottom: 12px;
+}
+
+.gallery-download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  background: rgba(0, 212, 255, 0.15);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.gallery-download-button:hover {
+  background: rgba(0, 212, 255, 0.3);
 }
 
 .gallery-zoom-controls {
