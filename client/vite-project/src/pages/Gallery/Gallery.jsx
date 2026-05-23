@@ -15,7 +15,10 @@ const Gallery = () => {
   const ZOOM_STEP = 0.2;
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
   const SWIPE_THRESHOLD = 50;
+  const CLOSE_THRESHOLD = 80;
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -106,14 +109,22 @@ const Gallery = () => {
   const handleTouchStart = (event) => {
     touchStartX.current = event.touches[0]?.clientX || 0;
     touchEndX.current = touchStartX.current;
+    touchStartY.current = event.touches[0]?.clientY || 0;
+    touchEndY.current = touchStartY.current;
   };
 
   const handleTouchMove = (event) => {
     touchEndX.current = event.touches[0]?.clientX || 0;
+    touchEndY.current = event.touches[0]?.clientY || 0;
   };
 
   const handleTouchEnd = () => {
     const deltaX = touchEndX.current - touchStartX.current;
+    const deltaY = touchEndY.current - touchStartY.current;
+    if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > CLOSE_THRESHOLD) {
+      handleCloseModal();
+      return;
+    }
     if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
     if (deltaX > 0) {
       handlePrev();
