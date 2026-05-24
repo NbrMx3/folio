@@ -377,8 +377,20 @@ export async function clearAnalytics() {
 
 // Track a visit (called from portfolio)
 export async function trackVisit(ref = 'direct', page = '/') {
+  const payload = { ref, page };
   try {
-    await fetch(`${API_BASE}/track?ref=${encodeURIComponent(ref)}&page=${encodeURIComponent(page)}`);
+    if (navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      navigator.sendBeacon(`${API_BASE}/track`, blob);
+      return;
+    }
+
+    await fetch(`${API_BASE}/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    });
   } catch {
     // Silently fail tracking
   }

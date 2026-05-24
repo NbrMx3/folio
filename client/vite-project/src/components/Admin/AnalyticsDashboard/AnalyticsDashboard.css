@@ -416,6 +416,23 @@
   border: 1px solid rgba(0, 234, 255, 0.2);
 }
 
+.visitor-social-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.visitor-social-links a {
+  color: var(--cyber-text);
+  opacity: 0.8;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.visitor-social-links a:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
 .pagination {
   display: flex;
   align-items: center;

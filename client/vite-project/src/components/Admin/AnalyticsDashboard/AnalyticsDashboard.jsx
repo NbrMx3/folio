@@ -55,6 +55,15 @@ const platformColors = {
   Other: '#888',
 };
 
+const socialAccountIcons = [
+  { key: 'github', label: 'GitHub', icon: <FaGithub /> },
+  { key: 'linkedin', label: 'LinkedIn', icon: <FaLinkedin /> },
+  { key: 'twitter', label: 'X', icon: <FaTwitter /> },
+  { key: 'facebook', label: 'Facebook', icon: <FaFacebook /> },
+  { key: 'instagram', label: 'Instagram', icon: <FaInstagram /> },
+  { key: 'tiktok', label: 'TikTok', icon: <SiTiktok /> },
+];
+
 const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
   const [chartData, setChartData] = useState([]);
   const [visitors, setVisitors] = useState([]);
@@ -358,7 +367,10 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 <option value="Facebook">Facebook</option>
                 <option value="Instagram">Instagram</option>
                 <option value="TikTok">TikTok</option>
+                <option value="YouTube">YouTube</option>
+                <option value="Reddit">Reddit</option>
                 <option value="Google">Google</option>
+                <option value="Bing">Bing</option>
                 <option value="Direct">Direct</option>
                 <option value="Other">Other</option>
               </select>
@@ -389,6 +401,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 <th>Browser</th>
                 <th>OS</th>
                 <th>Page</th>
+                <th>Social Accounts</th>
               </tr>
             </thead>
             <tbody>
@@ -419,11 +432,32 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                     <td>{v.browser}</td>
                     <td>{v.os}</td>
                     <td>{v.page}</td>
+                    <td>
+                      {v.socialAccounts ? (
+                        <div className="visitor-social-links">
+                          {socialAccountIcons
+                            .filter((social) => v.socialAccounts?.[social.key])
+                            .map((social) => (
+                              <a
+                                key={social.key}
+                                href={v.socialAccounts[social.key]}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label={social.label}
+                              >
+                                {social.icon}
+                              </a>
+                            ))}
+                        </div>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="12" className="no-data">
+                  <td colSpan="13" className="no-data">
                     No visitors recorded yet.
                   </td>
                 </tr>

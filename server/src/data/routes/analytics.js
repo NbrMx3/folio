@@ -9,6 +9,7 @@ import {
   getChartData,
   getPlatformDetails,
   clearAnalyticsData,
+  getProfile,
 } from '../utils/db.js';
 import { getTraccarHealth, getTraccarOverview } from '../services/traccar.js';
 
@@ -41,7 +42,28 @@ router.get('/visitors', verifyToken, async (req, res) => {
   try {
     const { page = 1, limit = 20, source } = req.query;
     const result = await getVisitors(parseInt(page), parseInt(limit), source);
-    res.json(result);
+    const profile = await getProfile();
+
+    const socialAccounts = {
+      github: profile?.github || '',
+      linkedin: profile?.linkedin || '',
+      twitter: profile?.twitter || '',
+      facebook: profile?.facebook || '',
+      instagram: profile?.instagram || '',
+      tiktok: profile?.tiktok || '',
+    };
+
+    const visitors = (result.visitors || []).map((visitor) => {
+      const pageValue = String(visitor?.page || '');
+      const isProjectClick = pageValue.startsWith('/projects/') && pageValue.includes('link=');
+      return {
+        ...visitor,
+        projectClick: isProjectClick,
+        socialAccounts: isProjectClick ? socialAccounts : null,
+      };
+    });
+
+    res.json({ ...result, visitors });
   } catch (error) {
     console.error('Visitors error:', error);
     res.status(500).json({ error: 'Failed to fetch visitors' });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import { getProjectsList } from '../../utils/api';
+import { getProjectsList, trackVisit } from '../../utils/api';
 import './Projects.css';
 
 const Projects = () => {
@@ -28,6 +28,12 @@ const Projects = () => {
     };
   }, []);
 
+  const handleProjectClick = (project, linkType) => {
+    const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
+    const page = `/projects/${project.id}?link=${linkType}`;
+    void trackVisit(ref, page);
+  };
+
   return (
     <section className="projects" id="projects">
       <div className="projects-container">
@@ -49,10 +55,18 @@ const Projects = () => {
                 ))}
               </div>
               <div className="project-links">
-                <a href={project.github} aria-label="GitHub repo">
+                <a
+                  href={project.github}
+                  aria-label="GitHub repo"
+                  onClick={() => handleProjectClick(project, 'github')}
+                >
                   <FaGithub /> Code
                 </a>
-                <a href={project.live} aria-label="Live demo">
+                <a
+                  href={project.live}
+                  aria-label="Live demo"
+                  onClick={() => handleProjectClick(project, 'live')}
+                >
                   <FaExternalLinkAlt /> Demo
                 </a>
               </div>

@@ -14,6 +14,7 @@ const Portfolio = () => {
   useEffect(() => {
     // Track visitor on portfolio load
     const ref = document.referrer || 'direct';
+    sessionStorage.setItem('folio_ref', ref);
     void trackVisit(ref, window.location.pathname);
 
     const showTimer = setTimeout(() => {
