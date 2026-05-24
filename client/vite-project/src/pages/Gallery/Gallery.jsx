@@ -106,8 +106,9 @@ const Gallery = () => {
     }
   };
 
-  const pictureItems = items.filter((item) => item.type !== 'video');
+  const pictureItems = items.filter((item) => item.type === 'photo');
   const videoItems = items.filter((item) => item.type === 'video');
+  const audioItems = items.filter((item) => item.type === 'audio');
 
   return (
     <>
@@ -115,7 +116,7 @@ const Gallery = () => {
       <section className="gallery-section">
         <div className="gallery-container">
           <h1 className="gallery-title">Nbr's Gallery</h1>
-          <p className="gallery-description">Explore my photos and videos</p>
+          <p className="gallery-description">Explore my photos, videos, and audio</p>
 
           {loading ? (
             <div className="gallery-loading">Loading gallery...</div>
@@ -204,6 +205,48 @@ const Gallery = () => {
                   </div>
                 )}
               </div>
+
+              <div className="gallery-group">
+                <div className="gallery-group-header">
+                  <h2 className="gallery-group-title">Audio</h2>
+                  <span className="gallery-group-count">{audioItems.length}</span>
+                </div>
+                {audioItems.length === 0 ? (
+                  <div className="gallery-empty">No audio yet.</div>
+                ) : (
+                  <div className="gallery-grid">
+                    {audioItems.map((item) => (
+                      <div key={item.id} className="gallery-card">
+                        <div
+                          className="gallery-item gallery-audio-card"
+                          onClick={() => handleItemClick(item, audioItems)}
+                        >
+                          <audio
+                            className="gallery-audio-player"
+                            src={item.url}
+                            controls
+                            preload="metadata"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          {item.title && (
+                            <div className="gallery-item-overlay">
+                              <p className="gallery-item-title">{item.title}</p>
+                            </div>
+                          )}
+                        </div>
+                        {(item.title || item.description) && (
+                          <div className="gallery-item-caption">
+                            {item.title && <p className="gallery-caption-title">{item.title}</p>}
+                            {item.description && (
+                              <p className="gallery-caption-description">{item.description}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -257,6 +300,15 @@ const Gallery = () => {
                 controls
                 autoPlay
               />
+            ) : selectedItem.type === 'audio' ? (
+              <div className="gallery-modal-media-wrapper">
+                <audio
+                  className="gallery-audio-player"
+                  src={selectedItem.url}
+                  controls
+                  autoPlay
+                />
+              </div>
             ) : (
               <div className="gallery-modal-media-wrapper">
                 <img

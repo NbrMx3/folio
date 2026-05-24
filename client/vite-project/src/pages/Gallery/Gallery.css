@@ -97,6 +97,16 @@
   aspect-ratio: 1 / 1;
 }
 
+.gallery-audio-card {
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-audio-player {
+  width: 100%;
+}
+
 .gallery-item:hover {
   transform: translateY(-10px);
   border-color: #00d4ff;

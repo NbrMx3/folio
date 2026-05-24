@@ -18,7 +18,7 @@ const storage = new CloudinaryStorage({
     const isVideo = mimeType.startsWith('video/');
     const params = {
       folder: 'folio-gallery',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv', 'webm'],
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv', 'webm', 'mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'],
       resource_type: 'auto',
     };
 
@@ -40,7 +40,10 @@ const upload = multer({
   storage,
   limits: { fileSize: MAX_GALLERY_UPLOAD_BYTES },
   fileFilter: (req, file, cb) => {
-    const isMedia = file.mimetype?.startsWith('image/') || file.mimetype?.startsWith('video/');
+    const isMedia =
+      file.mimetype?.startsWith('image/')
+      || file.mimetype?.startsWith('video/')
+      || file.mimetype?.startsWith('audio/');
     if (!isMedia) {
       return cb(new Error('Only image and video files are allowed'));
     }
@@ -82,7 +85,8 @@ router.post('/upload', verifyToken, uploadSingleMedia, async (req, res) => {
     const { title, description, type } = req.body;
     const mimeType = req.file.mimetype || '';
     const isVideo = req.file.resource_type === 'video' || mimeType.startsWith('video/');
-    const mediaType = type || (isVideo ? 'video' : 'photo');
+    const isAudio = mimeType.startsWith('audio/');
+    const mediaType = type || (isVideo ? 'video' : isAudio ? 'audio' : 'photo');
     const eagerUrl = req.file?.eager?.[0]?.secure_url || req.file?.eager?.[0]?.url || '';
     const preferredUrl = isVideo && eagerUrl ? eagerUrl : rawUrl;
     const mediaUrl = preferredUrl.startsWith('http://') ? preferredUrl.replace('http://', 'https://') : preferredUrl;

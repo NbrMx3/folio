@@ -414,14 +414,16 @@ function normalizeGalleryType(item) {
   const current = String(item?.type || '').toLowerCase();
   const inferred = inferTypeFromUrl(item?.url);
   if (inferred) return inferred;
-  if (current === 'video' || current === 'photo') return current;
+  if (current === 'video' || current === 'photo' || current === 'audio') return current;
   return 'photo';
 }
 
 function inferTypeFromUrl(url) {
   if (!url) return '';
   const cleaned = String(url).split('?')[0].split('#')[0].toLowerCase();
-  return /\.(mp4|mov|webm|mkv|avi)$/.test(cleaned) ? 'video' : '';
+  if (/\.(mp4|mov|webm|mkv|avi)$/.test(cleaned)) return 'video';
+  if (/\.(mp3|wav|m4a|aac|ogg|flac)$/.test(cleaned)) return 'audio';
+  return '';
 }
 
 function buildGalleryPlaybackUrl(item) {
