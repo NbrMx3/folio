@@ -163,6 +163,19 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
     }
   };
 
+  const describeActivity = (visitor) => {
+    const pageValue = String(visitor?.page || '');
+    if (pageValue.startsWith('/projects/') && pageValue.includes('link=')) {
+      const linkType = pageValue.split('link=')[1] || '';
+      const cleanType = linkType.split('&')[0] || 'project';
+      return `Clicked project link (${cleanType})`;
+    }
+    if (pageValue && pageValue !== '/') {
+      return `Visited ${pageValue}`;
+    }
+    return 'Viewed portfolio';
+  };
+
   return (
     <div className="analytics-dashboard">
       {/* Platform Breakdown */}
@@ -355,10 +368,10 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
         </div>
       )}
 
-      {/* Recent Visitors */}
+      {/* Activity Logs */}
       <div className="analytics-section">
         <div className="visitors-header">
-          <h3>Recent Visitors</h3>
+          <h3>Activity Logs</h3>
           <div className="visitors-actions">
             <div className="visitors-filter">
               <FaFilter />
@@ -405,7 +418,9 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
             <thead>
               <tr>
                 <th>Time</th>
+                <th>Activity</th>
                 <th>Source</th>
+                <th>IP</th>
                 <th>Continent</th>
                 <th>Country</th>
                 <th>Region</th>
@@ -424,6 +439,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 visitors.map((v) => (
                   <tr key={v.id}>
                     <td>{new Date(v.timestamp).toLocaleString()}</td>
+                    <td>{describeActivity(v)}</td>
                     <td>
                       <span
                         className="source-badge"
@@ -435,6 +451,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                         {platformIcons[v.source] || <FaGlobe />}{' '}{v.source}
                       </span>
                     </td>
+                    <td>{v.ip || '—'}</td>
                     <td>
                       {v.continent && v.continent !== 'Unknown' ? v.continent : '—'}
                     </td>
@@ -472,7 +489,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="13" className="no-data">
+                  <td colSpan="15" className="no-data">
                     No visitors recorded yet.
                   </td>
                 </tr>
