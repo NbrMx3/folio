@@ -234,38 +234,6 @@
   background: rgba(0, 212, 255, 0.3);
 }
 
-.gallery-zoom-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(15, 20, 40, 0.9);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 999px;
-  padding: 6px 12px;
-}
-
-.gallery-zoom-button {
-  background: rgba(0, 212, 255, 0.2);
-  border: 1px solid rgba(0, 212, 255, 0.5);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.gallery-zoom-button:hover {
-  background: rgba(0, 212, 255, 0.35);
-}
-
-.gallery-zoom-level {
-  color: #cbd5e0;
-  font-size: 0.9rem;
-  min-width: 56px;
-  text-align: center;
-}
-
 .gallery-modal-media-wrapper {
   max-width: min(90vw, 1100px);
   max-height: min(75vh, 720px);
