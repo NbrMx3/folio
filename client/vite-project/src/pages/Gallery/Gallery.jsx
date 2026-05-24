@@ -181,8 +181,9 @@ const Gallery = () => {
                           <video
                             src={item.playbackUrl || item.url}
                             className="gallery-media"
-                            controls
-                            onClick={(e) => e.stopPropagation()}
+                            preload="metadata"
+                            muted
+                            playsInline
                           />
                           {item.title && (
                             <div className="gallery-item-overlay">
