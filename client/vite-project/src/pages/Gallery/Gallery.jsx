@@ -7,6 +7,7 @@ import './Gallery.css';
 const Gallery = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeItems, setActiveItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const touchStartX = useRef(0);
@@ -34,17 +35,18 @@ const Gallery = () => {
 
   useEffect(() => {
     if (selectedIndex === null) return;
-    if (items.length === 0) return;
-    if (selectedIndex >= items.length) {
+    if (activeItems.length === 0) return;
+    if (selectedIndex >= activeItems.length) {
       setSelectedIndex(null);
       setSelectedItem(null);
       return;
     }
-    setSelectedItem(items[selectedIndex]);
-  }, [items, selectedIndex]);
+    setSelectedItem(activeItems[selectedIndex]);
+  }, [activeItems, selectedIndex]);
 
-  const handleItemClick = (item) => {
-    const index = items.findIndex((entry) => entry.id === item.id);
+  const handleItemClick = (item, list) => {
+    const index = list.findIndex((entry) => entry.id === item.id);
+    setActiveItems(list);
     setSelectedIndex(index === -1 ? 0 : index);
     setSelectedItem(item);
   };
@@ -52,18 +54,19 @@ const Gallery = () => {
   const handleCloseModal = () => {
     setSelectedItem(null);
     setSelectedIndex(null);
+    setActiveItems([]);
   };
 
   const normalizeIndex = (index) => {
-    if (items.length === 0) return 0;
-    return (index + items.length) % items.length;
+    if (activeItems.length === 0) return 0;
+    return (index + activeItems.length) % activeItems.length;
   };
 
   const goToIndex = (index) => {
-    if (items.length === 0) return;
+    if (activeItems.length === 0) return;
     const normalized = normalizeIndex(index);
     setSelectedIndex(normalized);
-    setSelectedItem(items[normalized]);
+    setSelectedItem(activeItems[normalized]);
   };
 
   const handlePrev = () => {
@@ -103,6 +106,9 @@ const Gallery = () => {
     }
   };
 
+  const pictureItems = items.filter((item) => item.type !== 'video');
+  const videoItems = items.filter((item) => item.type === 'video');
+
   return (
     <>
       <Navbar />
@@ -116,43 +122,87 @@ const Gallery = () => {
           ) : items.length === 0 ? (
             <div className="gallery-empty">No gallery items yet.</div>
           ) : (
-            <div className="gallery-grid">
-              {items.map((item) => (
-                <div key={item.id} className="gallery-card">
-                  <div
-                    className="gallery-item"
-                    onClick={() => handleItemClick(item)}
-                  >
-                    {item.type === 'video' ? (
-                      <video
-                        src={item.playbackUrl || item.url}
-                        className="gallery-media"
-                        controls
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <img
-                        src={item.url}
-                        alt={item.title || 'Gallery item'}
-                        className="gallery-media"
-                      />
-                    )}
-                    {item.title && (
-                      <div className="gallery-item-overlay">
-                        <p className="gallery-item-title">{item.title}</p>
-                      </div>
-                    )}
-                  </div>
-                  {(item.title || item.description) && (
-                    <div className="gallery-item-caption">
-                      {item.title && <p className="gallery-caption-title">{item.title}</p>}
-                      {item.description && (
-                        <p className="gallery-caption-description">{item.description}</p>
-                      )}
-                    </div>
-                  )}
+            <div className="gallery-groups">
+              <div className="gallery-group">
+                <div className="gallery-group-header">
+                  <h2 className="gallery-group-title">Pictures</h2>
+                  <span className="gallery-group-count">{pictureItems.length}</span>
                 </div>
-              ))}
+                {pictureItems.length === 0 ? (
+                  <div className="gallery-empty">No pictures yet.</div>
+                ) : (
+                  <div className="gallery-grid">
+                    {pictureItems.map((item) => (
+                      <div key={item.id} className="gallery-card">
+                        <div
+                          className="gallery-item"
+                          onClick={() => handleItemClick(item, pictureItems)}
+                        >
+                          <img
+                            src={item.url}
+                            alt={item.title || 'Gallery item'}
+                            className="gallery-media"
+                          />
+                          {item.title && (
+                            <div className="gallery-item-overlay">
+                              <p className="gallery-item-title">{item.title}</p>
+                            </div>
+                          )}
+                        </div>
+                        {(item.title || item.description) && (
+                          <div className="gallery-item-caption">
+                            {item.title && <p className="gallery-caption-title">{item.title}</p>}
+                            {item.description && (
+                              <p className="gallery-caption-description">{item.description}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="gallery-group">
+                <div className="gallery-group-header">
+                  <h2 className="gallery-group-title">Videos</h2>
+                  <span className="gallery-group-count">{videoItems.length}</span>
+                </div>
+                {videoItems.length === 0 ? (
+                  <div className="gallery-empty">No videos yet.</div>
+                ) : (
+                  <div className="gallery-grid">
+                    {videoItems.map((item) => (
+                      <div key={item.id} className="gallery-card">
+                        <div
+                          className="gallery-item"
+                          onClick={() => handleItemClick(item, videoItems)}
+                        >
+                          <video
+                            src={item.playbackUrl || item.url}
+                            className="gallery-media"
+                            controls
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          {item.title && (
+                            <div className="gallery-item-overlay">
+                              <p className="gallery-item-title">{item.title}</p>
+                            </div>
+                          )}
+                        </div>
+                        {(item.title || item.description) && (
+                          <div className="gallery-item-caption">
+                            {item.title && <p className="gallery-caption-title">{item.title}</p>}
+                            {item.description && (
+                              <p className="gallery-caption-description">{item.description}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -170,7 +220,7 @@ const Gallery = () => {
             <button className="gallery-modal-close" onClick={handleCloseModal}>
               Back
             </button>
-            {items.length > 1 && (
+            {activeItems.length > 1 && (
               <>
                 <button
                   className="gallery-nav-button gallery-nav-prev"
