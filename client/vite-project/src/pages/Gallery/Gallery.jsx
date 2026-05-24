@@ -10,6 +10,8 @@ const Gallery = () => {
   const [activeItems, setActiveItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [playingAudioId, setPlayingAudioId] = useState(null);
+  const audioRefs = useRef({});
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const touchStartY = useRef(0);
@@ -52,6 +54,11 @@ const Gallery = () => {
   };
 
   const handleCloseModal = () => {
+    if (playingAudioId) {
+      const currentAudio = audioRefs.current[playingAudioId];
+      if (currentAudio) currentAudio.pause();
+      setPlayingAudioId(null);
+    }
     setSelectedItem(null);
     setSelectedIndex(null);
     setActiveItems([]);
@@ -104,6 +111,29 @@ const Gallery = () => {
     } else {
       handleNext();
     }
+  };
+
+  const handleAudioToggle = (item) => {
+    const audio = audioRefs.current[item.id];
+    if (!audio) return;
+
+    if (playingAudioId && playingAudioId !== item.id) {
+      const currentAudio = audioRefs.current[playingAudioId];
+      if (currentAudio) currentAudio.pause();
+    }
+
+    if (audio.paused) {
+      audio.play();
+      setPlayingAudioId(item.id);
+      return;
+    }
+
+    audio.pause();
+    setPlayingAudioId(null);
+  };
+
+  const handleAudioEnded = (itemId) => {
+    if (playingAudioId === itemId) setPlayingAudioId(null);
   };
 
   const pictureItems = items.filter((item) => item.type === 'photo');
@@ -218,15 +248,37 @@ const Gallery = () => {
                     {audioItems.map((item) => (
                       <div key={item.id} className="gallery-card">
                         <div
-                          className="gallery-item gallery-audio-card"
+                          className={`gallery-item gallery-audio-card${playingAudioId === item.id ? ' is-playing' : ''}`}
                           onClick={() => handleItemClick(item, audioItems)}
                         >
+                          <div className="gallery-audio-controls">
+                            <button
+                              type="button"
+                              className="gallery-audio-toggle"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAudioToggle(item);
+                              }}
+                            >
+                              {playingAudioId === item.id ? 'Pause' : 'Play'}
+                            </button>
+                            <span className="gallery-audio-title">
+                              {item.title || 'Audio track'}
+                            </span>
+                          </div>
+                          <div className="gallery-audio-wave" aria-hidden="true">
+                            {Array.from({ length: 12 }).map((_, idx) => (
+                              <span key={idx}></span>
+                            ))}
+                          </div>
                           <audio
-                            className="gallery-audio-player"
+                            ref={(el) => {
+                              audioRefs.current[item.id] = el;
+                            }}
+                            className="gallery-audio-element"
                             src={item.url}
-                            controls
                             preload="metadata"
-                            onClick={(e) => e.stopPropagation()}
+                            onEnded={() => handleAudioEnded(item.id)}
                           />
                           {item.title && (
                             <div className="gallery-item-overlay">
@@ -302,12 +354,34 @@ const Gallery = () => {
               />
             ) : selectedItem.type === 'audio' ? (
               <div className="gallery-modal-media-wrapper">
-                <audio
-                  className="gallery-audio-player"
-                  src={selectedItem.url}
-                  controls
-                  autoPlay
-                />
+                <div className={`gallery-audio-card gallery-audio-card--modal${playingAudioId === selectedItem.id ? ' is-playing' : ''}`}>
+                  <div className="gallery-audio-controls">
+                    <button
+                      type="button"
+                      className="gallery-audio-toggle"
+                      onClick={() => handleAudioToggle(selectedItem)}
+                    >
+                      {playingAudioId === selectedItem.id ? 'Pause' : 'Play'}
+                    </button>
+                    <span className="gallery-audio-title">
+                      {selectedItem.title || 'Audio track'}
+                    </span>
+                  </div>
+                  <div className="gallery-audio-wave" aria-hidden="true">
+                    {Array.from({ length: 16 }).map((_, idx) => (
+                      <span key={idx}></span>
+                    ))}
+                  </div>
+                  <audio
+                    ref={(el) => {
+                      audioRefs.current[selectedItem.id] = el;
+                    }}
+                    className="gallery-audio-element"
+                    src={selectedItem.url}
+                    preload="metadata"
+                    onEnded={() => handleAudioEnded(selectedItem.id)}
+                  />
+                </div>
               </div>
             ) : (
               <div className="gallery-modal-media-wrapper">

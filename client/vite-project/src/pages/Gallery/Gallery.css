@@ -101,10 +101,85 @@
   padding: 16px;
   align-items: center;
   justify-content: center;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
-.gallery-audio-player {
-  width: 100%;
+.gallery-audio-card--modal {
+  width: min(90vw, 520px);
+  aspect-ratio: auto;
+  padding: 24px;
+}
+
+.gallery-audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gallery-audio-toggle {
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  background: rgba(0, 212, 255, 0.12);
+  color: #e6f8ff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-audio-toggle:hover {
+  background: rgba(0, 212, 255, 0.24);
+  border-color: rgba(0, 212, 255, 0.7);
+}
+
+.gallery-audio-title {
+  color: #e2f2ff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.gallery-audio-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 52px;
+}
+
+.gallery-audio-wave span {
+  width: 4px;
+  height: 18px;
+  background: rgba(0, 212, 255, 0.5);
+  border-radius: 999px;
+  animation: galleryWave 1.2s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.gallery-audio-card.is-playing .gallery-audio-wave span,
+.gallery-audio-card--modal.is-playing .gallery-audio-wave span {
+  animation-play-state: running;
+}
+
+.gallery-audio-wave span:nth-child(2) { animation-delay: 0.1s; height: 24px; }
+.gallery-audio-wave span:nth-child(3) { animation-delay: 0.2s; height: 30px; }
+.gallery-audio-wave span:nth-child(4) { animation-delay: 0.3s; height: 20px; }
+.gallery-audio-wave span:nth-child(5) { animation-delay: 0.4s; height: 34px; }
+.gallery-audio-wave span:nth-child(6) { animation-delay: 0.5s; height: 26px; }
+.gallery-audio-wave span:nth-child(7) { animation-delay: 0.6s; height: 38px; }
+.gallery-audio-wave span:nth-child(8) { animation-delay: 0.7s; height: 22px; }
+.gallery-audio-wave span:nth-child(9) { animation-delay: 0.8s; height: 32px; }
+.gallery-audio-wave span:nth-child(10) { animation-delay: 0.9s; height: 28px; }
+.gallery-audio-wave span:nth-child(11) { animation-delay: 1s; height: 20px; }
+.gallery-audio-wave span:nth-child(12) { animation-delay: 1.1s; height: 30px; }
+
+.gallery-audio-element {
+  display: none;
+}
+
+@keyframes galleryWave {
+  0%, 100% { transform: scaleY(0.6); }
+  50% { transform: scaleY(1.1); }
 }
 
 .gallery-item:hover {
