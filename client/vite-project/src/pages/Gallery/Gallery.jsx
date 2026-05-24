@@ -344,6 +344,16 @@ const Gallery = () => {
               >
                 Download
               </a>
+              {selectedItem.type !== 'audio' && (
+                <a
+                  className="gallery-save-button"
+                  href={selectedItem.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Save
+                </a>
+              )}
             </div>
             {selectedItem.type === 'video' ? (
               <video
