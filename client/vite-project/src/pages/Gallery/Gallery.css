@@ -155,24 +155,26 @@
 
 .gallery-modal-close {
   position: absolute;
-  top: -40px;
+  top: -42px;
   right: 0;
-  background: none;
-  border: none;
+  background: rgba(15, 20, 40, 0.7);
+  border: 1px solid rgba(0, 212, 255, 0.4);
   color: #fff;
-  font-size: 3rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  width: 50px;
-  height: 50px;
+  padding: 6px 14px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
   z-index: 10;
 }
 
 .gallery-modal-close:hover {
   color: #00d4ff;
+  background: rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.7);
 }
 
 .gallery-nav-button {

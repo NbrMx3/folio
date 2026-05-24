@@ -168,7 +168,7 @@ const Gallery = () => {
             onTouchEnd={handleTouchEnd}
           >
             <button className="gallery-modal-close" onClick={handleCloseModal}>
-              ×
+              Back
             </button>
             {items.length > 1 && (
               <>
