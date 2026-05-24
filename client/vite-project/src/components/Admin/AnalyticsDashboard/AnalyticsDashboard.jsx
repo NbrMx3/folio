@@ -371,6 +371,9 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 <option value="YouTube">YouTube</option>
                 <option value="Reddit">Reddit</option>
                 <option value="Google">Google</option>
+                <option value="chrome">Chrome Browser</option>
+                <option value="android">Android</option>
+                <option value="ios_safari">iOS Safari</option>
                 <option value="Bing">Bing</option>
                 <option value="Direct">Direct</option>
                 <option value="Other">Other</option>

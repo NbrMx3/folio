@@ -862,18 +862,51 @@ export async function getVisitors(page = 1, limit = 20, source = null) {
     let countQuery = 'SELECT COUNT(*) as total FROM visitors';
     const params = [];
     const countParams = [];
-    const isProjectClicks = source === 'project_clicks';
+    const normalizedSource = typeof source === 'string' ? source.trim() : '';
+    const isProjectClicks = normalizedSource === 'project_clicks';
+    const isBrowserFilter = normalizedSource.startsWith('browser:');
+    const isOsFilter = normalizedSource.startsWith('os:');
+    const isIosSafari = normalizedSource === 'ios_safari';
+    const isAndroid = normalizedSource === 'android';
+    const isChrome = normalizedSource === 'chrome';
 
     if (isProjectClicks) {
       query += ' WHERE page LIKE $1 AND page LIKE $2';
       countQuery += ' WHERE page LIKE $1 AND page LIKE $2';
       params.push('/projects/%', '%link=%');
       countParams.push('/projects/%', '%link=%');
-    } else if (source && source !== 'all') {
+    } else if (isIosSafari) {
+      query += ' WHERE os ILIKE $1 AND browser ILIKE $2';
+      countQuery += ' WHERE os ILIKE $1 AND browser ILIKE $2';
+      params.push('%iOS%', '%Safari%');
+      countParams.push('%iOS%', '%Safari%');
+    } else if (isAndroid) {
+      query += ' WHERE os ILIKE $1';
+      countQuery += ' WHERE os ILIKE $1';
+      params.push('%Android%');
+      countParams.push('%Android%');
+    } else if (isChrome) {
+      query += ' WHERE browser ILIKE $1';
+      countQuery += ' WHERE browser ILIKE $1';
+      params.push('%Chrome%');
+      countParams.push('%Chrome%');
+    } else if (isBrowserFilter) {
+      const browserValue = normalizedSource.replace(/^browser:/i, '').trim();
+      query += ' WHERE browser ILIKE $1';
+      countQuery += ' WHERE browser ILIKE $1';
+      params.push(`%${browserValue}%`);
+      countParams.push(`%${browserValue}%`);
+    } else if (isOsFilter) {
+      const osValue = normalizedSource.replace(/^os:/i, '').trim();
+      query += ' WHERE os ILIKE $1';
+      countQuery += ' WHERE os ILIKE $1';
+      params.push(`%${osValue}%`);
+      countParams.push(`%${osValue}%`);
+    } else if (normalizedSource && normalizedSource !== 'all') {
       query += ' WHERE source = $1';
       countQuery += ' WHERE source = $1';
-      params.push(source);
-      countParams.push(source);
+      params.push(normalizedSource);
+      countParams.push(normalizedSource);
     }
 
     query += ' ORDER BY timestamp DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
@@ -894,13 +927,29 @@ export async function getVisitors(page = 1, limit = 20, source = null) {
 
   const db = await readJsonDb();
   let visitors = db.visitors || [];
-  if (source === 'project_clicks') {
+  const normalizedSource = typeof source === 'string' ? source.trim() : '';
+  if (normalizedSource === 'project_clicks') {
     visitors = visitors.filter((v) => {
       const pageValue = String(v.page || '');
       return pageValue.startsWith('/projects/') && pageValue.includes('link=');
     });
-  } else if (source && source !== 'all') {
-    visitors = visitors.filter(v => v.source === source);
+  } else if (normalizedSource === 'ios_safari') {
+    visitors = visitors.filter((v) =>
+      String(v.os || '').toLowerCase().includes('ios')
+      && String(v.browser || '').toLowerCase().includes('safari')
+    );
+  } else if (normalizedSource === 'android') {
+    visitors = visitors.filter((v) => String(v.os || '').toLowerCase().includes('android'));
+  } else if (normalizedSource === 'chrome') {
+    visitors = visitors.filter((v) => String(v.browser || '').toLowerCase().includes('chrome'));
+  } else if (normalizedSource.startsWith('browser:')) {
+    const browserValue = normalizedSource.replace(/^browser:/i, '').trim().toLowerCase();
+    visitors = visitors.filter((v) => String(v.browser || '').toLowerCase().includes(browserValue));
+  } else if (normalizedSource.startsWith('os:')) {
+    const osValue = normalizedSource.replace(/^os:/i, '').trim().toLowerCase();
+    visitors = visitors.filter((v) => String(v.os || '').toLowerCase().includes(osValue));
+  } else if (normalizedSource && normalizedSource !== 'all') {
+    visitors = visitors.filter(v => v.source === normalizedSource);
   }
   visitors = visitors.slice().sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
   const total = visitors.length;
