@@ -55,6 +55,21 @@ const platformColors = {
   Other: '#888',
 };
 
+const platformOrder = [
+  'LinkedIn',
+  'GitHub',
+  'Twitter/X',
+  'Facebook',
+  'Instagram',
+  'TikTok',
+  'YouTube',
+  'Reddit',
+  'Google',
+  'Bing',
+  'Direct',
+  'Other',
+];
+
 const socialAccountIcons = [
   { key: 'github', label: 'GitHub', icon: <FaGithub /> },
   { key: 'linkedin', label: 'LinkedIn', icon: <FaLinkedin /> },
@@ -157,41 +172,35 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
           See who viewed your portfolio from each social media platform
         </p>
         <div className="platform-grid">
-          {overview?.platformStats &&
-            Object.entries(overview.platformStats)
-              .sort(([, a], [, b]) => b - a)
-              .map(([platform, views]) => (
-                <div className="platform-card" key={platform}>
-                  <div
-                    className="platform-icon"
-                    style={{
-                      background: `${platformColors[platform] || '#888'}20`,
-                      color: platformColors[platform] || '#888',
-                    }}
-                  >
-                    {platformIcons[platform] || <FaGlobe />}
-                  </div>
-                  <div className="platform-info">
-                    <span className="platform-name">{platform}</span>
-                    <span className="platform-views">{views} views</span>
-                  </div>
-                  <div className="platform-bar-wrapper">
-                    <div
-                      className="platform-bar"
-                      style={{
-                        width: `${(views / (overview.totalViews || 1)) * 100}%`,
-                        background: platformColors[platform] || '#888',
-                      }}
-                    ></div>
-                  </div>
+          {platformOrder.map((platform) => {
+            const views = overview?.platformStats?.[platform] || 0;
+            return (
+              <div className="platform-card" key={platform}>
+                <div
+                  className="platform-icon"
+                  style={{
+                    background: `${platformColors[platform] || '#888'}20`,
+                    color: platformColors[platform] || '#888',
+                  }}
+                >
+                  {platformIcons[platform] || <FaGlobe />}
                 </div>
-              ))}
-          {(!overview?.platformStats ||
-            Object.keys(overview.platformStats).length === 0) && (
-            <p className="no-data">
-              No platform data yet. Share your portfolio on social media to start tracking!
-            </p>
-          )}
+                <div className="platform-info">
+                  <span className="platform-name">{platform}</span>
+                  <span className="platform-views">{views} views</span>
+                </div>
+                <div className="platform-bar-wrapper">
+                  <div
+                    className="platform-bar"
+                    style={{
+                      width: `${(views / (overview?.totalViews || 1)) * 100}%`,
+                      background: platformColors[platform] || '#888',
+                    }}
+                  ></div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -372,7 +381,9 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 <option value="Reddit">Reddit</option>
                 <option value="Google">Google</option>
                 <option value="chrome">Chrome Browser</option>
+                <option value="browser:safari">Safari Browser</option>
                 <option value="android">Android</option>
+                <option value="os:iOS">iOS</option>
                 <option value="ios_safari">iOS Safari</option>
                 <option value="Bing">Bing</option>
                 <option value="Direct">Direct</option>
