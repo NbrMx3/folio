@@ -136,6 +136,14 @@ const Gallery = () => {
     if (playingAudioId === itemId) setPlayingAudioId(null);
   };
 
+  const renderStars = () => (
+    <div className="gallery-rating" aria-label="5 star rating">
+      {Array.from({ length: 5 }).map((_, idx) => (
+        <span key={idx} className="gallery-star">★</span>
+      ))}
+    </div>
+  );
+
   const pictureItems = items.filter((item) => item.type === 'photo');
   const videoItems = items.filter((item) => item.type === 'video');
   const audioItems = items.filter((item) => item.type === 'audio');
@@ -188,6 +196,7 @@ const Gallery = () => {
                             )}
                           </div>
                         )}
+                        {renderStars()}
                       </div>
                     ))}
                   </div>
@@ -230,6 +239,7 @@ const Gallery = () => {
                             )}
                           </div>
                         )}
+                        {renderStars()}
                       </div>
                     ))}
                   </div>
@@ -294,6 +304,7 @@ const Gallery = () => {
                             )}
                           </div>
                         )}
+                        {renderStars()}
                       </div>
                     ))}
                   </div>

@@ -239,6 +239,18 @@
   margin: 0;
 }
 
+.gallery-rating {
+  display: inline-flex;
+  gap: 4px;
+  color: #f6c453;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.gallery-star {
+  text-shadow: 0 0 10px rgba(246, 196, 83, 0.35);
+}
+
 /* Gallery Modal */
 .gallery-modal {
   position: fixed;
