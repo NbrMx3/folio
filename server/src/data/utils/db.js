@@ -672,11 +672,19 @@ export async function deleteProject(id) {
 // ─── Gallery queries ───────────────────────────────────────
 export async function getGallery() {
   if (usingPostgres && pool) {
-    const result = await pool.query('SELECT * FROM gallery ORDER BY sort_order ASC, id ASC');
+    const result = await pool.query('SELECT * FROM gallery ORDER BY created_at DESC, id DESC');
     return result.rows;
   }
   const db = await readJsonDb();
-  return (db.gallery || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  return (db.gallery || []).sort((a, b) => {
+    const aTime = a.created_at ? new Date(a.created_at).getTime() : null;
+    const bTime = b.created_at ? new Date(b.created_at).getTime() : null;
+
+    if (aTime && bTime) return bTime - aTime;
+    if (aTime && !bTime) return -1;
+    if (!aTime && bTime) return 1;
+    return (b.id || 0) - (a.id || 0);
+  });
 }
 
 export async function createGalleryItem(data) {
