@@ -861,11 +861,19 @@ export async function getVisitors(page = 1, limit = 20, source = null) {
     let query = 'SELECT * FROM visitors';
     let countQuery = 'SELECT COUNT(*) as total FROM visitors';
     const params = [];
+    const countParams = [];
+    const isProjectClicks = source === 'project_clicks';
 
-    if (source && source !== 'all') {
+    if (isProjectClicks) {
+      query += ' WHERE page LIKE $1 AND page LIKE $2';
+      countQuery += ' WHERE page LIKE $1 AND page LIKE $2';
+      params.push('/projects/%', '%link=%');
+      countParams.push('/projects/%', '%link=%');
+    } else if (source && source !== 'all') {
       query += ' WHERE source = $1';
       countQuery += ' WHERE source = $1';
       params.push(source);
+      countParams.push(source);
     }
 
     query += ' ORDER BY timestamp DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
@@ -873,7 +881,7 @@ export async function getVisitors(page = 1, limit = 20, source = null) {
 
     const [visitors, count] = await Promise.all([
       pool.query(query, params),
-      pool.query(countQuery, source && source !== 'all' ? [source] : []),
+      pool.query(countQuery, countParams),
     ]);
 
     return {
@@ -886,7 +894,14 @@ export async function getVisitors(page = 1, limit = 20, source = null) {
 
   const db = await readJsonDb();
   let visitors = db.visitors || [];
-  if (source && source !== 'all') visitors = visitors.filter(v => v.source === source);
+  if (source === 'project_clicks') {
+    visitors = visitors.filter((v) => {
+      const pageValue = String(v.page || '');
+      return pageValue.startsWith('/projects/') && pageValue.includes('link=');
+    });
+  } else if (source && source !== 'all') {
+    visitors = visitors.filter(v => v.source === source);
+  }
   visitors = visitors.slice().sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
   const total = visitors.length;
   const start = (page - 1) * limit;

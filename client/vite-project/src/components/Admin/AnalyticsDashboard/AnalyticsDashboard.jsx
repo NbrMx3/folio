@@ -361,6 +361,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                 }}
               >
                 <option value="all">All Platforms</option>
+                <option value="project_clicks">Project Clicks Only</option>
                 <option value="LinkedIn">LinkedIn</option>
                 <option value="GitHub">GitHub</option>
                 <option value="Twitter/X">Twitter/X</option>
