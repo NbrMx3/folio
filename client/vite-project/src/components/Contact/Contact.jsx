@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
 import './Contact.css';
 
 const Contact = () => {
@@ -17,6 +17,12 @@ const Contact = () => {
       label: 'Email',
       value: 'kipkemoi386@gmail.com',
       href: 'mailto:kipkemoi386@gmail.com',
+    },
+    {
+      icon: <FaWhatsapp />,
+      label: 'WhatsApp',
+      value: '+254112267013',
+      href: 'https://wa.me/254112267013',
     },
     {
       icon: <FaMapMarkerAlt />,
