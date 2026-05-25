@@ -27,7 +27,8 @@ const Projects = () => {
       .catch((err) => {
         console.error('Projects fetch error:', err.message);
         if (isMounted) {
-          setError('Could not load projects. Backend may be unavailable.');
+          setProjects([]);
+          setError('');
         }
       });
 

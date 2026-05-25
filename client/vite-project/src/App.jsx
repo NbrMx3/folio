@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Portfolio from './pages/Portfolio';
 import Gallery from './pages/Gallery/Gallery';
@@ -8,8 +9,28 @@ import AdminResetPassword from './pages/AdminResetPassword/AdminResetPassword';
 import './App.css';
 
 function App() {
+  const [isOnline, setIsOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   return (
     <div className="app">
+      {!isOnline && (
+        <div className="connection-banner" role="status" aria-live="polite">
+          Offline mode: cached portfolio content is available.
+        </div>
+      )}
       <Routes>
         <Route path="/" element={<Portfolio />} />
         <Route path="/gallery" element={<Gallery />} />

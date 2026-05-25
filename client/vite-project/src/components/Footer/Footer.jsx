@@ -10,16 +10,12 @@ import {
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
 import { getProfile } from '../../utils/api';
+import { fallbackProfile } from '../../data/offlineContent';
 import './Footer.css';
 
 const Footer = () => {
   const [profile, setProfile] = useState({
-    github: '',
-    linkedin: '',
-    twitter: '',
-    facebook: '',
-    instagram: '',
-    tiktok: '',
+    ...fallbackProfile,
   });
 
   useEffect(() => {
@@ -32,7 +28,9 @@ const Footer = () => {
         }
       })
       .catch(() => {
-        // ignore
+        if (!cancelled) {
+          setProfile(fallbackProfile);
+        }
       });
 
     return () => {

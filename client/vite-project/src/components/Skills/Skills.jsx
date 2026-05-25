@@ -14,6 +14,7 @@ import {
   FaRocket,
 } from 'react-icons/fa';
 import { getSkills } from '../../utils/api';
+import { fallbackSkills } from '../../data/offlineContent';
 import './Skills.css';
 
 const iconMap = {
@@ -32,7 +33,7 @@ const iconMap = {
 };
 
 const Skills = () => {
-  const [skills, setSkills] = useState([]);
+  const [skills, setSkills] = useState(fallbackSkills);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -47,7 +48,8 @@ const Skills = () => {
       .catch((err) => {
         console.error('Skills fetch error:', err.message);
         if (isMounted) {
-          setError('Could not load skills. Backend may be unavailable.');
+          setSkills(fallbackSkills);
+          setError('');
         }
       });
 

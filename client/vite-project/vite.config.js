@@ -11,6 +11,34 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       includeAssets: ['dk_portfolio_logo_light.svg'],
+      workbox: {
+        navigateFallback: '/index.html',
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'folio-api',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request, url }) => request.destination === 'image' || url.pathname.startsWith('/uploads/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'folio-images',
+              expiration: {
+                maxEntries: 80,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'CyberDev Portfolio',
         short_name: 'Portfolio',

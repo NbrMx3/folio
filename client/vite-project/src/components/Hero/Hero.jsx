@@ -11,21 +11,13 @@ import {
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
 import { getProfile, trackConversion } from '../../utils/api';
+import { fallbackProfile } from '../../data/offlineContent';
 import './Hero.css';
 
 const Hero = () => {
   const heroRef = useRef(null);
   const [profile, setProfile] = useState({
-    name: '',
-    title: '',
-    bio: '',
-    picture: '',
-    github: '',
-    linkedin: '',
-    twitter: '',
-    facebook: '',
-    instagram: '',
-    tiktok: '',
+    ...fallbackProfile,
   });
   const heroSnippet = [
     'const buildExperience = async () => {',
@@ -45,6 +37,9 @@ const Hero = () => {
       })
       .catch((err) => {
         console.error('Profile fetch error:', err.message);
+        if (isMounted) {
+          setProfile(fallbackProfile);
+        }
       });
 
     return () => {
