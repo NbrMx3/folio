@@ -26,9 +26,6 @@ const Testimonials = () => {
           <h2 className="section-title">
             Testimonials <span className="highlight">& Feedback</span>
           </h2>
-          <p>
-            Short proof points that can be replaced with real client quotes whenever you have them.
-          </p>
         </div>
 
         <div className="testimonials-grid">
@@ -49,3 +46,4 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
+
