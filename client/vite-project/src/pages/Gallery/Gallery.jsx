@@ -155,6 +155,78 @@ const Gallery = () => {
     </div>
   );
 
+  const resolveItemUrl = (item) => item?.playbackUrl || item?.url || '';
+
+  const sanitizeFilename = (value) =>
+    (value || 'gallery-item')
+      .toString()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-zA-Z0-9-_]/g, '')
+      .toLowerCase();
+
+  const extensionFromType = (contentType) => {
+    if (!contentType) return '';
+    const map = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/svg+xml': 'svg',
+      'video/mp4': 'mp4',
+      'audio/mpeg': 'mp3',
+      'audio/wav': 'wav',
+      'audio/ogg': 'ogg',
+    };
+    return map[contentType] || '';
+  };
+
+  const extensionFromUrl = (url) => {
+    if (!url) return '';
+    const clean = url.split('?')[0];
+    const match = clean.match(/\.([a-zA-Z0-9]+)$/);
+    return match ? match[1].toLowerCase() : '';
+  };
+
+  const handleDownload = async (item) => {
+    const url = resolveItemUrl(item);
+    if (!url) return;
+
+    try {
+      const response = await fetch(url, { mode: 'cors' });
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const contentType = response.headers.get('content-type') || '';
+      const ext = extensionFromType(contentType) || extensionFromUrl(url);
+      const filename = `${sanitizeFilename(item?.title)}${ext ? `.${ext}` : ''}`;
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, '_blank', 'noopener');
+    }
+  };
+
+  const handleSave = async (item) => {
+    const url = resolveItemUrl(item);
+    if (!url) return;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: item?.title || 'Gallery item', url });
+        return;
+      } catch {
+        // Fall back to opening in a new tab.
+      }
+    }
+
+    window.open(url, '_blank', 'noopener');
+  };
+
   const pictureItems = items.filter((item) => item.type === 'photo');
   const videoItems = items.filter((item) => item.type === 'video');
   const audioItems = items.filter((item) => item.type === 'audio');
@@ -208,23 +280,20 @@ const Gallery = () => {
                           </div>
                         )}
                         <div className="gallery-card-actions">
-                          <a
+                          <button
+                            type="button"
                             className="gallery-card-action"
-                            href={item.url}
-                            download
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={() => handleDownload(item)}
                           >
                             Download
-                          </a>
-                          <a
+                          </button>
+                          <button
+                            type="button"
                             className="gallery-card-action gallery-card-action--ghost"
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={() => handleSave(item)}
                           >
                             Save
-                          </a>
+                          </button>
                         </div>
                         {renderStars()}
                       </div>
@@ -270,23 +339,20 @@ const Gallery = () => {
                           </div>
                         )}
                         <div className="gallery-card-actions">
-                          <a
+                          <button
+                            type="button"
                             className="gallery-card-action"
-                            href={item.url}
-                            download
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={() => handleDownload(item)}
                           >
                             Download
-                          </a>
-                          <a
+                          </button>
+                          <button
+                            type="button"
                             className="gallery-card-action gallery-card-action--ghost"
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={() => handleSave(item)}
                           >
                             Save
-                          </a>
+                          </button>
                         </div>
                         {renderStars()}
                       </div>
@@ -354,23 +420,20 @@ const Gallery = () => {
                           </div>
                         )}
                         <div className="gallery-card-actions">
-                          <a
+                          <button
+                            type="button"
                             className="gallery-card-action"
-                            href={item.url}
-                            download
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={() => handleDownload(item)}
                           >
                             Download
-                          </a>
-                          <a
+                          </button>
+                          <button
+                            type="button"
                             className="gallery-card-action gallery-card-action--ghost"
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={() => handleSave(item)}
                           >
                             Save
-                          </a>
+                          </button>
                         </div>
                         {renderStars()}
                       </div>
@@ -414,23 +477,20 @@ const Gallery = () => {
               </>
             )}
             <div className="gallery-modal-toolbar">
-              <a
+              <button
+                type="button"
                 className="gallery-download-button"
-                href={selectedItem.url}
-                download
-                target="_blank"
-                rel="noreferrer"
+                onClick={() => handleDownload(selectedItem)}
               >
                 Download
-              </a>
-              <a
+              </button>
+              <button
+                type="button"
                 className="gallery-save-button"
-                href={selectedItem.url}
-                target="_blank"
-                rel="noreferrer"
+                onClick={() => handleSave(selectedItem)}
               >
                 Save
-              </a>
+              </button>
             </div>
             {selectedItem.type === 'video' ? (
               <video
