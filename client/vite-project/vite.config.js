@@ -9,6 +9,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      includeAssets: ['dk_portfolio_logo_light.svg'],
       manifest: {
         name: 'CyberDev Portfolio',
         short_name: 'Portfolio',
