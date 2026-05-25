@@ -215,6 +215,19 @@ export async function initDatabase() {
           )
         `);
 
+        // Create contact messages table
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS contact_messages (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            message TEXT NOT NULL,
+            source TEXT DEFAULT 'portfolio',
+            status TEXT DEFAULT 'new',
+            created_at TIMESTAMP DEFAULT NOW()
+          )
+        `);
+
         // Create visitors table
         await client.query(`
           CREATE TABLE IF NOT EXISTS visitors (
@@ -379,6 +392,7 @@ export async function initDatabase() {
       ];
       if (!db.projects) db.projects = [];
       if (!db.gallery) db.gallery = [];
+      if (!db.contactMessages) db.contactMessages = [];
       if (!db.visitors) db.visitors = [];
       if (!db.platformStats) db.platformStats = {};
       db.adminAuth = normalizeAdminAuth(db.adminAuth);
@@ -733,6 +747,35 @@ export async function deleteGalleryItem(id) {
   const db = await readJsonDb();
   db.gallery = (db.gallery || []).filter(g => String(g.id) !== String(id));
   await writeJsonDb(db);
+}
+
+// ─── Contact queries ──────────────────────────────────────
+export async function createContactMessage(data) {
+  const { name, email, message, source = 'portfolio', status = 'new' } = data;
+
+  if (usingPostgres && pool) {
+    const result = await pool.query(
+      'INSERT INTO contact_messages (name, email, message, source, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, email, message, source, status]
+    );
+    return result.rows[0];
+  }
+
+  const db = await readJsonDb();
+  db.contactMessages = db.contactMessages || [];
+  const nextId = db.contactMessages.length ? Math.max(...db.contactMessages.map((entry) => entry.id || 0)) + 1 : 1;
+  const entry = {
+    id: nextId,
+    name,
+    email,
+    message,
+    source,
+    status,
+    created_at: new Date().toISOString(),
+  };
+  db.contactMessages.push(entry);
+  await writeJsonDb(db);
+  return entry;
 }
 
 // ─── Visitor queries ───────────────────────────────────────

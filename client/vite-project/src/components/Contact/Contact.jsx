@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
+import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
+import { sendContactMessage } from '../../utils/api';
 import './Contact.css';
 
 const Contact = () => {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '', website: '' });
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState('idle');
+  const [feedback, setFeedback] = useState('');
 
   const contactDetails = [
     {
@@ -31,14 +35,75 @@ const Contact = () => {
     },
   ];
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const validateForm = () => {
+    const nextErrors = {};
+
+    if (form.website.trim()) {
+      nextErrors.website = 'Spam protection triggered.';
+      return nextErrors;
+    }
+
+    if (form.name.trim().length < 2) {
+      nextErrors.name = 'Please add your full name.';
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.email.trim())) {
+      nextErrors.email = 'Enter a valid email address.';
+    }
+
+    if (form.message.trim().length < 20) {
+      nextErrors.message = 'Message should be at least 20 characters.';
+    }
+
+    return nextErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors((current) => {
+        const next = { ...current };
+        delete next[e.target.name];
+        return next;
+      });
+    }
+    if (status !== 'idle') {
+      setStatus('idle');
+      setFeedback('');
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Thanks ${form.name}! Your message has been received.`);
-    setForm({ name: '', email: '', message: '' });
+
+    const nextErrors = validateForm();
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      setStatus('error');
+      setFeedback(nextErrors.website || 'Please fix the highlighted fields.');
+      return;
+    }
+
+    setStatus('submitting');
+    setFeedback('');
+
+    try {
+      const response = await sendContactMessage({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        message: form.message.trim(),
+        website: form.website.trim(),
+      });
+
+      setStatus('success');
+      setFeedback(response?.message || 'Message sent successfully.');
+      setForm({ name: '', email: '', message: '', website: '' });
+      setErrors({});
+    } catch (error) {
+      setStatus('error');
+      setFeedback(error.message || 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -50,6 +115,20 @@ const Contact = () => {
         <p className="contact-subtitle">
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
+        <div className="contact-status-bar" aria-live="polite">
+          {status === 'success' && (
+            <div className="contact-status success">
+              <FaCheckCircle />
+              <span>{feedback}</span>
+            </div>
+          )}
+          {status === 'error' && feedback && (
+            <div className="contact-status error">
+              <FaExclamationCircle />
+              <span>{feedback}</span>
+            </div>
+          )}
+        </div>
         <div className="contact-grid">
           {contactDetails.map((item) => (
             <div className="contact-card" key={item.label}>
@@ -68,40 +147,67 @@ const Contact = () => {
           ))}
         </div>
         <form className="contact-form" onSubmit={handleSubmit}>
+          <div className="contact-form-note">
+            Messages are validated before sending. A hidden trap field blocks bot submissions.
+          </div>
           <div className="form-row">
             <div className="form-group">
+              <label htmlFor="name">Name</label>
               <input
+                id="name"
                 type="text"
                 name="name"
                 placeholder="Your Name"
                 value={form.name}
                 onChange={handleChange}
+                aria-invalid={Boolean(errors.name)}
                 required
               />
+              {errors.name && <span className="field-error">{errors.name}</span>}
             </div>
             <div className="form-group">
+              <label htmlFor="email">Email</label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 placeholder="Your Email"
                 value={form.email}
                 onChange={handleChange}
+                aria-invalid={Boolean(errors.email)}
                 required
               />
+              {errors.email && <span className="field-error">{errors.email}</span>}
             </div>
           </div>
           <div className="form-group">
+            <label htmlFor="message">Message</label>
             <textarea
+              id="message"
               name="message"
               placeholder="Your Message"
               rows="5"
               value={form.message}
               onChange={handleChange}
+              aria-invalid={Boolean(errors.message)}
               required
             ></textarea>
+            {errors.message && <span className="field-error">{errors.message}</span>}
           </div>
-          <button type="submit" className="btn-primary">
-            <FaPaperPlane /> Send Message
+          <div className="contact-honeypot" aria-hidden="true">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              type="text"
+              name="website"
+              tabIndex="-1"
+              autoComplete="off"
+              value={form.website}
+              onChange={handleChange}
+            />
+          </div>
+          <button type="submit" className="btn-primary" disabled={status === 'submitting'}>
+            <FaPaperPlane /> {status === 'submitting' ? 'Sending...' : 'Send Message'}
           </button>
         </form>
       </div>

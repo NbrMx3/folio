@@ -212,6 +212,24 @@ export async function deleteProject(id) {
   });
 }
 
+// Contact
+export async function sendContactMessage(data) {
+  const res = await fetch(`${API_BASE}/contact`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  const payload = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const error = payload?.error || payload?.message || 'Failed to send message';
+    throw new Error(error);
+  }
+
+  return payload;
+}
+
 // Analytics
 export async function getAnalyticsOverview() {
   return authFetch('/analytics/overview');

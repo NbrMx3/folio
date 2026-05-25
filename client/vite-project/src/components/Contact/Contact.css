@@ -17,6 +17,31 @@
   font-size: 1rem;
 }
 
+.contact-status-bar {
+  margin: 0 0 1rem;
+  min-height: 3rem;
+}
+
+.contact-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(152, 225, 255, 0.18);
+  background: rgba(6, 22, 46, 0.76);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-soft);
+}
+
+.contact-status.success {
+  border-color: rgba(115, 230, 255, 0.32);
+}
+
+.contact-status.error {
+  border-color: rgba(255, 137, 137, 0.34);
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
@@ -94,6 +119,12 @@
   box-shadow: var(--shadow-strong);
 }
 
+.contact-form-note {
+  color: var(--text-muted-2);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -115,6 +146,15 @@
   resize: vertical;
 }
 
+.form-group label {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: var(--text-muted);
@@ -126,11 +166,36 @@
   box-shadow: 0 0 0 3px var(--accent-weak);
 }
 
+.form-group input[aria-invalid='true'],
+.form-group textarea[aria-invalid='true'] {
+  border-color: rgba(255, 137, 137, 0.6);
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.45rem;
+  color: #ffb5b5;
+  font-size: 0.78rem;
+}
+
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .contact .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   align-self: flex-start;
+}
+
+.contact .btn-primary:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
 }
 
 @media (max-width: 760px) {
