@@ -1,13 +1,29 @@
 .projects {
   padding: var(--section-pad-y) var(--page-gutter);
+  position: relative;
   background:
     linear-gradient(180deg, rgba(2, 12, 28, 0.75), rgba(3, 18, 40, 0.52)),
     radial-gradient(circle at 86% 18%, rgba(255, 178, 104, 0.14), transparent 30%);
 }
 
+.projects::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.6;
+  background:
+    linear-gradient(120deg, rgba(120, 230, 255, 0.08), transparent 32%),
+    repeating-linear-gradient(90deg, rgba(120, 230, 255, 0.06) 0 1px, transparent 1px 32px);
+  mix-blend-mode: screen;
+}
+
 .projects-container {
   max-width: var(--container-max);
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  animation: fade-rise 0.8s ease both;
 }
 
 .projects-grid {
@@ -23,11 +39,12 @@
   border: 1px solid var(--card-border);
   border-radius: 18px;
   padding: clamp(1.2rem, 2.4vw, 2rem);
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 18px 52px rgba(2, 10, 24, 0.38);
+  box-shadow: var(--shadow-soft);
   backdrop-filter: blur(10px);
+  will-change: transform;
 }
 
 .project-card::before {
@@ -48,15 +65,15 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(118deg, rgba(255, 255, 255, 0.12), transparent 30%, transparent 68%, rgba(255, 178, 104, 0.08));
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.12), transparent 30%, transparent 68%, rgba(255, 178, 104, 0.12));
   pointer-events: none;
   transition: opacity 0.3s;
 }
 
 .project-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px) scale(1.01);
   border-color: var(--accent-strong);
-  box-shadow: 0 24px 60px rgba(13, 103, 161, 0.42);
+  box-shadow: var(--shadow-strong);
 }
 
 .project-card:hover::before {
@@ -117,11 +134,18 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  transition: color 0.3s;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(6, 22, 46, 0.46);
+  transition: color 0.3s, border-color 0.3s, background 0.3s, transform 0.3s;
 }
 
 .project-links a:hover {
   color: var(--accent);
+  border-color: var(--accent-strong);
+  background: var(--accent-weak);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 640px) {

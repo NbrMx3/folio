@@ -1,14 +1,27 @@
 .footer {
   padding: clamp(2rem, 5vw, 3rem) var(--page-gutter) clamp(1.2rem, 3vw, 2rem);
   border-top: 1px solid var(--card-border);
+  position: relative;
   background:
     linear-gradient(180deg, rgba(2, 9, 20, 0.9), rgba(2, 11, 26, 0.78)),
     radial-gradient(circle at 70% 6%, rgba(98, 217, 255, 0.14), transparent 36%);
 }
 
+.footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background: linear-gradient(90deg, transparent, rgba(115, 230, 255, 0.18), transparent);
+}
+
 .footer-container {
   max-width: var(--container-max);
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  animation: fade-rise 0.8s ease both;
 }
 
 .footer-top {

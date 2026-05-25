@@ -15,13 +15,17 @@
   --card: rgba(5, 27, 58, 0.54);
   --card-soft: rgba(5, 29, 64, 0.4);
   --card-border: rgba(138, 222, 255, 0.27);
+  --card-strong: rgba(8, 38, 78, 0.72);
   --overlay: rgba(2, 11, 27, 0.7);
   --accent: #73e6ff;
   --accent-weak: rgba(115, 230, 255, 0.16);
   --accent-strong: rgba(115, 230, 255, 0.38);
   --accent-warm: #6ec9ff;
+  --accent-hot: #f7b37a;
   --nav-bg: rgba(3, 20, 45, 0.78);
   --shadow-accent: 0 16px 48px rgba(12, 111, 171, 0.34);
+  --shadow-soft: 0 14px 36px rgba(2, 9, 23, 0.28);
+  --shadow-strong: 0 28px 70px rgba(3, 11, 28, 0.45);
   --container-max: 1200px;
   --page-gutter: clamp(0.9rem, 2.8vw, 2rem);
   --section-pad-y: clamp(3.4rem, 8vw, 6rem);
@@ -37,13 +41,17 @@
   --card: rgba(255, 255, 255, 0.82);
   --card-soft: rgba(239, 247, 255, 0.92);
   --card-border: rgba(14, 83, 143, 0.18);
+  --card-strong: rgba(255, 255, 255, 0.95);
   --overlay: rgba(6, 36, 69, 0.08);
   --accent: #0e8ac7;
   --accent-weak: rgba(14, 138, 199, 0.12);
   --accent-strong: rgba(14, 138, 199, 0.24);
   --accent-warm: #2f88d5;
+  --accent-hot: #f08a4b;
   --nav-bg: rgba(255, 255, 255, 0.88);
   --shadow-accent: 0 12px 32px rgba(14, 113, 173, 0.16);
+  --shadow-soft: 0 14px 30px rgba(18, 52, 86, 0.14);
+  --shadow-strong: 0 26px 60px rgba(12, 40, 74, 0.2);
   color-scheme: light;
 }
 
@@ -60,6 +68,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: inherit;
+}
+
+a,
+button {
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 img,
@@ -101,4 +126,36 @@ video {
   font-weight: 700;
   margin: 0 0 3rem;
   color: var(--text-strong);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.section-title::after {
+  content: '';
+  width: clamp(2.4rem, 10vw, 5.6rem);
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hot), transparent);
+  box-shadow: 0 0 16px rgba(115, 230, 255, 0.4);
+}
+
+@keyframes fade-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }

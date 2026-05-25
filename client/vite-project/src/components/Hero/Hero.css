@@ -65,6 +65,7 @@
 .hero-content {
   position: relative;
   z-index: 2;
+  animation: fade-rise 0.9s ease both;
 }
 
 .hero-kicker {
@@ -207,6 +208,8 @@
   position: relative;
   min-height: clamp(460px, 60vw, 560px);
   perspective: 1600px;
+  animation: fade-rise 1s ease both;
+  animation-delay: 0.1s;
 }
 
 .hero-visual::before {

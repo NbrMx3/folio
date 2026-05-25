@@ -7,13 +7,31 @@
   padding: clamp(0.7rem, 1.8vw, 1rem) 0;
   transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
   border-bottom: 1px solid transparent;
+  backdrop-filter: blur(0px);
+}
+
+.navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(120, 230, 255, 0.55), rgba(247, 179, 122, 0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .navbar.scrolled {
   background: var(--nav-bg);
   box-shadow: var(--shadow-accent);
   border-color: var(--card-border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+}
+
+.navbar.scrolled::after {
+  opacity: 1;
 }
 
 .navbar-container {
@@ -56,6 +74,7 @@
   letter-spacing: 0.04em;
   transition: color 0.3s;
   position: relative;
+  padding-bottom: 0.2rem;
 }
 
 .nav-links a::after {
@@ -71,6 +90,7 @@
 
 .nav-links a:hover {
   color: var(--accent);
+  text-shadow: 0 0 18px rgba(115, 230, 255, 0.45);
 }
 
 .nav-links a:hover::after {
@@ -154,7 +174,8 @@
     gap: 1.5rem;
     transition: right 0.35s ease;
     border-left: 1px solid var(--card-border);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(18px);
+    box-shadow: -24px 0 60px rgba(2, 10, 26, 0.48);
   }
 
   .nav-links.open {
