@@ -126,7 +126,7 @@
 .admin-icon {
   background: var(--card-soft);
   border: 1px solid transparent;
-  color: var(--text-muted);
+  color: #ffffff;
   font-size: 1.05rem;
   cursor: pointer;
   padding: 0.38rem;
