@@ -247,6 +247,40 @@
   letter-spacing: 0.05em;
 }
 
+.gallery-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gallery-card-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  background: rgba(0, 212, 255, 0.15);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.gallery-card-action:hover {
+  background: rgba(0, 212, 255, 0.3);
+}
+
+.gallery-card-action--ghost {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.gallery-card-action--ghost:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .gallery-star {
   text-shadow: 0 0 10px rgba(246, 196, 83, 0.35);
 }

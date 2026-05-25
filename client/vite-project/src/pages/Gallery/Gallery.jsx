@@ -19,12 +19,23 @@ const Gallery = () => {
   const SWIPE_THRESHOLD = 50;
   const CLOSE_THRESHOLD = 80;
 
+  const sortByNewest = (list) =>
+    list.slice().sort((a, b) => {
+      const aTime = a?.created_at ? new Date(a.created_at).getTime() : null;
+      const bTime = b?.created_at ? new Date(b.created_at).getTime() : null;
+
+      if (aTime && bTime) return bTime - aTime;
+      if (aTime && !bTime) return -1;
+      if (!aTime && bTime) return 1;
+      return (b?.id || 0) - (a?.id || 0);
+    });
+
   useEffect(() => {
     const fetchGallery = async () => {
       try {
         setLoading(true);
         const data = await getGallery();
-        setItems(data);
+        setItems(sortByNewest(data));
       } catch (error) {
         console.error('Failed to fetch gallery:', error);
       } finally {
@@ -196,6 +207,25 @@ const Gallery = () => {
                             )}
                           </div>
                         )}
+                        <div className="gallery-card-actions">
+                          <a
+                            className="gallery-card-action"
+                            href={item.url}
+                            download
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Download
+                          </a>
+                          <a
+                            className="gallery-card-action gallery-card-action--ghost"
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Save
+                          </a>
+                        </div>
                         {renderStars()}
                       </div>
                     ))}
@@ -239,6 +269,25 @@ const Gallery = () => {
                             )}
                           </div>
                         )}
+                        <div className="gallery-card-actions">
+                          <a
+                            className="gallery-card-action"
+                            href={item.url}
+                            download
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Download
+                          </a>
+                          <a
+                            className="gallery-card-action gallery-card-action--ghost"
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Save
+                          </a>
+                        </div>
                         {renderStars()}
                       </div>
                     ))}
@@ -304,6 +353,25 @@ const Gallery = () => {
                             )}
                           </div>
                         )}
+                        <div className="gallery-card-actions">
+                          <a
+                            className="gallery-card-action"
+                            href={item.url}
+                            download
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Download
+                          </a>
+                          <a
+                            className="gallery-card-action gallery-card-action--ghost"
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Save
+                          </a>
+                        </div>
                         {renderStars()}
                       </div>
                     ))}
