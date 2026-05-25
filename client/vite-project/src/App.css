@@ -3,9 +3,10 @@
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(72% 90% at 18% 78%, rgba(7, 34, 105, 0.36) 0%, rgba(3, 14, 42, 0.2) 46%, transparent 76%),
-    radial-gradient(56% 76% at 92% 66%, rgba(17, 69, 164, 0.34) 0%, rgba(5, 22, 59, 0.18) 52%, transparent 82%),
-    linear-gradient(180deg, #01040c 0%, #010711 46%, #010711 100%);
+    radial-gradient(78% 92% at 12% 72%, rgba(9, 43, 132, 0.42) 0%, rgba(3, 12, 33, 0.18) 44%, transparent 74%),
+    radial-gradient(64% 84% at 88% 60%, rgba(14, 82, 196, 0.28) 0%, rgba(4, 19, 54, 0.16) 50%, transparent 82%),
+    radial-gradient(50% 32% at 32% 30%, rgba(19, 92, 220, 0.12) 0%, transparent 72%),
+    linear-gradient(180deg, #01040c 0%, #01060f 38%, #010811 100%);
 }
 
 .app::before {
@@ -14,21 +15,27 @@
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.82;
   background:
-    radial-gradient(circle at 10% 12%, rgba(210, 238, 255, 0.86) 0 0.1%, transparent 0.38%),
-    radial-gradient(circle at 22% 20%, rgba(181, 225, 255, 0.72) 0 0.1%, transparent 0.35%),
-    radial-gradient(circle at 40% 16%, rgba(203, 238, 255, 0.8) 0 0.08%, transparent 0.33%),
-    radial-gradient(circle at 58% 24%, rgba(193, 234, 255, 0.74) 0 0.1%, transparent 0.34%),
-    radial-gradient(circle at 74% 18%, rgba(210, 241, 255, 0.84) 0 0.09%, transparent 0.36%),
-    radial-gradient(circle at 86% 10%, rgba(182, 227, 255, 0.66) 0 0.1%, transparent 0.32%),
-    radial-gradient(circle at 8% 34%, rgba(174, 222, 255, 0.6) 0 0.09%, transparent 0.32%),
-    radial-gradient(circle at 28% 42%, rgba(198, 235, 255, 0.72) 0 0.1%, transparent 0.36%),
-    radial-gradient(circle at 46% 36%, rgba(170, 221, 255, 0.56) 0 0.09%, transparent 0.33%),
-    radial-gradient(circle at 64% 44%, rgba(203, 237, 255, 0.7) 0 0.1%, transparent 0.36%),
-    radial-gradient(circle at 78% 40%, rgba(170, 222, 255, 0.62) 0 0.08%, transparent 0.34%),
-    radial-gradient(circle at 92% 34%, rgba(194, 234, 255, 0.76) 0 0.1%, transparent 0.37%);
-  animation: starfield-twinkle 9s ease-in-out infinite;
+    radial-gradient(circle at 10% 12%, rgba(211, 241, 255, 0.82) 0 0.1%, transparent 0.38%),
+    radial-gradient(circle at 22% 20%, rgba(146, 212, 255, 0.8) 0 0.1%, transparent 0.35%),
+    radial-gradient(circle at 39% 14%, rgba(201, 238, 255, 0.72) 0 0.08%, transparent 0.32%),
+    radial-gradient(circle at 58% 24%, rgba(174, 222, 255, 0.68) 0 0.09%, transparent 0.34%),
+    radial-gradient(circle at 74% 18%, rgba(210, 241, 255, 0.82) 0 0.09%, transparent 0.36%),
+    radial-gradient(circle at 86% 10%, rgba(174, 222, 255, 0.62) 0 0.1%, transparent 0.32%),
+    radial-gradient(circle at 8% 34%, rgba(162, 214, 255, 0.56) 0 0.09%, transparent 0.32%),
+    radial-gradient(circle at 28% 42%, rgba(198, 235, 255, 0.74) 0 0.1%, transparent 0.36%),
+    radial-gradient(circle at 46% 36%, rgba(170, 221, 255, 0.54) 0 0.09%, transparent 0.33%),
+    radial-gradient(circle at 64% 44%, rgba(203, 237, 255, 0.66) 0 0.1%, transparent 0.36%),
+    radial-gradient(circle at 78% 40%, rgba(170, 222, 255, 0.58) 0 0.08%, transparent 0.34%),
+    radial-gradient(circle at 92% 34%, rgba(194, 234, 255, 0.72) 0 0.1%, transparent 0.37%),
+    radial-gradient(40% 22% at 15% 72%, rgba(44, 122, 255, 0.16), transparent 72%),
+    radial-gradient(30% 20% at 48% 66%, rgba(70, 160, 255, 0.12), transparent 70%),
+    radial-gradient(28% 18% at 82% 74%, rgba(36, 110, 216, 0.16), transparent 72%),
+    linear-gradient(110deg, transparent 0 13%, rgba(66, 166, 255, 0.08) 15%, transparent 18% 34%, rgba(60, 152, 255, 0.12) 36%, transparent 39% 58%, rgba(53, 146, 255, 0.08) 60%, transparent 63% 100%),
+    linear-gradient(80deg, transparent 0 21%, rgba(91, 186, 255, 0.06) 23%, transparent 26% 43%, rgba(80, 176, 255, 0.1) 46%, transparent 49% 70%, rgba(82, 181, 255, 0.06) 73%, transparent 76% 100%);
+  filter: blur(0.35px);
+  animation: starfield-twinkle 9s ease-in-out infinite, drift-streaks 18s ease-in-out infinite;
 }
 
 .app::after {
@@ -37,13 +44,20 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.96;
+  opacity: 0.94;
+  mix-blend-mode: screen;
   background:
-    radial-gradient(circle at 35% 53%, rgba(178, 236, 255, 0.98) 0 1.1%, rgba(92, 173, 255, 0.68) 2.6%, rgba(37, 111, 216, 0.18) 7.2%, transparent 14%),
-    radial-gradient(circle at 100% 53%, rgba(190, 239, 255, 0.84) 0 1.2%, rgba(80, 166, 255, 0.54) 3.2%, rgba(36, 110, 216, 0.12) 8.4%, transparent 18%),
-    radial-gradient(72% 20% at 52% 56%, rgba(35, 110, 228, 0.26) 0%, rgba(8, 48, 134, 0.16) 38%, transparent 76%),
-    linear-gradient(180deg, transparent 51.6%, rgba(139, 218, 255, 0.92) 52.5%, rgba(98, 187, 255, 0.58) 53.4%, transparent 54.1%),
-    linear-gradient(180deg, transparent 54%, rgba(40, 114, 236, 0.18) 60%, rgba(9, 32, 90, 0.24) 77%, transparent 100%);
+    radial-gradient(circle at 16% 67%, rgba(91, 188, 255, 0.88) 0 0.6%, rgba(46, 124, 236, 0.48) 1.9%, rgba(19, 77, 189, 0.16) 5.5%, transparent 13%),
+    radial-gradient(circle at 26% 55%, rgba(170, 239, 255, 0.9) 0 0.7%, rgba(85, 174, 255, 0.55) 2.1%, rgba(39, 115, 221, 0.16) 6%, transparent 14%),
+    radial-gradient(circle at 40% 59%, rgba(126, 220, 255, 0.84) 0 0.55%, rgba(65, 154, 246, 0.42) 1.7%, rgba(26, 92, 204, 0.14) 5.2%, transparent 12%),
+    radial-gradient(circle at 54% 61%, rgba(184, 244, 255, 0.86) 0 0.65%, rgba(75, 176, 255, 0.54) 1.8%, rgba(34, 115, 226, 0.12) 5.4%, transparent 13%),
+    radial-gradient(circle at 68% 57%, rgba(126, 219, 255, 0.82) 0 0.55%, rgba(66, 160, 255, 0.42) 1.8%, rgba(23, 84, 198, 0.1) 5.5%, transparent 12%),
+    radial-gradient(circle at 83% 59%, rgba(173, 240, 255, 0.88) 0 0.6%, rgba(87, 184, 255, 0.48) 2%, rgba(34, 118, 229, 0.12) 5.6%, transparent 13%),
+    radial-gradient(circle at 96% 60%, rgba(191, 242, 255, 0.72) 0 0.55%, rgba(84, 176, 255, 0.42) 1.9%, rgba(31, 110, 221, 0.1) 5.4%, transparent 12%),
+    radial-gradient(74% 24% at 52% 60%, rgba(35, 110, 228, 0.28) 0%, rgba(8, 48, 134, 0.18) 38%, transparent 76%),
+    linear-gradient(180deg, transparent 50.2%, rgba(162, 231, 255, 0.94) 51.1%, rgba(86, 176, 255, 0.52) 52.1%, transparent 53%),
+    linear-gradient(180deg, transparent 52.2%, rgba(41, 117, 241, 0.2) 57%, rgba(9, 32, 90, 0.3) 74%, transparent 100%),
+    linear-gradient(92deg, transparent 0 20%, rgba(113, 196, 255, 0.08) 23%, transparent 26% 47%, rgba(85, 179, 255, 0.12) 50%, transparent 53% 72%, rgba(116, 198, 255, 0.08) 75%, transparent 78% 100%);
   animation: horizon-pulse 6.8s ease-in-out infinite;
 }
 
@@ -66,6 +80,17 @@
 
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes drift-streaks {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(-1.1%, 0.8%, 0) scale(1.02);
   }
 }
 

@@ -7,9 +7,9 @@
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(58% 30% at 18% 70%, rgba(8, 42, 118, 0.2) 0%, rgba(5, 20, 58, 0.1) 52%, transparent 82%),
-    radial-gradient(48% 26% at 86% 66%, rgba(12, 58, 142, 0.18) 0%, rgba(4, 18, 52, 0.08) 52%, transparent 82%),
-    linear-gradient(180deg, rgba(1, 5, 13, 0.26), rgba(1, 4, 11, 0.5));
+    radial-gradient(60% 34% at 16% 72%, rgba(9, 55, 160, 0.18) 0%, rgba(5, 20, 58, 0.08) 54%, transparent 82%),
+    radial-gradient(52% 28% at 88% 64%, rgba(10, 68, 170, 0.16) 0%, rgba(4, 18, 52, 0.06) 52%, transparent 82%),
+    linear-gradient(180deg, rgba(1, 5, 13, 0.12), rgba(1, 4, 11, 0.38));
 }
 
 .hero::before {
@@ -17,22 +17,23 @@
   position: absolute;
   inset: -10%;
   z-index: -2;
-  opacity: 0.84;
+  opacity: 0.82;
   transform: scale(1.08);
   background:
-    radial-gradient(circle at 8% 14%, rgba(198, 236, 255, 0.78) 0 0.14%, transparent 0.52%),
-    radial-gradient(circle at 24% 20%, rgba(181, 226, 255, 0.66) 0 0.13%, transparent 0.47%),
-    radial-gradient(circle at 42% 10%, rgba(212, 241, 255, 0.84) 0 0.12%, transparent 0.44%),
-    radial-gradient(circle at 58% 24%, rgba(183, 230, 255, 0.72) 0 0.12%, transparent 0.46%),
-    radial-gradient(circle at 74% 16%, rgba(198, 236, 255, 0.78) 0 0.12%, transparent 0.46%),
-    radial-gradient(circle at 90% 12%, rgba(175, 222, 255, 0.64) 0 0.14%, transparent 0.5%),
-    radial-gradient(circle at 14% 36%, rgba(172, 221, 255, 0.62) 0 0.11%, transparent 0.45%),
-    radial-gradient(circle at 36% 40%, rgba(206, 238, 255, 0.76) 0 0.13%, transparent 0.48%),
-    radial-gradient(circle at 68% 36%, rgba(176, 225, 255, 0.66) 0 0.12%, transparent 0.46%),
-    radial-gradient(circle at 84% 42%, rgba(206, 238, 255, 0.74) 0 0.12%, transparent 0.46%),
-    radial-gradient(56% 20% at 48% 66%, rgba(23, 86, 194, 0.3), transparent 72%);
-  filter: blur(0.4px);
-  animation: hero-data-rush 12s ease-in-out infinite;
+    radial-gradient(circle at 8% 14%, rgba(198, 236, 255, 0.76) 0 0.14%, transparent 0.52%),
+    radial-gradient(circle at 24% 20%, rgba(181, 226, 255, 0.58) 0 0.13%, transparent 0.47%),
+    radial-gradient(circle at 42% 10%, rgba(212, 241, 255, 0.82) 0 0.12%, transparent 0.44%),
+    radial-gradient(circle at 58% 24%, rgba(183, 230, 255, 0.68) 0 0.12%, transparent 0.46%),
+    radial-gradient(circle at 74% 16%, rgba(198, 236, 255, 0.72) 0 0.12%, transparent 0.46%),
+    radial-gradient(circle at 90% 12%, rgba(175, 222, 255, 0.58) 0 0.14%, transparent 0.5%),
+    radial-gradient(circle at 14% 36%, rgba(172, 221, 255, 0.52) 0 0.11%, transparent 0.45%),
+    radial-gradient(circle at 36% 40%, rgba(206, 238, 255, 0.72) 0 0.13%, transparent 0.48%),
+    radial-gradient(circle at 68% 36%, rgba(176, 225, 255, 0.62) 0 0.12%, transparent 0.46%),
+    radial-gradient(circle at 84% 42%, rgba(206, 238, 255, 0.7) 0 0.12%, transparent 0.46%),
+    radial-gradient(56% 20% at 48% 66%, rgba(23, 86, 194, 0.28), transparent 72%),
+    linear-gradient(105deg, transparent 0 14%, rgba(74, 161, 255, 0.07) 16%, transparent 19% 35%, rgba(88, 178, 255, 0.09) 38%, transparent 41% 61%, rgba(71, 157, 255, 0.07) 64%, transparent 67% 100%);
+  filter: blur(0.45px);
+  animation: hero-data-rush 12s ease-in-out infinite, hero-trail-drift 16s ease-in-out infinite;
 }
 
 .hero::after {
@@ -41,13 +42,15 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.88;
   mix-blend-mode: screen;
   background:
     radial-gradient(circle at 35% 52%, rgba(178, 236, 255, 0.82) 0 1.25%, rgba(92, 173, 255, 0.5) 3.1%, rgba(37, 111, 216, 0.16) 8%, transparent 15%),
     radial-gradient(circle at 100% 52%, rgba(190, 239, 255, 0.74) 0 1.2%, rgba(80, 166, 255, 0.42) 3.3%, rgba(36, 110, 216, 0.12) 8.5%, transparent 19%),
-    linear-gradient(180deg, transparent 52.1%, rgba(160, 226, 255, 0.9) 52.9%, rgba(98, 187, 255, 0.48) 53.5%, transparent 54.2%),
-    linear-gradient(180deg, transparent 54%, rgba(40, 114, 236, 0.12) 60%, rgba(7, 26, 74, 0.2) 76%, transparent 100%);
+    radial-gradient(circle at 0% 58%, rgba(114, 197, 255, 0.72) 0 0.8%, rgba(57, 145, 242, 0.35) 2.8%, rgba(21, 78, 199, 0.08) 7.4%, transparent 16%),
+    linear-gradient(180deg, transparent 52.1%, rgba(160, 226, 255, 0.92) 52.9%, rgba(98, 187, 255, 0.52) 53.5%, transparent 54.2%),
+    linear-gradient(180deg, transparent 54%, rgba(40, 114, 236, 0.14) 60%, rgba(7, 26, 74, 0.22) 76%, transparent 100%),
+    linear-gradient(92deg, transparent 0 24%, rgba(66, 160, 255, 0.08) 27%, transparent 31% 52%, rgba(75, 174, 255, 0.12) 56%, transparent 60% 100%);
   background-size: auto, auto, 100% 100%, 100% 100%;
   animation: hero-grid-pulse 6s ease-in-out infinite;
 }
@@ -219,8 +222,9 @@
   border: 1px solid rgba(177, 236, 255, 0.34);
   border-radius: 34px;
   background:
-    linear-gradient(160deg, rgba(122, 216, 255, 0.24), rgba(10, 35, 72, 0.82) 42%, rgba(6, 15, 31, 0.93) 100%),
-    repeating-linear-gradient(90deg, rgba(181, 238, 255, 0.08) 0 1px, transparent 1px 30px);
+    linear-gradient(160deg, rgba(122, 216, 255, 0.18), rgba(10, 35, 72, 0.84) 42%, rgba(6, 15, 31, 0.94) 100%),
+    repeating-linear-gradient(90deg, rgba(181, 238, 255, 0.06) 0 1px, transparent 1px 30px),
+    linear-gradient(180deg, rgba(29, 118, 255, 0.1), transparent 18%, rgba(11, 42, 90, 0.2) 58%, transparent 100%);
   box-shadow:
     0 40px 90px rgba(0, 0, 0, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -466,6 +470,17 @@
 
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes hero-trail-drift {
+  0%,
+  100% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: scale(1.11) translate3d(1.2%, -0.7%, 0);
   }
 }
 
