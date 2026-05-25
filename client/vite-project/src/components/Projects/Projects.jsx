@@ -77,6 +77,11 @@ const Projects = () => {
     void trackVisit(ref, page);
   };
 
+  const handleProjectView = (project) => {
+    const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
+    void trackVisit(ref, `/projects/${project.slug}/view`);
+  };
+
   return (
     <section className="projects" id="projects">
       <div className="projects-container">
@@ -159,7 +164,10 @@ const Projects = () => {
                   <Link
                     to={`/projects/${project.slug}`}
                     className="project-link project-link-case-study"
-                    onClick={() => handleProjectClick(project, 'case-study')}
+                    onClick={() => {
+                      handleProjectClick(project, 'case-study');
+                      handleProjectView(project);
+                    }}
                   >
                     Case Study <FaArrowRight />
                   </Link>

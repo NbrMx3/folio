@@ -7,6 +7,7 @@ import Testimonials from '../components/Testimonials/Testimonials';
 import Writing from '../components/Writing/Writing';
 import Contact from '../components/Contact/Contact';
 import Footer from '../components/Footer/Footer';
+import Seo from '../components/Seo/Seo';
 import { trackVisit } from '../utils/api';
 import './Portfolio.css';
 
@@ -62,6 +63,20 @@ const Portfolio = () => {
 
   return (
     <>
+      <Seo
+        title="Full-Stack Developer Portfolio"
+        description="CyberDev portfolio featuring motion-rich project showcases, case studies, writing, and direct contact options."
+        url={window.location.href}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Person',
+          name: 'CyberDev',
+          jobTitle: 'Full-Stack Developer',
+          url: window.location.href,
+          image: '/dk_portfolio_logo_light.svg',
+          sameAs: ['https://github.com', 'https://linkedin.com', 'https://x.com'],
+        }}
+      />
       <div
         className={`portfolio-welcome-toast ${showWelcomeToast ? 'is-visible' : ''}`}
         role="status"

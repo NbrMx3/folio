@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
-import { sendContactMessage } from '../../utils/api';
+import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle, FaDownload } from 'react-icons/fa';
+import { sendContactMessage, trackConversion } from '../../utils/api';
 import './Contact.css';
 
 const Contact = () => {
@@ -32,6 +32,28 @@ const Contact = () => {
       icon: <FaMapMarkerAlt />,
       label: 'Location',
       value: 'Eldoret, Kenya',
+    },
+  ];
+
+  const quickActions = [
+    {
+      label: 'Resume',
+      href: '/resume.pdf',
+      track: 'resume',
+      icon: <FaDownload />,
+      download: true,
+    },
+    {
+      label: 'Email',
+      href: 'mailto:kipkemoi386@gmail.com',
+      track: 'email',
+      icon: <FaEnvelope />,
+    },
+    {
+      label: 'WhatsApp',
+      href: 'https://wa.me/254112267013',
+      track: 'whatsapp',
+      icon: <FaWhatsapp />,
     },
   ];
 
@@ -106,6 +128,11 @@ const Contact = () => {
     }
   };
 
+  const handleQuickAction = (action) => {
+    const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
+    void trackConversion(ref, 'cta', action);
+  };
+
   return (
     <section className="contact" id="contact">
       <div className="contact-container">
@@ -115,6 +142,22 @@ const Contact = () => {
         <p className="contact-subtitle">
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
+        <div className="contact-quick-actions">
+          {quickActions.map((action) => (
+            <a
+              key={action.label}
+              href={action.href}
+              className="contact-quick-action"
+              download={action.download || undefined}
+              onClick={() => handleQuickAction(action.track)}
+              target={action.download ? undefined : '_blank'}
+              rel={action.download ? undefined : 'noreferrer'}
+            >
+              {action.icon}
+              <span>{action.label}</span>
+            </a>
+          ))}
+        </div>
         <div className="contact-status-bar" aria-live="polite">
           {status === 'success' && (
             <div className="contact-status success">

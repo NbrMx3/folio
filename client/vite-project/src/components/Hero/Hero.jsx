@@ -5,9 +5,12 @@ import {
   FaTwitter,
   FaFacebook,
   FaInstagram,
+  FaEnvelope,
+  FaDownload,
+  FaWhatsapp,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
-import { getProfile } from '../../utils/api';
+import { getProfile, trackConversion } from '../../utils/api';
 import './Hero.css';
 
 const Hero = () => {
@@ -103,6 +106,33 @@ const Hero = () => {
     { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok /> },
   ];
 
+  const quickActions = [
+    {
+      label: 'Download Resume',
+      href: '/resume.pdf',
+      icon: <FaDownload />,
+      download: true,
+      track: 'resume',
+    },
+    {
+      label: 'Email',
+      href: 'mailto:kipkemoi386@gmail.com',
+      icon: <FaEnvelope />,
+      track: 'email',
+    },
+    {
+      label: 'WhatsApp',
+      href: 'https://wa.me/254112267013',
+      icon: <FaWhatsapp />,
+      track: 'whatsapp',
+    },
+  ];
+
+  const handleQuickAction = (action) => {
+    const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
+    void trackConversion(ref, 'cta', action);
+  };
+
   return (
     <section className="hero" id="home" ref={heroRef}>
       <div className="hero-container">
@@ -119,7 +149,9 @@ const Hero = () => {
             Specializing in modern web development and cyber systems
           </p>
           <div className="hero-actions">
-            <a href="#contact" className="btn-primary">Let's Connect</a>
+            <a href="#contact" className="btn-primary" onClick={() => handleQuickAction('contact')}>
+              Let's Connect
+            </a>
             <div className="hero-socials">
               {socialLinks.map((social) => (
                 <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
@@ -127,6 +159,22 @@ const Hero = () => {
                 </a>
               ))}
             </div>
+          </div>
+          <div className="hero-quick-actions">
+            {quickActions.map((action) => (
+              <a
+                key={action.label}
+                href={action.href}
+                className="hero-quick-action"
+                download={action.download || undefined}
+                onClick={() => handleQuickAction(action.track)}
+                target={action.download ? undefined : '_blank'}
+                rel={action.download ? undefined : 'noreferrer'}
+              >
+                {action.icon}
+                <span>{action.label}</span>
+              </a>
+            ))}
           </div>
           <div className="hero-metrics">
             <article className="hero-metric">

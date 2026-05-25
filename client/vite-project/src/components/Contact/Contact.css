@@ -17,6 +17,31 @@
   font-size: 1rem;
 }
 
+.contact-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+}
+
+.contact-quick-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(152, 225, 255, 0.18);
+  background: rgba(6, 22, 46, 0.48);
+  color: var(--text-strong);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.contact-quick-action:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent);
+}
+
 .contact-status-bar {
   margin: 0 0 1rem;
   min-height: 3rem;
@@ -208,6 +233,9 @@
 
   .contact .btn-primary {
     width: 100%;
+    justify-content: center;
+  }
+  .contact-quick-actions {
     justify-content: center;
   }
   .contact-grid {

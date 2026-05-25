@@ -414,6 +414,10 @@ export async function trackVisit(ref = 'direct', page = '/') {
   }
 }
 
+export async function trackConversion(ref = 'direct', category = 'cta', action = 'click') {
+  return trackVisit(ref, `/${category}/${action}`);
+}
+
 // Gallery
 export async function getGallery() {
   const res = await fetch(`${API_BASE}/gallery`);

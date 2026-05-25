@@ -170,6 +170,13 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
       const cleanType = linkType.split('&')[0] || 'project';
       return `Clicked project link (${cleanType})`;
     }
+    if (pageValue.startsWith('/projects/') && pageValue.endsWith('/view')) {
+      return 'Viewed project case study';
+    }
+    if (pageValue.startsWith('/cta/')) {
+      const action = pageValue.split('/cta/')[1] || 'action';
+      return `Clicked contact action (${action})`;
+    }
     if (pageValue && pageValue !== '/') {
       return `Visited ${pageValue}`;
     }

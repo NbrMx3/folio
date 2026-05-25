@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { FaArrowLeft, FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
 import { getProjectsList, trackVisit } from '../../utils/api';
 import { findProjectBySlug } from '../../data/projectShowcase';
+import Seo from '../../components/Seo/Seo';
 import './ProjectCaseStudy.css';
 
 const ProjectCaseStudy = () => {
@@ -42,12 +43,22 @@ const ProjectCaseStudy = () => {
   useEffect(() => {
     if (!project) return;
     const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
-    void trackVisit(ref, window.location.pathname);
+    void trackVisit(ref, `${window.location.pathname}/view`);
   }, [project]);
+
+  const handleCaseStudyAction = (action) => {
+    const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
+    void trackVisit(ref, `/projects/${projectSlug}?link=${action}`);
+  };
 
   if (error) {
     return (
       <main className="case-study case-study-error">
+        <Seo
+          title="Project Case Study"
+          description="A detailed project case study from the portfolio."
+          url={window.location.href}
+        />
         <div className="case-study-shell">
           <Link className="case-study-back" to="/#projects">
             <FaArrowLeft /> Back to projects
@@ -64,6 +75,11 @@ const ProjectCaseStudy = () => {
   if (!project) {
     return (
       <main className="case-study case-study-loading">
+        <Seo
+          title="Project Case Study"
+          description="Loading portfolio project details."
+          url={window.location.href}
+        />
         <div className="case-study-shell">
           <div className="case-study-panel">
             <p>Loading project details...</p>
@@ -75,6 +91,26 @@ const ProjectCaseStudy = () => {
 
   return (
     <main className="case-study">
+      <Seo
+        title={`${project.title} Case Study`}
+        description={project.summary || project.description}
+        url={window.location.href}
+        image="/dk_portfolio_logo_light.svg"
+        type="article"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: project.title,
+          description: project.summary || project.description,
+          url: window.location.href,
+          creator: {
+            '@type': 'Person',
+            name: 'CyberDev',
+          },
+          about: project.type,
+          keywords: (project.tags || []).join(', '),
+        }}
+      />
       <div className="case-study-shell">
         <Link className="case-study-back" to="/#projects">
           <FaArrowLeft /> Back to projects
@@ -92,12 +128,12 @@ const ProjectCaseStudy = () => {
             </div>
             <div className="case-study-links">
               {project.live && project.live !== '#' && (
-                <a href={project.live} target="_blank" rel="noreferrer">
+                <a href={project.live} target="_blank" rel="noreferrer" onClick={() => handleCaseStudyAction('live')}>
                   <FaExternalLinkAlt /> Live Demo
                 </a>
               )}
               {project.github && project.github !== '#' && (
-                <a href={project.github} target="_blank" rel="noreferrer">
+                <a href={project.github} target="_blank" rel="noreferrer" onClick={() => handleCaseStudyAction('source')}>
                   <FaGithub /> Source
                 </a>
               )}
