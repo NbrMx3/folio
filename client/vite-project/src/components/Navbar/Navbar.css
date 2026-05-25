@@ -179,8 +179,17 @@
 }
 
 @media (max-width: 768px) {
+  .navbar-container {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
   .menu-toggle {
     display: block;
+  }
+
+  .nav-right {
+    margin-left: auto;
   }
 
   .nav-links {
@@ -199,12 +208,26 @@
     box-shadow: -24px 0 60px rgba(2, 10, 26, 0.48);
   }
 
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 0.35rem 0;
+  }
+
   .nav-links.open {
     right: 0;
   }
 }
 
 @media (max-width: 420px) {
+  .navbar-container {
+    gap: 0.45rem;
+  }
+
   .logo {
     letter-spacing: 0.05em;
   }
@@ -222,5 +245,9 @@
 
   .menu-toggle {
     font-size: 1.45rem;
+  }
+
+  .nav-right {
+    gap: 0.35rem;
   }
 }

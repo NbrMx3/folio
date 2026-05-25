@@ -220,6 +220,12 @@
   flex-wrap: wrap;
 }
 
+.project-links a {
+  min-width: 0;
+  flex: 1 1 140px;
+  justify-content: center;
+}
+
 .project-link-case-study {
   color: var(--text-strong);
   border-color: rgba(115, 230, 255, 0.2);
@@ -284,6 +290,10 @@
     flex-direction: column;
   }
 
+  .projects-toolbar-count {
+    white-space: normal;
+  }
+
   .projects-toolbar-group {
     width: 100%;
     align-items: stretch;
@@ -296,6 +306,20 @@
 
   .projects-grid {
     grid-template-columns: 1fr;
+  }
+
+  .project-card-top,
+  .project-card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .project-links {
+    gap: 0.75rem;
+  }
+
+  .project-links a {
+    width: 100%;
   }
 
   .project-card {

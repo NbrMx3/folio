@@ -485,6 +485,11 @@
     font-size: 2rem;
   }
 
+  .gallery-group-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .gallery-group-title {
     font-size: 1.3rem;
   }
@@ -517,6 +522,10 @@
     padding: 60px 0 30px;
   }
 
+  .gallery-container {
+    padding: 0 12px;
+  }
+
   .gallery-title {
     font-size: 1.5rem;
   }
@@ -531,13 +540,29 @@
     gap: 10px;
   }
 
+  .gallery-card-actions,
+  .gallery-modal-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .gallery-card-action,
+  .gallery-download-button,
+  .gallery-save-button {
+    width: 100%;
+  }
+
   .gallery-modal-content {
-    padding: 0 30px;
+    padding: 0 18px;
   }
 
   .gallery-nav-button {
     width: 34px;
     height: 34px;
     font-size: 1.5rem;
+  }
+
+  .gallery-modal-close {
+    top: -30px;
+    right: 0;
   }
 }

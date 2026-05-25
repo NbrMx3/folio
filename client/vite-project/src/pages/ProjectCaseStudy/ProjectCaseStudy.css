@@ -249,3 +249,26 @@
     flex-direction: column;
   }
 }
+
+@media (max-width: 640px) {
+  .case-study {
+    padding-top: 5rem;
+  }
+
+  .case-study-hero {
+    padding: 1rem;
+  }
+
+  .case-study-copy h1 {
+    font-size: clamp(1.9rem, 12vw, 3rem);
+  }
+
+  .case-study-links a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .case-study-shot-frame {
+    min-height: 180px;
+  }
+}
