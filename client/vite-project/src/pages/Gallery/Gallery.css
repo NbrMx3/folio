@@ -270,6 +270,13 @@
   transition: all 0.2s ease;
 }
 
+.gallery-card-action--icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1.05rem;
+}
+
 .gallery-card-action:hover {
   background: rgba(0, 212, 255, 0.3);
 }
@@ -402,6 +409,13 @@
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.gallery-download-button--icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.2rem;
 }
 
 .gallery-download-button:hover {

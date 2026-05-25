@@ -282,10 +282,12 @@ const Gallery = () => {
                         <div className="gallery-card-actions">
                           <button
                             type="button"
-                            className="gallery-card-action"
+                            className="gallery-card-action gallery-card-action--icon"
                             onClick={() => handleDownload(item)}
+                            aria-label="Download"
+                            title="Download"
                           >
-                            Download
+                            <span aria-hidden="true">&darr;</span>
                           </button>
                           <button
                             type="button"
@@ -341,10 +343,12 @@ const Gallery = () => {
                         <div className="gallery-card-actions">
                           <button
                             type="button"
-                            className="gallery-card-action"
+                            className="gallery-card-action gallery-card-action--icon"
                             onClick={() => handleDownload(item)}
+                            aria-label="Download"
+                            title="Download"
                           >
-                            Download
+                            <span aria-hidden="true">&darr;</span>
                           </button>
                           <button
                             type="button"
@@ -422,10 +426,12 @@ const Gallery = () => {
                         <div className="gallery-card-actions">
                           <button
                             type="button"
-                            className="gallery-card-action"
+                            className="gallery-card-action gallery-card-action--icon"
                             onClick={() => handleDownload(item)}
+                            aria-label="Download"
+                            title="Download"
                           >
-                            Download
+                            <span aria-hidden="true">&darr;</span>
                           </button>
                           <button
                             type="button"
@@ -479,10 +485,12 @@ const Gallery = () => {
             <div className="gallery-modal-toolbar">
               <button
                 type="button"
-                className="gallery-download-button"
+                className="gallery-download-button gallery-download-button--icon"
                 onClick={() => handleDownload(selectedItem)}
+                aria-label="Download"
+                title="Download"
               >
-                Download
+                <span aria-hidden="true">&darr;</span>
               </button>
               <button
                 type="button"
