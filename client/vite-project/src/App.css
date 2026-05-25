@@ -3,10 +3,10 @@
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(78% 92% at 12% 72%, rgba(9, 43, 132, 0.42) 0%, rgba(3, 12, 33, 0.18) 44%, transparent 74%),
-    radial-gradient(64% 84% at 88% 60%, rgba(14, 82, 196, 0.28) 0%, rgba(4, 19, 54, 0.16) 50%, transparent 82%),
+    radial-gradient(78% 92% at 12% 72%, var(--scene-haze) 0%, rgba(3, 12, 33, 0.18) 44%, transparent 74%),
+    radial-gradient(64% 84% at 88% 60%, var(--scene-wave) 0%, rgba(4, 19, 54, 0.16) 50%, transparent 82%),
     radial-gradient(50% 32% at 32% 30%, rgba(19, 92, 220, 0.12) 0%, transparent 72%),
-    linear-gradient(180deg, #01040c 0%, #01060f 38%, #010811 100%);
+    linear-gradient(180deg, var(--scene-ink) 0%, #01060f 38%, var(--scene-deep) 100%);
 }
 
 .app::before {
@@ -29,10 +29,10 @@
     radial-gradient(circle at 64% 44%, rgba(203, 237, 255, 0.66) 0 0.1%, transparent 0.36%),
     radial-gradient(circle at 78% 40%, rgba(170, 222, 255, 0.58) 0 0.08%, transparent 0.34%),
     radial-gradient(circle at 92% 34%, rgba(194, 234, 255, 0.72) 0 0.1%, transparent 0.37%),
-    radial-gradient(40% 22% at 15% 72%, rgba(44, 122, 255, 0.16), transparent 72%),
-    radial-gradient(30% 20% at 48% 66%, rgba(70, 160, 255, 0.12), transparent 70%),
+    radial-gradient(40% 22% at 15% 72%, var(--scene-haze), transparent 72%),
+    radial-gradient(30% 20% at 48% 66%, var(--scene-wave), transparent 70%),
     radial-gradient(28% 18% at 82% 74%, rgba(36, 110, 216, 0.16), transparent 72%),
-    linear-gradient(110deg, transparent 0 13%, rgba(66, 166, 255, 0.08) 15%, transparent 18% 34%, rgba(60, 152, 255, 0.12) 36%, transparent 39% 58%, rgba(53, 146, 255, 0.08) 60%, transparent 63% 100%),
+    linear-gradient(110deg, transparent 0 13%, var(--scene-grid) 15%, transparent 18% 34%, rgba(60, 152, 255, 0.12) 36%, transparent 39% 58%, rgba(53, 146, 255, 0.08) 60%, transparent 63% 100%),
     linear-gradient(80deg, transparent 0 21%, rgba(91, 186, 255, 0.06) 23%, transparent 26% 43%, rgba(80, 176, 255, 0.1) 46%, transparent 49% 70%, rgba(82, 181, 255, 0.06) 73%, transparent 76% 100%);
   filter: blur(0.35px);
   animation: starfield-twinkle 9s ease-in-out infinite, drift-streaks 18s ease-in-out infinite;
@@ -47,7 +47,7 @@
   opacity: 0.94;
   mix-blend-mode: screen;
   background:
-    radial-gradient(circle at 16% 67%, rgba(91, 188, 255, 0.88) 0 0.6%, rgba(46, 124, 236, 0.48) 1.9%, rgba(19, 77, 189, 0.16) 5.5%, transparent 13%),
+    radial-gradient(circle at 16% 67%, var(--scene-streak) 0 0.6%, rgba(46, 124, 236, 0.48) 1.9%, rgba(19, 77, 189, 0.16) 5.5%, transparent 13%),
     radial-gradient(circle at 26% 55%, rgba(170, 239, 255, 0.9) 0 0.7%, rgba(85, 174, 255, 0.55) 2.1%, rgba(39, 115, 221, 0.16) 6%, transparent 14%),
     radial-gradient(circle at 40% 59%, rgba(126, 220, 255, 0.84) 0 0.55%, rgba(65, 154, 246, 0.42) 1.7%, rgba(26, 92, 204, 0.14) 5.2%, transparent 12%),
     radial-gradient(circle at 54% 61%, rgba(184, 244, 255, 0.86) 0 0.65%, rgba(75, 176, 255, 0.54) 1.8%, rgba(34, 115, 226, 0.12) 5.4%, transparent 13%),

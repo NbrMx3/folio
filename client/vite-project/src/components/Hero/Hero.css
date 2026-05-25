@@ -12,6 +12,11 @@
     linear-gradient(180deg, rgba(1, 5, 13, 0.12), rgba(1, 4, 11, 0.38));
 }
 
+.hero::before,
+.hero::after {
+  will-change: transform;
+}
+
 .hero::before {
   content: '';
   position: absolute;
@@ -211,6 +216,8 @@
   position: relative;
   min-height: clamp(460px, 60vw, 560px);
   perspective: 1600px;
+  transform: translate3d(var(--hero-parallax-x, 0px), var(--hero-parallax-y, 0px), 0);
+  transition: transform 180ms ease-out;
   animation: fade-rise 1s ease both;
   animation-delay: 0.1s;
 }
@@ -229,7 +236,7 @@
     0 40px 90px rgba(0, 0, 0, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(24px);
-  transform: rotateY(-14deg) rotateX(5deg);
+  transform: rotateY(-14deg) rotateX(5deg) translate3d(0, calc(var(--hero-scroll-shift, 0px) * -0.3), 0);
 }
 
 .hero-visual::after {
@@ -244,6 +251,7 @@
   filter: blur(20px);
   opacity: 0.94;
   animation: pulse-glow 4.8s ease-in-out infinite;
+  transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * -0.15), 0);
 }
 
 .hero-code-card,
@@ -265,7 +273,7 @@
     repeating-linear-gradient(90deg, rgba(170, 236, 255, 0.05) 0 1px, transparent 1px 26px);
   box-shadow: 0 24px 70px rgba(2, 7, 19, 0.45);
   backdrop-filter: blur(22px);
-  transform: rotate(-8deg) translateZ(40px);
+  transform: rotate(-8deg) translate3d(0, calc(var(--hero-scroll-shift, 0px) * -0.18), 40px);
   animation: float-code-card 7s ease-in-out infinite;
 }
 
@@ -359,7 +367,7 @@
   background: rgba(6, 21, 41, 0.84);
   box-shadow: 0 20px 60px rgba(2, 7, 19, 0.42);
   backdrop-filter: blur(20px);
-  transform: translateZ(60px);
+  transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * -0.12), 60px);
   animation: float-status-card 8s ease-in-out infinite;
 }
 
@@ -398,7 +406,7 @@
   background: linear-gradient(180deg, rgba(4, 16, 30, 0.8), rgba(7, 27, 55, 0.74));
   box-shadow: 0 28px 75px rgba(2, 7, 19, 0.52);
   backdrop-filter: blur(22px);
-  transform: rotate(7deg) translateZ(30px);
+  transform: rotate(7deg) translate3d(0, calc(var(--hero-scroll-shift, 0px) * -0.16), 30px);
   animation: float-image-card 9s ease-in-out infinite;
 }
 
@@ -648,5 +656,14 @@
   .hero-metric {
     padding: 0.82rem 0.88rem;
     border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .hero * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }

@@ -123,6 +123,27 @@
   box-shadow: 0 8px 24px rgba(17, 128, 194, 0.24);
 }
 
+.visual-mode-toggle {
+  background: var(--card-soft);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: color 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.visual-mode-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent-strong);
+  background: var(--accent-weak);
+  box-shadow: 0 8px 24px rgba(17, 128, 194, 0.24);
+}
+
 .admin-icon {
   background: var(--card-soft);
   border: 1px solid transparent;
@@ -189,9 +210,14 @@
   }
 
   .theme-toggle,
+  .visual-mode-toggle,
   .admin-icon {
     padding: 0.34rem;
     font-size: 0.9rem;
+  }
+
+  .visual-mode-toggle span {
+    display: none;
   }
 
   .menu-toggle {

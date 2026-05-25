@@ -22,6 +22,50 @@
   transform: translateY(0);
 }
 
+.reveal-section {
+  opacity: 0;
+  transform: translateY(24px) scale(0.985);
+  transition: opacity 700ms ease, transform 700ms ease;
+  will-change: opacity, transform;
+}
+
+.reveal-section.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.reveal-hero {
+  transition-delay: 80ms;
+}
+
+.reveal-section:nth-of-type(3) {
+  transition-delay: 90ms;
+}
+
+.reveal-section:nth-of-type(4) {
+  transition-delay: 120ms;
+}
+
+.reveal-section:nth-of-type(5) {
+  transition-delay: 150ms;
+}
+
+.reveal-section:nth-of-type(6) {
+  transition-delay: 180ms;
+}
+
+.reveal-section:nth-of-type(7) {
+  transition-delay: 210ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 @media (max-width: 640px) {
   .portfolio-welcome-toast {
     right: max(0.75rem, env(safe-area-inset-right));

@@ -10,8 +10,18 @@ const applyToDOM = (mode) => {
   document.documentElement.setAttribute('data-theme', effective);
 };
 
+const resolveVisualMode = (mode) => {
+  const allowed = ['midnight', 'aurora', 'eclipse'];
+  return allowed.includes(mode) ? mode : 'midnight';
+};
+
+const applyVisualModeToDOM = (mode) => {
+  document.documentElement.setAttribute('data-visual-mode', resolveVisualMode(mode));
+};
+
 export const useThemeStore = create((set, get) => ({
   theme: localStorage.getItem('theme') || 'default',
+  visualMode: localStorage.getItem('visualMode') || 'midnight',
 
   cycleTheme: () => {
     const current = get().theme;
@@ -22,7 +32,16 @@ export const useThemeStore = create((set, get) => ({
     set({ theme: next });
   },
 
+  cycleVisualMode: () => {
+    const current = resolveVisualMode(get().visualMode);
+    const next = current === 'midnight' ? 'aurora' : current === 'aurora' ? 'eclipse' : 'midnight';
+    localStorage.setItem('visualMode', next);
+    applyVisualModeToDOM(next);
+    set({ visualMode: next });
+  },
+
   applyTheme: () => {
     applyToDOM(get().theme);
+    applyVisualModeToDOM(get().visualMode);
   },
 }));

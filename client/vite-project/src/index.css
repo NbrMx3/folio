@@ -29,6 +29,13 @@
   --container-max: 1200px;
   --page-gutter: clamp(0.9rem, 2.8vw, 2rem);
   --section-pad-y: clamp(3.4rem, 8vw, 6rem);
+  --scene-ink: #01040c;
+  --scene-deep: #010811;
+  --scene-haze: rgba(9, 43, 132, 0.42);
+  --scene-wave: rgba(14, 82, 196, 0.28);
+  --scene-spark: rgba(170, 239, 255, 0.88);
+  --scene-grid: rgba(66, 166, 255, 0.08);
+  --scene-streak: rgba(91, 188, 255, 0.58);
   color-scheme: dark;
 }
 
@@ -52,7 +59,38 @@
   --shadow-accent: 0 12px 32px rgba(14, 113, 173, 0.16);
   --shadow-soft: 0 14px 30px rgba(18, 52, 86, 0.14);
   --shadow-strong: 0 26px 60px rgba(12, 40, 74, 0.2);
+  --scene-ink: #f0f6ff;
+  --scene-deep: #dbeafe;
+  --scene-haze: rgba(47, 136, 213, 0.16);
+  --scene-wave: rgba(14, 138, 199, 0.16);
+  --scene-spark: rgba(14, 138, 199, 0.48);
+  --scene-grid: rgba(14, 138, 199, 0.06);
+  --scene-streak: rgba(14, 138, 199, 0.26);
   color-scheme: light;
+}
+
+[data-visual-mode="midnight"] {
+  --scene-haze: rgba(9, 43, 132, 0.42);
+  --scene-wave: rgba(14, 82, 196, 0.28);
+  --scene-spark: rgba(170, 239, 255, 0.88);
+  --scene-grid: rgba(66, 166, 255, 0.08);
+  --scene-streak: rgba(91, 188, 255, 0.58);
+}
+
+[data-visual-mode="aurora"] {
+  --scene-haze: rgba(26, 113, 180, 0.34);
+  --scene-wave: rgba(70, 177, 255, 0.24);
+  --scene-spark: rgba(178, 244, 255, 0.92);
+  --scene-grid: rgba(102, 219, 255, 0.1);
+  --scene-streak: rgba(118, 214, 255, 0.68);
+}
+
+[data-visual-mode="eclipse"] {
+  --scene-haze: rgba(58, 63, 96, 0.34);
+  --scene-wave: rgba(108, 118, 161, 0.18);
+  --scene-spark: rgba(233, 238, 255, 0.7);
+  --scene-grid: rgba(171, 178, 216, 0.09);
+  --scene-streak: rgba(232, 236, 255, 0.42);
 }
 
 html {

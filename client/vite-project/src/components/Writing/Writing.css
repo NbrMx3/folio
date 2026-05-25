@@ -1,0 +1,104 @@
+.writing {
+  padding: var(--section-pad-y) var(--page-gutter);
+  background:
+    linear-gradient(180deg, rgba(2, 11, 25, 0.56), rgba(2, 9, 20, 0.72)),
+    radial-gradient(circle at 12% 16%, rgba(115, 230, 255, 0.14), transparent 28%);
+}
+
+.writing-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.writing-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+}
+
+.writing-header p {
+  max-width: 28rem;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.writing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.writing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.35rem;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(8, 34, 73, 0.46), rgba(5, 20, 42, 0.66)),
+    var(--card);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
+}
+
+.writing-card.featured {
+  border-color: var(--accent-strong);
+  box-shadow: var(--shadow-strong);
+}
+
+.writing-card-top,
+.writing-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.writing-tag,
+.writing-meta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(152, 225, 255, 0.16);
+  background: rgba(6, 22, 46, 0.52);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.writing-card h3 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 1.2rem;
+}
+
+.writing-card p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.writing-card-bottom {
+  margin-top: auto;
+  color: var(--text-muted-2);
+  font-size: 0.86rem;
+}
+
+.writing-card-bottom a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (max-width: 960px) {
+  .writing-header,
+  .writing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   FaGithub,
   FaLinkedin,
@@ -11,6 +11,7 @@ import { getProfile } from '../../utils/api';
 import './Hero.css';
 
 const Hero = () => {
+  const heroRef = useRef(null);
   const [profile, setProfile] = useState({
     name: '',
     title: '',
@@ -48,6 +49,48 @@ const Hero = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const element = heroRef.current;
+    if (!element) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      element.style.removeProperty('--hero-parallax-x');
+      element.style.removeProperty('--hero-parallax-y');
+      element.style.removeProperty('--hero-scroll-shift');
+      return undefined;
+    }
+
+    const updateFromPointer = (event) => {
+      const rect = element.getBoundingClientRect();
+      const offsetX = ((event.clientX - rect.left) / rect.width - 0.5) * 18;
+      const offsetY = ((event.clientY - rect.top) / rect.height - 0.5) * 18;
+      element.style.setProperty('--hero-parallax-x', `${offsetX.toFixed(2)}px`);
+      element.style.setProperty('--hero-parallax-y', `${offsetY.toFixed(2)}px`);
+    };
+
+    const resetMotion = () => {
+      element.style.setProperty('--hero-parallax-x', '0px');
+      element.style.setProperty('--hero-parallax-y', '0px');
+    };
+
+    const updateScroll = () => {
+      const offset = Math.min(window.scrollY * 0.03, 18);
+      element.style.setProperty('--hero-scroll-shift', `${offset.toFixed(2)}px`);
+    };
+
+    element.addEventListener('pointermove', updateFromPointer);
+    element.addEventListener('pointerleave', resetMotion);
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    updateScroll();
+
+    return () => {
+      element.removeEventListener('pointermove', updateFromPointer);
+      element.removeEventListener('pointerleave', resetMotion);
+      window.removeEventListener('scroll', updateScroll);
+    };
+  }, []);
+
   const titleWords = (profile.title || 'Full-Stack Developer').trim().split(/\s+/);
   const titleLead = titleWords.length > 1 ? titleWords.slice(0, -1).join(' ') : 'Full-Stack';
   const titleAccent = titleWords.length > 1 ? titleWords[titleWords.length - 1] : titleWords[0];
@@ -61,7 +104,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="hero" id="home">
+    <section className="hero" id="home" ref={heroRef}>
       <div className="hero-container">
         <div className="hero-content">
           <p className="hero-kicker">Code-First Interfaces</p>

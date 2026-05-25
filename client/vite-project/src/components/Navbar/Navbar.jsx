@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
-import { FaUserShield, FaMoon, FaSun, FaDesktop } from 'react-icons/fa';
+import { FaUserShield, FaMoon, FaSun, FaDesktop, FaPalette } from 'react-icons/fa';
 import { useThemeStore } from '../../store/useThemeStore';
 import './Navbar.css';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, cycleTheme, applyTheme } = useThemeStore();
+  const { theme, visualMode, cycleTheme, cycleVisualMode, applyTheme } = useThemeStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,8 +30,9 @@ const Navbar = () => {
 
   const themeIcon = theme === 'default' ? <FaDesktop /> : theme === 'dark' ? <FaMoon /> : <FaSun />;
   const themeLabel = theme === 'default' ? 'System' : theme === 'dark' ? 'Dark' : 'Light';
+  const visualModeLabel = visualMode === 'midnight' ? 'Midnight' : visualMode === 'aurora' ? 'Aurora' : 'Eclipse';
 
-  const links = ['Home', 'Skills', 'Projects', 'Contact'];
+  const links = ['Home', 'Skills', 'Projects', 'Writing', 'Contact'];
 
   return (
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
@@ -59,6 +60,15 @@ const Navbar = () => {
             title={`Theme: ${themeLabel}`}
           >
             {themeIcon}
+          </button>
+          <button
+            className="visual-mode-toggle"
+            onClick={cycleVisualMode}
+            aria-label={`Visual mode: ${visualModeLabel}`}
+            title={`Visual mode: ${visualModeLabel}`}
+          >
+            <FaPalette />
+            <span>{visualModeLabel}</span>
           </button>
           <button
             className="admin-icon"
