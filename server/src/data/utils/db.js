@@ -95,6 +95,7 @@ function normalizeAdminAuth(record = {}) {
 export function getDefaultProfile() {
   return {
     picture: '',
+    resume: '',
     name: 'CyberDev',
     title: 'Full-Stack Developer',
     bio: '',
@@ -141,6 +142,7 @@ export async function initDatabase() {
           CREATE TABLE IF NOT EXISTS profile (
             id SERIAL PRIMARY KEY,
             picture TEXT DEFAULT '',
+            resume TEXT DEFAULT '',
             name TEXT DEFAULT 'CyberDev',
             title TEXT DEFAULT 'Full-Stack Developer',
             bio TEXT DEFAULT '',
@@ -157,6 +159,7 @@ export async function initDatabase() {
 
         // Add columns if they don't exist (for existing databases)
         const profileCols = [
+          'resume',
           'bio',
           'github',
           'linkedin',
@@ -299,6 +302,7 @@ export async function initDatabase() {
           await client.query(`
             INSERT INTO profile (
               picture,
+              resume,
               name,
               title,
               bio,
@@ -310,7 +314,7 @@ export async function initDatabase() {
               tiktok,
               email
             )
-            VALUES ('', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '')
+            VALUES ('', '', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '')
           `);
         }
 
@@ -373,6 +377,7 @@ export async function initDatabase() {
       const db = await readJsonDb();
       const defaultProfile = {
         picture: '',
+        resume: '',
         name: 'CyberDev',
         title: 'Full-Stack Developer',
         bio: '',
@@ -477,7 +482,7 @@ export async function getProfile() {
   if (usingPostgres && pool) {
     try {
       const result = await pool.query(
-        'SELECT picture, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, email FROM profile LIMIT 1'
+        'SELECT picture, resume, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, email FROM profile LIMIT 1'
       );
       return result.rows[0] || getDefaultProfile();
     } catch (error) {
@@ -493,6 +498,7 @@ export async function updateProfile(data) {
   if (usingPostgres && pool) {
     const {
       picture,
+      resume,
       name,
       title,
       bio,
@@ -509,6 +515,7 @@ export async function updateProfile(data) {
     let paramCount = 1;
 
     if (picture !== undefined) { updates.push(`picture = $${paramCount++}`); values.push(picture); }
+    if (resume !== undefined) { updates.push(`resume = $${paramCount++}`); values.push(resume); }
     if (name !== undefined) { updates.push(`name = $${paramCount++}`); values.push(name); }
     if (title !== undefined) { updates.push(`title = $${paramCount++}`); values.push(title); }
     if (bio !== undefined) { updates.push(`bio = $${paramCount++}`); values.push(bio); }
@@ -533,6 +540,7 @@ export async function updateProfile(data) {
   const db = await readJsonDb();
   db.profile = db.profile || {
     picture: '',
+    resume: '',
     name: 'CyberDev',
     title: 'Full-Stack Developer',
     bio: '',

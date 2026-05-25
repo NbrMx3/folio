@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { PassThrough } from 'stream';
 import { verifyToken } from '../routes/middleware/auth.js';
 import { getDefaultProfile, getProfile, updateProfile } from '../utils/db.js';
 
@@ -21,6 +22,33 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage });
+const resumeUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
+
+const uploadResumeBuffer = (buffer) => new Promise((resolve, reject) => {
+  const stream = cloudinary.uploader.upload_stream(
+    {
+      folder: 'folio-profile',
+      resource_type: 'raw',
+      public_id: 'resume',
+      overwrite: true,
+      invalidate: true,
+    },
+    (error, result) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(result);
+    }
+  );
+
+  const passthrough = new PassThrough();
+  passthrough.end(buffer);
+  passthrough.pipe(stream);
+});
 
 const router = express.Router();
 
@@ -49,6 +77,29 @@ router.post('/upload', verifyToken, upload.single('picture'), async (req, res) =
   }
 });
 
+// POST /api/profile/resume — admin only
+router.post('/resume', verifyToken, resumeUpload.single('resume'), async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: 'No resume uploaded' });
+    }
+
+    const mimeType = String(req.file.mimetype || '').toLowerCase();
+    const fileName = String(req.file.originalname || '').toLowerCase();
+    if (mimeType !== 'application/pdf' && !fileName.endsWith('.pdf')) {
+      return res.status(400).json({ error: 'Resume must be a PDF file' });
+    }
+
+    const result = await uploadResumeBuffer(req.file.buffer);
+    const resumeUrl = result.secure_url || result.url;
+    await updateProfile({ resume: resumeUrl });
+    res.json({ resume: resumeUrl });
+  } catch (error) {
+    console.error('Resume upload failed:', error);
+    res.status(500).json({ error: 'Resume upload failed' });
+  }
+});
+
 // PUT /api/profile — admin only
 router.put('/', verifyToken, async (req, res) => {
   try {
@@ -62,6 +113,7 @@ router.put('/', verifyToken, async (req, res) => {
       facebook,
       instagram,
       tiktok,
+      resume,
       email,
     } = req.body;
     const updated = await updateProfile({
@@ -74,6 +126,7 @@ router.put('/', verifyToken, async (req, res) => {
       facebook,
       instagram,
       tiktok,
+      resume,
       email,
     });
     res.json(updated);

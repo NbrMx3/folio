@@ -104,7 +104,7 @@ const Hero = () => {
   const quickActions = [
     {
       label: 'Download Resume',
-      href: '/resume.pdf',
+      href: profile.resume || '/resume.pdf',
       icon: <FaDownload />,
       download: true,
       track: 'resume',

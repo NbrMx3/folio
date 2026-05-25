@@ -158,6 +158,15 @@ export async function uploadProfilePicture(file) {
   });
 }
 
+export async function uploadProfileResume(file) {
+  const formData = new FormData();
+  formData.append('resume', file);
+  return authFetch('/profile/resume', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
 // Skills
 export async function getSkills() {
   const res = await fetch(`${API_BASE}/skills`);

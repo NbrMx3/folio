@@ -3,6 +3,7 @@ export const fallbackProfile = {
   title: 'Full-Stack Developer',
   bio: 'Building digital experiences that merge creativity with technology.',
   picture: '',
+  resume: '/resume.pdf',
   github: 'https://github.com',
   linkedin: 'https://linkedin.com',
   twitter: 'https://x.com',

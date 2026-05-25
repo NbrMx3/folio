@@ -38,7 +38,7 @@ const Contact = () => {
   const quickActions = [
     {
       label: 'Resume',
-      href: '/resume.pdf',
+      href: profile.resume || '/resume.pdf',
       track: 'resume',
       icon: <FaDownload />,
       download: true,

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   FaCamera,
+  FaDownload,
+  FaFilePdf,
   FaSave,
   FaUser,
   FaGithub,
@@ -11,7 +13,7 @@ import {
   FaEnvelope,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
-import { getProfile, updateProfile, uploadProfilePicture } from '../../../utils/api';
+import { getProfile, updateProfile, uploadProfilePicture, uploadProfileResume } from '../../../utils/api';
 import './ProfileUpload.css';
 
 const ProfileUpload = () => {
@@ -40,6 +42,7 @@ const ProfileUpload = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const fileRef = useRef(null);
+  const resumeRef = useRef(null);
 
   useEffect(() => {
     loadProfile();
@@ -78,6 +81,29 @@ const ProfileUpload = () => {
       setMessage('Upload failed. Try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleResumeChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      setMessage('Resume must be a PDF file.');
+      return;
+    }
+
+    setSaving(true);
+    setMessage('');
+    try {
+      const data = await uploadProfileResume(file);
+      setProfile((prev) => ({ ...prev, resume: data.resume }));
+      setMessage('Resume updated!');
+    } catch {
+      setMessage('Resume upload failed. Try again.');
+    } finally {
+      setSaving(false);
+      e.target.value = '';
     }
   };
 
@@ -143,6 +169,39 @@ const ProfileUpload = () => {
             {message}
           </div>
         )}
+      </div>
+
+      <div className="profile-card">
+        <h2>Resume / CV</h2>
+        <p className="profile-hint">
+          Upload a PDF resume so visitors can download your latest CV from the portfolio landing page.
+        </p>
+        <div className="resume-card">
+          <div className="resume-meta">
+            <FaFilePdf />
+            <div>
+              <strong>{profile.resume ? 'Resume uploaded' : 'No resume uploaded yet'}</strong>
+              <span>{profile.resume ? 'Visitors will download the uploaded file.' : 'Upload a PDF to enable the download button.'}</span>
+            </div>
+          </div>
+          <div className="resume-actions">
+            <button type="button" className="resume-upload-btn" onClick={() => resumeRef.current?.click()} disabled={saving}>
+              <FaDownload /> {profile.resume ? 'Replace Resume' : 'Upload Resume'}
+            </button>
+            {profile.resume && (
+              <a href={profile.resume} className="resume-preview-link" target="_blank" rel="noreferrer">
+                Preview Current File
+              </a>
+            )}
+          </div>
+        </div>
+        <input
+          ref={resumeRef}
+          type="file"
+          accept="application/pdf,.pdf"
+          onChange={handleResumeChange}
+          hidden
+        />
       </div>
 
       <div className="profile-card">
