@@ -40,7 +40,7 @@ const Navbar = () => {
         <a href="#home" className="logo">
           Cyber<span>Dev</span>
         </a>
-        <ul className={`nav-links${menuOpen ? ' open' : ''}`}>
+        <ul id="primary-navigation" className={`nav-links${menuOpen ? ' open' : ''}`}>
           {links.map((link) => (
             <li key={link}>
               <a
@@ -54,6 +54,7 @@ const Navbar = () => {
         </ul>
         <div className="nav-right">
           <button
+            type="button"
             className="theme-toggle"
             onClick={cycleTheme}
             aria-label={`Theme: ${themeLabel}`}
@@ -62,6 +63,7 @@ const Navbar = () => {
             {themeIcon}
           </button>
           <button
+            type="button"
             className="visual-mode-toggle"
             onClick={cycleVisualMode}
             aria-label={`Visual mode: ${visualModeLabel}`}
@@ -71,6 +73,7 @@ const Navbar = () => {
             <span>{visualModeLabel}</span>
           </button>
           <button
+            type="button"
             className="admin-icon"
             onClick={() => navigate('/admin/login')}
             aria-label="Admin login"
@@ -79,9 +82,12 @@ const Navbar = () => {
             <FaUserShield />
           </button>
           <button
+            type="button"
             className="menu-toggle"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            aria-controls="primary-navigation"
           >
             {menuOpen ? <HiX /> : <HiMenuAlt3 />}
           </button>

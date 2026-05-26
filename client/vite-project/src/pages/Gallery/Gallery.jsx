@@ -311,13 +311,12 @@ const Gallery = () => {
           <h1 className="gallery-title">Nbr's Gallery</h1>
           <p className="gallery-description">Explore my photos, videos, and audio</p>
 
-          <div className="gallery-filters" role="tablist" aria-label="Filter gallery by media type">
+          <div className="gallery-filters" role="toolbar" aria-label="Filter gallery by media type">
             {MEDIA_FILTERS.map((filter) => (
               <button
                 key={filter.key}
                 type="button"
-                role="tab"
-                aria-selected={mediaFilter === filter.key}
+                aria-pressed={mediaFilter === filter.key}
                 className={`gallery-filter-pill ${mediaFilter === filter.key ? 'is-active' : ''}`}
                 onClick={() => handleFilterChange(filter.key)}
               >
@@ -378,9 +377,11 @@ const Gallery = () => {
                   <div className="gallery-grid">
                     {pictureItems.map((item) => (
                       <div key={item.id} className="gallery-card">
-                        <div
+                        <button
+                          type="button"
                           className="gallery-item"
                           onClick={() => handleItemClick(item, pictureItems)}
+                          aria-label={`Open photo ${item.title || 'gallery item'}`}
                         >
                           <span className={`gallery-media-badge gallery-media-badge--${getMediaType(item)}`}>
                             {getMediaLabel(item)}
@@ -395,7 +396,7 @@ const Gallery = () => {
                               <p className="gallery-item-title">{item.title}</p>
                             </div>
                           )}
-                        </div>
+                        </button>
                         {(item.title || item.description) && (
                           <div className="gallery-item-caption">
                             {item.title && <p className="gallery-caption-title">{item.title}</p>}
@@ -440,9 +441,11 @@ const Gallery = () => {
                   <div className="gallery-grid">
                     {videoItems.map((item) => (
                       <div key={item.id} className="gallery-card">
-                        <div
+                        <button
+                          type="button"
                           className="gallery-item"
                           onClick={() => handleItemClick(item, videoItems)}
+                          aria-label={`Open video ${item.title || 'gallery item'}`}
                         >
                           <span className={`gallery-media-badge gallery-media-badge--${getMediaType(item)}`}>
                             {getMediaLabel(item)}
@@ -459,7 +462,7 @@ const Gallery = () => {
                               <p className="gallery-item-title">{item.title}</p>
                             </div>
                           )}
-                        </div>
+                        </button>
                         {(item.title || item.description) && (
                           <div className="gallery-item-caption">
                             {item.title && <p className="gallery-caption-title">{item.title}</p>}
@@ -507,6 +510,15 @@ const Gallery = () => {
                         <div
                           className={`gallery-item gallery-audio-card${playingAudioId === item.id ? ' is-playing' : ''}`}
                           onClick={() => handleItemClick(item, audioItems)}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Open audio ${item.title || 'gallery item'}`}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              handleItemClick(item, audioItems);
+                            }
+                          }}
                         >
                           <span className={`gallery-media-badge gallery-media-badge--${getMediaType(item)}`}>
                             {getMediaLabel(item)}
@@ -592,12 +604,13 @@ const Gallery = () => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <button className="gallery-modal-close" onClick={handleCloseModal}>
+            <button type="button" className="gallery-modal-close" onClick={handleCloseModal} aria-label="Close gallery viewer">
               Back
             </button>
             {activeItems.length > 1 && (
               <>
                 <button
+                  type="button"
                   className="gallery-nav-button gallery-nav-prev"
                   onClick={handlePrev}
                   aria-label="Previous item"
@@ -605,6 +618,7 @@ const Gallery = () => {
                   ‹
                 </button>
                 <button
+                  type="button"
                   className="gallery-nav-button gallery-nav-next"
                   onClick={handleNext}
                   aria-label="Next item"

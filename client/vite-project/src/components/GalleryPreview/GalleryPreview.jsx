@@ -53,11 +53,12 @@ const GalleryPreview = () => {
                   <video
                     src={item.playbackUrl || item.url}
                     className="gallery-preview-media"
+                    aria-label={item.title || 'Gallery video preview'}
                   />
                 ) : (
                   <img
                     src={item.url}
-                    alt={item.title || 'Gallery item'}
+                    alt={item.title ? `${item.title} preview` : 'Gallery preview item'}
                     className="gallery-preview-media"
                   />
                 )}

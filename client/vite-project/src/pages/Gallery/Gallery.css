@@ -228,12 +228,24 @@
 .gallery-item {
   position: relative;
   overflow: hidden;
+  display: block;
+  width: 100%;
+  padding: 0;
   border-radius: 12px;
   cursor: pointer;
-  background: #1a1f3a;
+  appearance: none;
   border: 2px solid transparent;
+  background: #1a1f3a;
   transition: all 0.3s ease;
   aspect-ratio: 1 / 1;
+  text-align: left;
+}
+
+.gallery-item:hover,
+.gallery-item:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(0, 212, 255, 0.45);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
 }
 
 .gallery-media-badge {
