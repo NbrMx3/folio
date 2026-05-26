@@ -150,6 +150,30 @@
   line-height: 1.8;
 }
 
+.case-study-stack-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.case-study-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.case-study-stack span,
+.case-study-shot-highlights span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(152, 225, 255, 0.16);
+  background: rgba(6, 22, 46, 0.58);
+  color: var(--text-strong);
+  font-size: 0.85rem;
+}
+
 .case-study-panel-head {
   display: flex;
   align-items: flex-end;
@@ -192,16 +216,63 @@
     linear-gradient(145deg, rgba(8, 31, 62, 0.9), rgba(4, 14, 32, 0.92));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.3);
   display: grid;
-  place-items: center;
+    align-content: start;
   padding: 1rem;
-  text-align: center;
+    gap: 1rem;
 }
 
-.case-study-shot-frame span {
-  color: rgba(224, 247, 255, 0.92);
-  font-size: 0.84rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  .case-study-shot-frame-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .case-study-shot-frame-topbar span,
+  .case-study-shot-frame-topbar strong {
+    color: rgba(224, 247, 255, 0.92);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .case-study-shot-frame-body {
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    margin-top: auto;
+  }
+
+  .case-study-shot-frame-block,
+  .case-study-shot-frame-grid div {
+    border-radius: 14px;
+    background: rgba(143, 216, 255, 0.14);
+    border: 1px solid rgba(152, 225, 255, 0.12);
+  }
+
+  .case-study-shot-frame-block--primary {
+    height: 72px;
+  }
+
+  .case-study-shot-frame-block--secondary {
+    height: 42px;
+    background: rgba(8, 31, 62, 0.74);
+  }
+
+  .case-study-shot-frame-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .case-study-shot-frame-grid div {
+    height: 34px;
+  }
+
+  .case-study-shot-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
 }
 
 .case-study-shot h3 {

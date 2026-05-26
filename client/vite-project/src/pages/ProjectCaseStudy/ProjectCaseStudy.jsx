@@ -158,6 +158,18 @@ const ProjectCaseStudy = () => {
           </div>
         </section>
 
+        <section className="case-study-panel case-study-stack-panel">
+          <div className="case-study-panel-head">
+            <h2>Stack</h2>
+            <p>The tools and capabilities used to deliver the work.</p>
+          </div>
+          <div className="case-study-stack">
+            {(project.stack || []).map((tool) => (
+              <span key={tool}>{tool}</span>
+            ))}
+          </div>
+        </section>
+
         <section className="case-study-grid">
           <article className="case-study-panel">
             <h2>Problem</h2>
@@ -183,10 +195,29 @@ const ProjectCaseStudy = () => {
             {(project.screenshots || []).map((shot) => (
               <article key={shot.title} className="case-study-shot">
                 <div className="case-study-shot-frame">
-                  <span>{shot.title}</span>
+                  <div className="case-study-shot-frame-topbar">
+                    <span>{shot.title}</span>
+                    <strong>Screenshot</strong>
+                  </div>
+                  <div className="case-study-shot-frame-body">
+                    <div className="case-study-shot-frame-block case-study-shot-frame-block--primary"></div>
+                    <div className="case-study-shot-frame-block case-study-shot-frame-block--secondary"></div>
+                    <div className="case-study-shot-frame-grid">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
                 </div>
                 <h3>{shot.title}</h3>
                 <p>{shot.caption}</p>
+                {Array.isArray(shot.highlights) && shot.highlights.length > 0 && (
+                  <div className="case-study-shot-highlights">
+                    {shot.highlights.map((highlight) => (
+                      <span key={highlight}>{highlight}</span>
+                    ))}
+                  </div>
+                )}
               </article>
             ))}
           </div>
