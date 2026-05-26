@@ -14,6 +14,8 @@ import {
   FaTablet,
   FaFilter,
   FaTrash,
+  FaExclamationTriangle,
+  FaCheckCircle,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
 import {
@@ -21,6 +23,10 @@ import {
   getVisitors,
   getPlatforms,
   getTraccarOverview,
+  getProfile,
+  getSkills,
+  getProjectsList,
+  getGallery,
   clearAnalytics,
 } from '../../../utils/api';
 import './AnalyticsDashboard.css';
@@ -79,12 +85,40 @@ const socialAccountIcons = [
   { key: 'tiktok', label: 'TikTok', icon: <SiTiktok /> },
 ];
 
+const profileFields = [
+  { key: 'picture', label: 'Profile picture' },
+  { key: 'name', label: 'Display name' },
+  { key: 'title', label: 'Job title' },
+  { key: 'bio', label: 'Bio' },
+  { key: 'resume', label: 'Resume' },
+  { key: 'email', label: 'Contact email' },
+  { key: 'github', label: 'GitHub' },
+  { key: 'linkedin', label: 'LinkedIn' },
+  { key: 'twitter', label: 'X' },
+  { key: 'facebook', label: 'Facebook' },
+  { key: 'instagram', label: 'Instagram' },
+  { key: 'tiktok', label: 'TikTok' },
+];
+
+const isMissingValue = (value) => {
+  if (value == null) return true;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return true;
+    return trimmed === '/resume.pdf';
+  }
+  if (Array.isArray(value)) return value.length === 0;
+  return false;
+};
+
 const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
   const [chartData, setChartData] = useState([]);
   const [visitors, setVisitors] = useState([]);
   const [platforms, setPlatforms] = useState({});
   const [traccarOverview, setTraccarOverview] = useState(null);
   const [traccarLoading, setTraccarLoading] = useState(true);
+  const [contentHealth, setContentHealth] = useState(null);
+  const [contentHealthLoading, setContentHealthLoading] = useState(true);
   const [visitorPage, setVisitorPage] = useState(1);
   const [visitorPages, setVisitorPages] = useState(1);
   const [filterSource, setFilterSource] = useState('all');
@@ -115,6 +149,69 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
 
   useEffect(() => {
     let cancelled = false;
+
+    const loadContentHealth = async () => {
+      try {
+        const [profileResult, skillsResult, projectsResult, galleryResult] = await Promise.allSettled([
+          getProfile(),
+          getSkills(),
+          getProjectsList(),
+          getGallery(),
+        ]);
+
+        if (cancelled) return;
+
+        const profile = profileResult.status === 'fulfilled' && profileResult.value ? profileResult.value : null;
+        const skills = skillsResult.status === 'fulfilled' && Array.isArray(skillsResult.value) ? skillsResult.value : [];
+        const projects = projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value) ? projectsResult.value : [];
+        const gallery = galleryResult.status === 'fulfilled' && Array.isArray(galleryResult.value) ? galleryResult.value : [];
+
+        const missingProfileFields = profile
+          ? profileFields.filter(({ key }) => isMissingValue(profile[key])).map(({ label }) => label)
+          : profileFields.map(({ label }) => label);
+
+        const sections = [
+          {
+            name: 'Skills',
+            status: skills.length > 0 ? 'ready' : 'missing',
+            detail: skills.length > 0 ? `${skills.length} skill${skills.length === 1 ? '' : 's'} published` : 'No skills have been added yet.',
+          },
+          {
+            name: 'Projects',
+            status: projects.length > 0 ? 'ready' : 'missing',
+            detail: projects.length > 0 ? `${projects.length} project${projects.length === 1 ? '' : 's'} published` : 'No projects have been added yet.',
+          },
+          {
+            name: 'Gallery',
+            status: gallery.length > 0 ? 'ready' : 'missing',
+            detail: gallery.length > 0 ? `${gallery.length} gallery item${gallery.length === 1 ? '' : 's'} published` : 'No gallery media has been uploaded yet.',
+          },
+        ];
+
+        const missingSections = sections.filter((section) => section.status === 'missing');
+
+        setContentHealth({
+          profileStatus: profile ? (missingProfileFields.length ? 'partial' : 'complete') : 'missing',
+          missingProfileFields,
+          sections,
+          missingSections,
+        });
+      } finally {
+        if (!cancelled) {
+          setContentHealthLoading(false);
+        }
+      }
+    };
+
+    loadContentHealth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     const loadVisitors = async () => {
       try {
         const data = await getVisitors(visitorPage, filterSource);
@@ -124,6 +221,59 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
       } catch {
         // ignore
       }
+
+        {/* Content Health */}
+        {activeTab === 'analytics' && (
+          <div className="analytics-section">
+            <h3>Content Health</h3>
+            <p className="section-hint">
+              Missing profile fields and empty content sections are tracked here so you can fill gaps quickly.
+            </p>
+            {contentHealthLoading ? (
+              <p className="no-data">Checking content completeness...</p>
+            ) : contentHealth ? (
+              <div className="content-health-grid">
+                <article className={`content-health-card ${contentHealth.profileStatus}`}>
+                  <div className="content-health-header">
+                    <span className="content-health-title">Profile</span>
+                    <span className="content-health-badge">{contentHealth.profileStatus}</span>
+                  </div>
+                  {contentHealth.missingProfileFields.length > 0 ? (
+                    <>
+                      <p className="content-health-message">
+                        {contentHealth.missingProfileFields.length} profile field{contentHealth.missingProfileFields.length === 1 ? '' : 's'} are missing.
+                      </p>
+                      <div className="missing-chips">
+                        {contentHealth.missingProfileFields.map((field) => (
+                          <span className="missing-chip" key={field}>
+                            <FaExclamationTriangle />
+                            {field}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="content-health-message success">
+                      <FaCheckCircle /> Profile data is complete.
+                    </p>
+                  )}
+                </article>
+
+                {contentHealth.sections.map((section) => (
+                  <article key={section.name} className={`content-health-card ${section.status}`}>
+                    <div className="content-health-header">
+                      <span className="content-health-title">{section.name}</span>
+                      <span className="content-health-badge">{section.status}</span>
+                    </div>
+                    <p className="content-health-message">{section.detail}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="no-data">Content health data could not be loaded.</p>
+            )}
+          </div>
+        )}
     };
     loadVisitors();
     return () => { cancelled = true; };
