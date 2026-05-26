@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaImages, FaArrowRight } from 'react-icons/fa';
 import { getGallery } from '../../utils/api';
@@ -54,12 +54,15 @@ const GalleryPreview = () => {
                     src={item.playbackUrl || item.url}
                     className="gallery-preview-media"
                     aria-label={item.title || 'Gallery video preview'}
+                    preload="metadata"
                   />
                 ) : (
                   <img
                     src={item.url}
                     alt={item.title ? `${item.title} preview` : 'Gallery preview item'}
                     className="gallery-preview-media"
+                    loading="lazy"
+                    decoding="async"
                   />
                 )}
               </div>
@@ -76,4 +79,4 @@ const GalleryPreview = () => {
   );
 };
 
-export default GalleryPreview;
+export default memo(GalleryPreview);

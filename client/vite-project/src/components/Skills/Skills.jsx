@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { memo, useState, useEffect } from 'react';
 import {
   FaReact,
   FaNodeJs,
@@ -104,4 +104,4 @@ const Skills = () => {
   );
 };
 
-export default Skills;
+export default memo(Skills);

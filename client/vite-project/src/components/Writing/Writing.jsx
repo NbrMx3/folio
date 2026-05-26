@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import './Writing.css';
 
 const posts = [
@@ -58,4 +59,4 @@ const Writing = () => {
   );
 };
 
-export default Writing;
+export default memo(Writing);

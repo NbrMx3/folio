@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import Seo from '../../components/Seo/Seo';
@@ -280,13 +280,15 @@ const Gallery = () => {
     window.open(url, '_blank', 'noopener');
   };
 
-  const visibleItems = mediaFilter === 'all'
-    ? items
-    : items.filter((item) => getMediaType(item) === mediaFilter);
+  const visibleItems = useMemo(() => (
+    mediaFilter === 'all'
+      ? items
+      : items.filter((item) => getMediaType(item) === mediaFilter)
+  ), [items, mediaFilter]);
 
-  const pictureItems = visibleItems.filter((item) => getMediaType(item) === 'photo');
-  const videoItems = visibleItems.filter((item) => getMediaType(item) === 'video');
-  const audioItems = visibleItems.filter((item) => getMediaType(item) === 'audio');
+  const pictureItems = useMemo(() => visibleItems.filter((item) => getMediaType(item) === 'photo'), [visibleItems]);
+  const videoItems = useMemo(() => visibleItems.filter((item) => getMediaType(item) === 'video'), [visibleItems]);
+  const audioItems = useMemo(() => visibleItems.filter((item) => getMediaType(item) === 'audio'), [visibleItems]);
   const hasVisibleItems = pictureItems.length > 0 || videoItems.length > 0 || audioItems.length > 0;
 
   return (
@@ -390,6 +392,8 @@ const Gallery = () => {
                             src={item.url}
                             alt={item.title || 'Gallery item'}
                             className="gallery-media"
+                            loading="lazy"
+                            decoding="async"
                           />
                           {item.title && (
                             <div className="gallery-item-overlay">
@@ -456,6 +460,7 @@ const Gallery = () => {
                             preload="metadata"
                             muted
                             playsInline
+                            aria-label={item.title ? `${item.title} video preview` : 'Gallery video preview'}
                           />
                           {item.title && (
                             <div className="gallery-item-overlay">
@@ -689,6 +694,8 @@ const Gallery = () => {
                   src={selectedItem.url}
                   alt={selectedItem.title || 'Gallery item'}
                   className="gallery-modal-media"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
             )}
@@ -710,4 +717,4 @@ const Gallery = () => {
   );
 };
 
-export default Gallery;
+export default memo(Gallery);

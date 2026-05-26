@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaGithub,
@@ -91,4 +91,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default memo(Footer);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaArrowRight, FaExternalLinkAlt, FaFilter, FaGithub, FaSortAmountDown } from 'react-icons/fa';
 import { getProjectsList, trackVisit } from '../../utils/api';
@@ -45,12 +45,15 @@ const Projects = () => {
     };
   }, []);
 
-  const normalizedProjects = dataSource === 'fallback' ? buildProjectCollection([]) : buildProjectCollection(projects);
-  const stackOptions = ['all', ...new Set(normalizedProjects.flatMap((project) => project.stack || []))];
-  const typeOptions = ['all', ...new Set(normalizedProjects.map((project) => project.type).filter(Boolean))];
-  const timelineOptions = ['all', ...new Set(normalizedProjects.map((project) => project.timeline).filter(Boolean))];
+  const normalizedProjects = useMemo(
+    () => (dataSource === 'fallback' ? buildProjectCollection([]) : buildProjectCollection(projects)),
+    [dataSource, projects],
+  );
+  const stackOptions = useMemo(() => ['all', ...new Set(normalizedProjects.flatMap((project) => project.stack || []))], [normalizedProjects]);
+  const typeOptions = useMemo(() => ['all', ...new Set(normalizedProjects.map((project) => project.type).filter(Boolean))], [normalizedProjects]);
+  const timelineOptions = useMemo(() => ['all', ...new Set(normalizedProjects.map((project) => project.timeline).filter(Boolean))], [normalizedProjects]);
 
-  const filteredProjects = normalizedProjects
+  const filteredProjects = useMemo(() => normalizedProjects
     .filter((project) => {
       const stackMatch = filters.stack === 'all' || (project.stack || []).some((stack) => String(stack).toLowerCase() === filters.stack.toLowerCase());
       const typeMatch = filters.type === 'all' || String(project.type).toLowerCase() === filters.type.toLowerCase();
@@ -78,7 +81,7 @@ const Projects = () => {
           }
           return String(left.title).localeCompare(String(right.title));
       }
-    });
+    }), [filters.sort, filters.stack, filters.timeline, filters.type, normalizedProjects]);
 
   const handleProjectClick = (project, linkType) => {
     const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
@@ -252,4 +255,4 @@ const Projects = () => {
   );
 };
 
-export default Projects;
+export default memo(Projects);

@@ -261,7 +261,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                   <div className="asset-preview-row">
                     <div className="asset-preview-frame profile-frame">
                       {contentHealth.profilePicture ? (
-                          <img src={contentHealth.profilePicture} alt="Profile image preview" />
+                          <img src={contentHealth.profilePicture} alt="Profile image preview" loading="lazy" decoding="async" />
                       ) : (
                         <div className="asset-preview-empty">
                           <FaExclamationTriangle />
@@ -302,7 +302,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                         {contentHealth.galleryPhotos.length > 0 ? (
                           contentHealth.galleryPhotos.map((photo) => (
                             <div className="asset-preview-frame gallery-frame" key={photo.id || photo.url} title={photo.title}>
-                              <img src={photo.url} alt={photo.title ? `${photo.title} preview` : 'Gallery photo preview'} />
+                              <img src={photo.url} alt={photo.title ? `${photo.title} preview` : 'Gallery photo preview'} loading="lazy" decoding="async" />
                             </div>
                           ))
                         ) : (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import {
   FaGithub,
   FaLinkedin,
@@ -261,6 +261,8 @@ const Hero = () => {
                 src={profile.picture}
                 alt={profile.name || 'Developer portrait'}
                 className="hero-image"
+                loading="lazy"
+                decoding="async"
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
             ) : (
@@ -277,4 +279,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default memo(Hero);

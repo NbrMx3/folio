@@ -259,12 +259,15 @@ const GalleryManager = () => {
                         src={item.playbackUrl || item.url}
                         className="preview-media"
                         controls
+                        preload="metadata"
                       />
                     ) : (
                       <img
                         src={item.url}
                         alt={item.title || 'Gallery item'}
                         className="preview-media"
+                        loading="lazy"
+                        decoding="async"
                       />
                     )}
                   </div>
