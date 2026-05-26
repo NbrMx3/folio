@@ -28,6 +28,39 @@
   margin-bottom: 40px;
 }
 
+.gallery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.gallery-filter-pill {
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  background: rgba(15, 20, 40, 0.72);
+  color: #cbd5e0;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.gallery-filter-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 212, 255, 0.45);
+  color: #f7fafc;
+}
+
+.gallery-filter-pill.is-active {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.24), rgba(0, 153, 255, 0.2));
+  border-color: rgba(0, 212, 255, 0.7);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.12);
+}
+
 .gallery-groups {
   display: flex;
   flex-direction: column;
@@ -153,6 +186,21 @@
   background: rgba(15, 20, 40, 0.65);
 }
 
+.gallery-filter-reset {
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  background: rgba(0, 212, 255, 0.14);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.75rem 1.05rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gallery-filter-reset:hover {
+  background: rgba(0, 212, 255, 0.24);
+}
+
 .gallery-empty--wide h2 {
   margin: 0;
   color: #f7fafc;
@@ -186,6 +234,36 @@
   border: 2px solid transparent;
   transition: all 0.3s ease;
   aspect-ratio: 1 / 1;
+}
+
+.gallery-media-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.gallery-media-badge--photo {
+  background: rgba(0, 212, 255, 0.2);
+}
+
+.gallery-media-badge--video {
+  background: rgba(247, 179, 122, 0.2);
+}
+
+.gallery-media-badge--audio {
+  background: rgba(142, 255, 193, 0.2);
 }
 
 .gallery-audio-card {
@@ -559,6 +637,11 @@
   text-align: center;
 }
 
+.gallery-modal-badge {
+  display: inline-flex;
+  margin: 0 auto 0.65rem;
+}
+
 .gallery-modal-info h2 {
   color: #fff;
   font-size: 1.5rem;
@@ -634,6 +717,10 @@
   .gallery-card-actions,
   .gallery-modal-toolbar {
     flex-wrap: wrap;
+  }
+
+  .gallery-filters {
+    justify-content: flex-start;
   }
 
   .gallery-card-action,

@@ -5,9 +5,23 @@ import Seo from '../../components/Seo/Seo';
 import { getGallery } from '../../utils/api';
 import './Gallery.css';
 
+const MEDIA_FILTERS = [
+  { key: 'all', label: 'All media' },
+  { key: 'photo', label: 'Photos' },
+  { key: 'video', label: 'Videos' },
+  { key: 'audio', label: 'Audio' },
+];
+
+const MEDIA_LABELS = {
+  photo: 'Photo',
+  video: 'Video',
+  audio: 'Audio',
+};
+
 const Gallery = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mediaFilter, setMediaFilter] = useState('all');
   const [activeItems, setActiveItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -58,11 +72,45 @@ const Gallery = () => {
     setSelectedItem(activeItems[selectedIndex]);
   }, [activeItems, selectedIndex]);
 
+  useEffect(() => {
+    if (!selectedItem) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        handleCloseModal();
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        handlePrev();
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedItem, selectedIndex, activeItems.length]);
+
   const handleItemClick = (item, list) => {
     const index = list.findIndex((entry) => entry.id === item.id);
     setActiveItems(list);
     setSelectedIndex(index === -1 ? 0 : index);
     setSelectedItem(item);
+  };
+
+  const handleFilterChange = (nextFilter) => {
+    setMediaFilter(nextFilter);
+    if (playingAudioId) {
+      const currentAudio = audioRefs.current[playingAudioId];
+      if (currentAudio) currentAudio.pause();
+      setPlayingAudioId(null);
+    }
+    setSelectedItem(null);
+    setSelectedIndex(null);
+    setActiveItems([]);
   };
 
   const handleCloseModal = () => {
@@ -148,6 +196,10 @@ const Gallery = () => {
     if (playingAudioId === itemId) setPlayingAudioId(null);
   };
 
+  const getMediaType = (item) => String(item?.type || 'photo').toLowerCase();
+
+  const getMediaLabel = (item) => MEDIA_LABELS[getMediaType(item)] || 'Photo';
+
   const renderStars = () => (
     <div className="gallery-rating" aria-label="5 star rating">
       {Array.from({ length: 5 }).map((_, idx) => (
@@ -228,9 +280,14 @@ const Gallery = () => {
     window.open(url, '_blank', 'noopener');
   };
 
-  const pictureItems = items.filter((item) => item.type === 'photo');
-  const videoItems = items.filter((item) => item.type === 'video');
-  const audioItems = items.filter((item) => item.type === 'audio');
+  const visibleItems = mediaFilter === 'all'
+    ? items
+    : items.filter((item) => getMediaType(item) === mediaFilter);
+
+  const pictureItems = visibleItems.filter((item) => getMediaType(item) === 'photo');
+  const videoItems = visibleItems.filter((item) => getMediaType(item) === 'video');
+  const audioItems = visibleItems.filter((item) => getMediaType(item) === 'audio');
+  const hasVisibleItems = pictureItems.length > 0 || videoItems.length > 0 || audioItems.length > 0;
 
   return (
     <>
@@ -253,6 +310,21 @@ const Gallery = () => {
         <div className="gallery-container">
           <h1 className="gallery-title">Nbr's Gallery</h1>
           <p className="gallery-description">Explore my photos, videos, and audio</p>
+
+          <div className="gallery-filters" role="tablist" aria-label="Filter gallery by media type">
+            {MEDIA_FILTERS.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                role="tab"
+                aria-selected={mediaFilter === filter.key}
+                className={`gallery-filter-pill ${mediaFilter === filter.key ? 'is-active' : ''}`}
+                onClick={() => handleFilterChange(filter.key)}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
 
           {loading ? (
             <div className="gallery-loading gallery-loading--skeleton" aria-busy="true">
@@ -285,6 +357,14 @@ const Gallery = () => {
               <h2>No gallery items yet.</h2>
               <p>Upload photos, videos, or audio from the admin dashboard to bring this section to life.</p>
             </div>
+          ) : !hasVisibleItems ? (
+            <div className="gallery-empty gallery-empty--wide">
+              <h2>No {mediaFilter === 'all' ? 'media' : MEDIA_LABELS[mediaFilter].toLowerCase()} match this filter.</h2>
+              <p>Try another media type or clear the filter to see everything again.</p>
+              <button type="button" className="gallery-filter-reset" onClick={() => handleFilterChange('all')}>
+                Show all media
+              </button>
+            </div>
           ) : (
             <div className="gallery-groups">
               <div className="gallery-group">
@@ -302,6 +382,9 @@ const Gallery = () => {
                           className="gallery-item"
                           onClick={() => handleItemClick(item, pictureItems)}
                         >
+                          <span className={`gallery-media-badge gallery-media-badge--${getMediaType(item)}`}>
+                            {getMediaLabel(item)}
+                          </span>
                           <img
                             src={item.url}
                             alt={item.title || 'Gallery item'}
@@ -361,6 +444,9 @@ const Gallery = () => {
                           className="gallery-item"
                           onClick={() => handleItemClick(item, videoItems)}
                         >
+                          <span className={`gallery-media-badge gallery-media-badge--${getMediaType(item)}`}>
+                            {getMediaLabel(item)}
+                          </span>
                           <video
                             src={item.playbackUrl || item.url}
                             className="gallery-media"
@@ -422,6 +508,9 @@ const Gallery = () => {
                           className={`gallery-item gallery-audio-card${playingAudioId === item.id ? ' is-playing' : ''}`}
                           onClick={() => handleItemClick(item, audioItems)}
                         >
+                          <span className={`gallery-media-badge gallery-media-badge--${getMediaType(item)}`}>
+                            {getMediaLabel(item)}
+                          </span>
                           <div className="gallery-audio-controls">
                             <button
                               type="button"
@@ -591,6 +680,9 @@ const Gallery = () => {
             )}
             {selectedItem.title && (
               <div className="gallery-modal-info">
+                <span className={`gallery-modal-badge gallery-media-badge--${getMediaType(selectedItem)}`}>
+                  {getMediaLabel(selectedItem)}
+                </span>
                 <h2>{selectedItem.title}</h2>
                 {selectedItem.description && <p>{selectedItem.description}</p>}
               </div>
