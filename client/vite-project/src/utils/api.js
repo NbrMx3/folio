@@ -233,7 +233,10 @@ export async function sendContactMessage(data) {
 
   if (!res.ok) {
     const error = payload?.error || payload?.message || 'Failed to send message';
-    throw new Error(error);
+    const err = new Error(error);
+    err.status = res.status;
+    err.retryAfterSeconds = payload?.retryAfterSeconds || null;
+    throw err;
   }
 
   return payload;

@@ -24,6 +24,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(morgan("dev"));
+app.set('trust proxy', 1);
 
 // Portfolio data is public — allow all origins.
 // Admin routes are protected by JWT so open CORS is safe here.

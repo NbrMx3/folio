@@ -1,14 +1,57 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle, FaDownload } from 'react-icons/fa';
 import { sendContactMessage, trackConversion } from '../../utils/api';
 import { fallbackProfile } from '../../data/offlineContent';
 import './Contact.css';
 
+const CONTACT_COOLDOWN_MS = 45 * 1000;
+
 const Contact = () => {
-  const [form, setForm] = useState({ name: '', email: '', message: '', website: '' });
+  const submittedAtRef = useRef(Date.now());
+  const cooldownTimerRef = useRef(null);
+  const [form, setForm] = useState({ name: '', email: '', message: '', website: '', company: '' });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle');
   const [feedback, setFeedback] = useState('');
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  useEffect(() => {
+    const stored = Number(localStorage.getItem('folio_contact_cooldown_until') || 0);
+    if (stored && stored > Date.now()) {
+      setCooldownUntil(stored);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!cooldownUntil) {
+      setCooldownSeconds(0);
+      if (cooldownTimerRef.current) {
+        clearInterval(cooldownTimerRef.current);
+        cooldownTimerRef.current = null;
+      }
+      return undefined;
+    }
+
+    const updateCountdown = () => {
+      const remaining = Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000));
+      setCooldownSeconds(remaining);
+      if (remaining === 0) {
+        localStorage.removeItem('folio_contact_cooldown_until');
+        setCooldownUntil(0);
+      }
+    };
+
+    updateCountdown();
+    cooldownTimerRef.current = window.setInterval(updateCountdown, 1000);
+
+    return () => {
+      if (cooldownTimerRef.current) {
+        clearInterval(cooldownTimerRef.current);
+        cooldownTimerRef.current = null;
+      }
+    };
+  }, [cooldownUntil]);
 
   const contactDetails = [
     {
@@ -61,8 +104,23 @@ const Contact = () => {
   const validateForm = () => {
     const nextErrors = {};
 
+    if (cooldownUntil > Date.now()) {
+      nextErrors.form = `Please wait ${cooldownSeconds || 1}s before sending another message.`;
+      return nextErrors;
+    }
+
     if (form.website.trim()) {
       nextErrors.website = 'Spam protection triggered.';
+      return nextErrors;
+    }
+
+    if (form.company.trim()) {
+      nextErrors.company = 'Spam protection triggered.';
+      return nextErrors;
+    }
+
+    if (Date.now() - submittedAtRef.current < 4000) {
+      nextErrors.form = 'Please take a moment before sending your message.';
       return nextErrors;
     }
 
@@ -97,6 +155,14 @@ const Contact = () => {
     }
   };
 
+  const beginCooldown = (retryAfterSeconds = null) => {
+    const duration = retryAfterSeconds ? retryAfterSeconds * 1000 : CONTACT_COOLDOWN_MS;
+    const nextCooldownUntil = Date.now() + duration;
+    localStorage.setItem('folio_contact_cooldown_until', String(nextCooldownUntil));
+    setCooldownUntil(nextCooldownUntil);
+    submittedAtRef.current = Date.now();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -117,14 +183,20 @@ const Contact = () => {
         email: form.email.trim(),
         message: form.message.trim(),
         website: form.website.trim(),
+        company: form.company.trim(),
+        submittedAt: submittedAtRef.current,
       });
 
       setStatus('success');
       setFeedback(response?.message || 'Message sent successfully.');
-      setForm({ name: '', email: '', message: '', website: '' });
+      setForm({ name: '', email: '', message: '', website: '', company: '' });
       setErrors({});
+      beginCooldown();
     } catch (error) {
       setStatus('error');
+      if (error.status === 429) {
+        beginCooldown(error.retryAfterSeconds);
+      }
       setFeedback(error.message || 'Something went wrong. Please try again.');
     }
   };
@@ -143,6 +215,11 @@ const Contact = () => {
         <p className="contact-subtitle">
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
+        {cooldownUntil > Date.now() && (
+          <div className="contact-rate-limit">
+            You can send another message in {cooldownSeconds}s.
+          </div>
+        )}
         <div className="contact-quick-actions">
           {quickActions.map((action) => (
             <a
@@ -160,6 +237,12 @@ const Contact = () => {
           ))}
         </div>
         <div className="contact-status-bar" aria-live="polite">
+          {errors.form && (
+            <div className="contact-status error">
+              <FaExclamationCircle />
+              <span>{errors.form}</span>
+            </div>
+          )}
           {status === 'success' && (
             <div className="contact-status success">
               <FaCheckCircle />
@@ -255,8 +338,18 @@ const Contact = () => {
               value={form.website}
               onChange={handleChange}
             />
+            <label htmlFor="company">Company</label>
+            <input
+              id="company"
+              type="text"
+              name="company"
+              tabIndex="-1"
+              autoComplete="off"
+              value={form.company}
+              onChange={handleChange}
+            />
           </div>
-          <button type="submit" className="btn-primary" disabled={status === 'submitting'}>
+          <button type="submit" className="btn-primary" disabled={status === 'submitting' || cooldownUntil > Date.now()}>
             <FaPaperPlane /> {status === 'submitting' ? 'Sending...' : 'Send Message'}
           </button>
         </form>
