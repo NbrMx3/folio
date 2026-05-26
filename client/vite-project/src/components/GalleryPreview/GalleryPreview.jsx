@@ -35,10 +35,15 @@ const GalleryPreview = () => {
         </div>
 
         {loading ? (
-          <div className="gallery-preview-loading">Loading gallery...</div>
+          <div className="gallery-preview-loading gallery-preview-loading--skeleton" aria-busy="true">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="skeleton skeleton-block gallery-preview-skeleton"></div>
+            ))}
+          </div>
         ) : items.length === 0 ? (
           <div className="gallery-preview-empty">
-            <p>No gallery items yet</p>
+            <h3>No gallery items yet.</h3>
+            <p>Upload a few photos or videos from the admin dashboard to populate this preview.</p>
           </div>
         ) : (
           <div className="gallery-preview-grid">

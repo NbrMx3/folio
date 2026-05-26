@@ -76,6 +76,109 @@
   animation: fade-rise 0.9s ease both;
 }
 
+.hero-loading-state {
+  align-items: stretch;
+}
+
+.hero-loading-copy,
+.hero-loading-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hero-loading-copy {
+  padding-top: 0.4rem;
+}
+
+.hero-loading-kicker {
+  width: 11rem;
+}
+
+.hero-loading-title {
+  width: min(100%, 24rem);
+}
+
+.hero-loading-title-bottom {
+  width: min(100%, 18rem);
+}
+
+.hero-loading-description {
+  width: min(100%, 30rem);
+}
+
+.hero-loading-description--short {
+  width: min(100%, 19rem);
+}
+
+.hero-loading-actions {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.hero-loading-button {
+  width: 11rem;
+  height: 3rem;
+  border-radius: 999px;
+}
+
+.hero-loading-avatar-row {
+  width: 14rem;
+  height: 3rem;
+  border-radius: 999px;
+}
+
+.hero-loading-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.hero-loading-metric {
+  min-height: 5.2rem;
+}
+
+.hero-loading-visual {
+  min-height: clamp(460px, 60vw, 560px);
+}
+
+.hero-loading-card {
+  min-height: 8rem;
+  border-radius: 28px;
+}
+
+.hero-loading-code {
+  height: 18rem;
+  transform: rotate(-6deg);
+}
+
+.hero-loading-status {
+  width: 12rem;
+  height: 8.8rem;
+  align-self: flex-end;
+  margin-top: -1.2rem;
+}
+
+.hero-loading-image {
+  width: min(19rem, 88%);
+  height: 18rem;
+  align-self: flex-end;
+  margin-top: auto;
+}
+
+.hero-empty-note {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(115, 230, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(6, 20, 41, 0.52);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
 .hero-kicker {
   display: inline-flex;
   align-items: center;
@@ -459,8 +562,10 @@
     repeating-linear-gradient(90deg, rgba(170, 232, 255, 0.04) 0 14px, transparent 14px 28px);
   color: #d4ecff;
   font-size: 0.72rem;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-align: center;
+  padding: 0.8rem;
 }
 
 .hero-image-meta {

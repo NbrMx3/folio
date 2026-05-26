@@ -179,6 +179,50 @@ video {
   box-shadow: 0 0 16px rgba(115, 230, 255, 0.4);
 }
 
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0.04) 18%, rgba(255, 255, 255, 0.12) 34%, rgba(255, 255, 255, 0.04) 50%),
+    rgba(255, 255, 255, 0.05);
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 1.35s linear infinite;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+.skeleton-line {
+  height: 0.95rem;
+  border-radius: 999px;
+}
+
+.skeleton-line--lg {
+  height: 1.35rem;
+}
+
+.skeleton-line--sm {
+  height: 0.72rem;
+}
+
+.skeleton-block {
+  border-radius: 16px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 220% 0;
+  }
+}
+
 @keyframes fade-rise {
   0% {
     opacity: 0;

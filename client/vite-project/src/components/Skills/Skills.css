@@ -30,6 +30,10 @@
   gap: 1.5rem;
 }
 
+.skills-grid--loading {
+  align-items: stretch;
+}
+
 .skill-card {
   background:
     linear-gradient(180deg, rgba(8, 35, 74, 0.52), rgba(5, 21, 44, 0.66)),
@@ -43,6 +47,53 @@
   overflow: hidden;
   position: relative;
   will-change: transform;
+}
+
+.skill-card--loading {
+  pointer-events: none;
+}
+
+.skill-skeleton-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  margin-bottom: 1rem;
+}
+
+.skill-skeleton-title {
+  width: 60%;
+  margin-bottom: 0.7rem;
+}
+
+.skill-skeleton-copy {
+  width: 100%;
+  margin-bottom: 0.55rem;
+}
+
+.skill-skeleton-copy--short {
+  width: 82%;
+}
+
+.skills-empty-state {
+  display: grid;
+  place-items: center;
+  gap: 0.7rem;
+  padding: 2rem 1.25rem;
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  background: rgba(5, 21, 44, 0.46);
+  text-align: center;
+}
+
+.skills-empty-state h3 {
+  margin: 0;
+  color: var(--text-strong);
+}
+
+.skills-empty-state p {
+  margin: 0;
+  color: var(--text-muted);
+  max-width: 32rem;
 }
 
 .skill-card::before {

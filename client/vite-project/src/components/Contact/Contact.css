@@ -68,6 +68,10 @@
   border-color: rgba(255, 137, 137, 0.34);
 }
 
+.contact-status.idle {
+  color: var(--text-muted);
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));

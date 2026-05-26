@@ -7,7 +7,8 @@ import './Projects.css';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataSource, setDataSource] = useState('loading');
   const [filters, setFilters] = useState({
     stack: 'all',
     type: 'all',
@@ -21,14 +22,21 @@ const Projects = () => {
     getProjectsList()
       .then((data) => {
         if (isMounted) {
-          setProjects(Array.isArray(data) ? data : []);
+          const nextProjects = Array.isArray(data) ? data : [];
+          setProjects(nextProjects);
+          setDataSource(nextProjects.length > 0 ? 'api' : 'empty');
         }
       })
       .catch((err) => {
         console.error('Projects fetch error:', err.message);
         if (isMounted) {
           setProjects([]);
-          setError('');
+          setDataSource('fallback');
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
         }
       });
 
@@ -37,7 +45,7 @@ const Projects = () => {
     };
   }, []);
 
-  const normalizedProjects = buildProjectCollection(projects);
+  const normalizedProjects = dataSource === 'fallback' ? buildProjectCollection([]) : buildProjectCollection(projects);
   const stackOptions = ['all', ...new Set(normalizedProjects.flatMap((project) => project.stack || []))];
   const typeOptions = ['all', ...new Set(normalizedProjects.map((project) => project.type).filter(Boolean))];
   const timelineOptions = ['all', ...new Set(normalizedProjects.map((project) => project.timeline).filter(Boolean))];
@@ -89,57 +97,91 @@ const Projects = () => {
         <h2 className="section-title">
           Featured <span className="highlight">Projects</span>
         </h2>
-        {error && <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>{error}</p>}
-        <div className="projects-toolbar">
-          <div className="projects-toolbar-group">
-            <FaFilter />
-            <label>
-              <span>Stack</span>
-              <select value={filters.stack} onChange={(event) => setFilters({ ...filters, stack: event.target.value })}>
-                {stackOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option === 'all' ? 'All stacks' : option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Type</span>
-              <select value={filters.type} onChange={(event) => setFilters({ ...filters, type: event.target.value })}>
-                {typeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option === 'all' ? 'All types' : option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Timeline</span>
-              <select value={filters.timeline} onChange={(event) => setFilters({ ...filters, timeline: event.target.value })}>
-                {timelineOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option === 'all' ? 'All timelines' : option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Sort</span>
-              <select value={filters.sort} onChange={(event) => setFilters({ ...filters, sort: event.target.value })}>
-                <option value="featured">Featured first</option>
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="title">Title A-Z</option>
-              </select>
-            </label>
+        {isLoading ? (
+          <>
+            <div className="projects-toolbar projects-toolbar--loading" aria-busy="true">
+              <div className="projects-toolbar-group projects-toolbar-group--loading">
+                <div className="skeleton skeleton-line projects-skeleton-chip"></div>
+                <div className="skeleton skeleton-line projects-skeleton-chip"></div>
+                <div className="skeleton skeleton-line projects-skeleton-chip"></div>
+                <div className="skeleton skeleton-line projects-skeleton-chip"></div>
+              </div>
+              <div className="skeleton skeleton-line projects-skeleton-counter"></div>
+            </div>
+            <div className="projects-grid projects-grid--loading">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div className="project-card project-card--loading" key={index}>
+                  <div className="skeleton skeleton-line projects-skeleton-number"></div>
+                  <div className="skeleton skeleton-line projects-skeleton-pill"></div>
+                  <div className="skeleton skeleton-line skeleton-line--lg projects-skeleton-title"></div>
+                  <div className="skeleton skeleton-line projects-skeleton-copy"></div>
+                  <div className="skeleton skeleton-line projects-skeleton-copy projects-skeleton-copy--short"></div>
+                  <div className="projects-skeleton-tags">
+                    <span className="skeleton skeleton-block projects-skeleton-tag"></span>
+                    <span className="skeleton skeleton-block projects-skeleton-tag"></span>
+                    <span className="skeleton skeleton-block projects-skeleton-tag"></span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : dataSource === 'empty' ? (
+          <div className="projects-empty projects-empty--wide">
+            <h3>No projects published yet.</h3>
+            <p>Add a project from the admin dashboard to show it here.</p>
           </div>
-          <div className="projects-toolbar-count">
-            <FaSortAmountDown />
-            <span>{filteredProjects.length} projects shown</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="projects-toolbar">
+              <div className="projects-toolbar-group">
+                <FaFilter />
+                <label>
+                  <span>Stack</span>
+                  <select value={filters.stack} onChange={(event) => setFilters({ ...filters, stack: event.target.value })}>
+                    {stackOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option === 'all' ? 'All stacks' : option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Type</span>
+                  <select value={filters.type} onChange={(event) => setFilters({ ...filters, type: event.target.value })}>
+                    {typeOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option === 'all' ? 'All types' : option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Timeline</span>
+                  <select value={filters.timeline} onChange={(event) => setFilters({ ...filters, timeline: event.target.value })}>
+                    {timelineOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option === 'all' ? 'All timelines' : option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Sort</span>
+                  <select value={filters.sort} onChange={(event) => setFilters({ ...filters, sort: event.target.value })}>
+                    <option value="featured">Featured first</option>
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="title">Title A-Z</option>
+                  </select>
+                </label>
+              </div>
+              <div className="projects-toolbar-count">
+                <FaSortAmountDown />
+                <span>{filteredProjects.length} projects shown</span>
+              </div>
+            </div>
 
-        {filteredProjects.length ? (
+            {filteredProjects.length ? (
           <div className="projects-grid">
             {filteredProjects.map((project, index) => (
               <article className="project-card" key={project.slug || project.id}>
@@ -202,6 +244,8 @@ const Projects = () => {
               Reset Filters
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
     </section>

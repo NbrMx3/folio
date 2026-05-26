@@ -240,9 +240,36 @@ const Gallery = () => {
           <p className="gallery-description">Explore my photos, videos, and audio</p>
 
           {loading ? (
-            <div className="gallery-loading">Loading gallery...</div>
+            <div className="gallery-loading gallery-loading--skeleton" aria-busy="true">
+              <div className="gallery-loading-header">
+                <div className="skeleton skeleton-line skeleton-line--lg gallery-loading-title"></div>
+                <div className="skeleton skeleton-line gallery-loading-subtitle"></div>
+              </div>
+              <div className="gallery-loading-groups">
+                {Array.from({ length: 3 }).map((_, groupIndex) => (
+                  <div className="gallery-loading-group" key={groupIndex}>
+                    <div className="gallery-group-header gallery-group-header--loading">
+                      <div className="skeleton skeleton-line gallery-loading-group-title"></div>
+                      <div className="skeleton skeleton-line gallery-loading-group-count"></div>
+                    </div>
+                    <div className="gallery-grid gallery-grid--loading">
+                      {Array.from({ length: 3 }).map((__, cardIndex) => (
+                        <div className="gallery-card gallery-card--loading" key={cardIndex}>
+                          <div className="skeleton skeleton-block gallery-loading-media"></div>
+                          <div className="skeleton skeleton-line gallery-loading-caption"></div>
+                          <div className="skeleton skeleton-line gallery-loading-caption gallery-loading-caption--short"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : items.length === 0 ? (
-            <div className="gallery-empty">No gallery items yet.</div>
+            <div className="gallery-empty gallery-empty--wide">
+              <h2>No gallery items yet.</h2>
+              <p>Upload photos, videos, or audio from the admin dashboard to bring this section to life.</p>
+            </div>
           ) : (
             <div className="gallery-groups">
               <div className="gallery-group">

@@ -172,6 +172,12 @@ const Contact = () => {
               <span>{feedback}</span>
             </div>
           )}
+          {status === 'idle' && !feedback && (
+            <div className="contact-status idle">
+              <FaPaperPlane />
+              <span>No message sent yet. Share a brief and I’ll reply with the next step.</span>
+            </div>
+          )}
         </div>
         <div className="contact-grid">
           {contactDetails.map((item) => (

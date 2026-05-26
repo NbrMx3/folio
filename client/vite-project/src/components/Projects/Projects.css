@@ -40,6 +40,30 @@
   box-shadow: var(--shadow-soft);
 }
 
+.projects-toolbar--loading {
+  min-height: 5.75rem;
+}
+
+.projects-toolbar-group--loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.projects-skeleton-chip {
+  width: 8.5rem;
+  height: 2.9rem;
+  border-radius: 12px;
+}
+
+.projects-skeleton-counter {
+  width: 9.5rem;
+  height: 1rem;
+  border-radius: 999px;
+}
+
 .projects-toolbar-group {
   display: flex;
   align-items: center;
@@ -87,6 +111,10 @@
   gap: 1.5rem;
 }
 
+.projects-grid--loading {
+  align-items: stretch;
+}
+
 .project-card {
   background:
     linear-gradient(180deg, rgba(7, 30, 65, 0.54), rgba(5, 20, 42, 0.72)),
@@ -100,6 +128,54 @@
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(10px);
   will-change: transform;
+}
+
+.project-card--loading {
+  pointer-events: none;
+}
+
+.projects-skeleton-number {
+  width: 3rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+}
+
+.projects-skeleton-pill {
+  width: 8rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+
+.projects-skeleton-title {
+  width: 68%;
+  margin-bottom: 0.9rem;
+}
+
+.projects-skeleton-copy {
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+
+.projects-skeleton-copy--short {
+  width: 82%;
+  margin-bottom: 1rem;
+}
+
+.projects-skeleton-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.2rem 0 1.1rem;
+}
+
+.projects-skeleton-tag {
+  width: 4.2rem;
+  height: 1.5rem;
+  border-radius: 20px;
 }
 
 .project-card::before {
@@ -263,6 +339,10 @@
   background: rgba(4, 17, 39, 0.58);
   color: var(--text-muted);
   text-align: center;
+}
+
+.projects-empty--wide {
+  min-height: 14rem;
 }
 
 .projects-empty h3 {

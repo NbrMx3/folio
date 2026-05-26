@@ -33,8 +33,9 @@ const iconMap = {
 };
 
 const Skills = () => {
-  const [skills, setSkills] = useState(fallbackSkills);
-  const [error, setError] = useState('');
+  const [skills, setSkills] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasPublishedSkills, setHasPublishedSkills] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -42,14 +43,21 @@ const Skills = () => {
     getSkills()
       .then((data) => {
         if (isMounted) {
-          setSkills(Array.isArray(data) ? data : []);
+          const nextSkills = Array.isArray(data) ? data : [];
+          setSkills(nextSkills);
+          setHasPublishedSkills(nextSkills.length > 0);
         }
       })
       .catch((err) => {
         console.error('Skills fetch error:', err.message);
         if (isMounted) {
           setSkills(fallbackSkills);
-          setError('');
+          setHasPublishedSkills(true);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
         }
       });
 
@@ -64,16 +72,33 @@ const Skills = () => {
         <h2 className="section-title">
           Technical <span className="highlight">Expertise</span>
         </h2>
-        {error && <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>{error}</p>}
-        <div className="skills-grid">
-          {skills.map((skill) => (
-            <div className="skill-card" key={skill.id}>
-              <div className="skill-icon">{iconMap[skill.icon] || <FaCode />}</div>
-              <h3>{skill.title}</h3>
-              <p>{skill.description}</p>
-            </div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="skills-grid skills-grid--loading" aria-busy="true" aria-live="polite">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div className="skill-card skill-card--loading" key={index}>
+                <div className="skeleton skeleton-block skill-skeleton-icon"></div>
+                <div className="skeleton skeleton-line skeleton-line--lg skill-skeleton-title"></div>
+                <div className="skeleton skeleton-line skill-skeleton-copy"></div>
+                <div className="skeleton skeleton-line skill-skeleton-copy skill-skeleton-copy--short"></div>
+              </div>
+            ))}
+          </div>
+        ) : !hasPublishedSkills ? (
+          <div className="skills-empty-state">
+            <h3>No skills published yet.</h3>
+            <p>Add a few core skills in the admin dashboard to make this section visible.</p>
+          </div>
+        ) : (
+          <div className="skills-grid">
+            {skills.map((skill) => (
+              <div className="skill-card" key={skill.id}>
+                <div className="skill-icon">{iconMap[skill.icon] || <FaCode />}</div>
+                <h3>{skill.title}</h3>
+                <p>{skill.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

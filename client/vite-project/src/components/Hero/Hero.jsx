@@ -16,6 +16,8 @@ import './Hero.css';
 
 const Hero = () => {
   const heroRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasProfileData, setHasProfileData] = useState(true);
   const [profile, setProfile] = useState({
     ...fallbackProfile,
   });
@@ -32,6 +34,8 @@ const Hero = () => {
     getProfile()
       .then((data) => {
         if (isMounted && data && typeof data === 'object') {
+          const hasPublishedData = Object.keys(data).length > 0;
+          setHasProfileData(hasPublishedData);
           setProfile((prev) => ({ ...prev, ...data }));
         }
       })
@@ -39,6 +43,12 @@ const Hero = () => {
         console.error('Profile fetch error:', err.message);
         if (isMounted) {
           setProfile(fallbackProfile);
+          setHasProfileData(false);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
         }
       });
 
@@ -128,6 +138,36 @@ const Hero = () => {
     void trackConversion(ref, 'cta', action);
   };
 
+  if (isLoading) {
+    return (
+      <section className="hero" id="home" ref={heroRef}>
+        <div className="hero-container hero-loading-state">
+          <div className="hero-loading-copy">
+            <div className="skeleton skeleton-line hero-loading-kicker"></div>
+            <div className="skeleton skeleton-line skeleton-line--lg hero-loading-title hero-loading-title-top"></div>
+            <div className="skeleton skeleton-line skeleton-line--lg hero-loading-title hero-loading-title-bottom"></div>
+            <div className="skeleton skeleton-line hero-loading-description"></div>
+            <div className="skeleton skeleton-line hero-loading-description hero-loading-description--short"></div>
+            <div className="hero-loading-actions">
+              <div className="skeleton skeleton-block hero-loading-button"></div>
+              <div className="skeleton skeleton-block hero-loading-avatar-row"></div>
+            </div>
+            <div className="hero-loading-metrics">
+              <div className="skeleton skeleton-block hero-loading-metric"></div>
+              <div className="skeleton skeleton-block hero-loading-metric"></div>
+              <div className="skeleton skeleton-block hero-loading-metric"></div>
+            </div>
+          </div>
+          <div className="hero-loading-visual">
+            <div className="skeleton skeleton-block hero-loading-card hero-loading-code"></div>
+            <div className="skeleton skeleton-block hero-loading-card hero-loading-status"></div>
+            <div className="skeleton skeleton-block hero-loading-card hero-loading-image"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="hero" id="home" ref={heroRef}>
       <div className="hero-container">
@@ -143,6 +183,11 @@ const Hero = () => {
           <p className="hero-sub">
             Specializing in modern web development and cyber systems
           </p>
+          {!hasProfileData && (
+            <div className="hero-empty-note">
+              No published profile content yet. Showing the portfolio defaults until the backend is updated.
+            </div>
+          )}
           <div className="hero-actions">
             <a href="#contact" className="btn-primary" onClick={() => handleQuickAction('contact')}>
               Let's Connect
@@ -219,7 +264,7 @@ const Hero = () => {
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
             ) : (
-              <div className="hero-image-placeholder">Profile Preview</div>
+              <div className="hero-image-placeholder">No profile image uploaded yet</div>
             )}
             <div className="hero-image-meta">
               <strong>{profile.name || 'Ready to collaborate'}</strong>
