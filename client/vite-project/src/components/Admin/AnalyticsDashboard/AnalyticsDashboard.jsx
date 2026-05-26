@@ -25,6 +25,7 @@ import {
   getTraccarOverview,
   getDownloadSummary,
   getDownloadLogs,
+  clearDownloadAnalytics,
   getProfile,
   getSkills,
   getProjectsList,
@@ -135,6 +136,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
   const [downloadSummary, setDownloadSummary] = useState(null);
   const [downloadLogs, setDownloadLogs] = useState([]);
   const [downloadLoading, setDownloadLoading] = useState(true);
+  const [isClearingDownloads, setIsClearingDownloads] = useState(false);
   const [contentHealth, setContentHealth] = useState(null);
   const [contentHealthLoading, setContentHealthLoading] = useState(true);
   const [visitorPage, setVisitorPage] = useState(1);
@@ -404,6 +406,30 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
     }
   };
 
+  const handleClearDownloadAnalytics = async () => {
+    const shouldClear = window.confirm(
+      'Are you sure you want to clear all download analytics data? This action cannot be undone.'
+    );
+
+    if (!shouldClear || isClearingDownloads) return;
+
+    try {
+      setIsClearingDownloads(true);
+      await clearDownloadAnalytics();
+      setDownloadSummary({
+        totalDownloads: 0,
+        todayDownloads: 0,
+        monthDownloads: 0,
+        yearDownloads: 0,
+      });
+      setDownloadLogs([]);
+    } catch {
+      window.alert('Failed to clear download analytics. Please try again.');
+    } finally {
+      setIsClearingDownloads(false);
+    }
+  };
+
   const describeActivity = (visitor) => {
     const pageValue = String(visitor?.page || '');
     if (pageValue.startsWith('/projects/') && pageValue.includes('link=')) {
@@ -656,10 +682,24 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
       )}
 
       <div className="analytics-section">
-        <h3>Download Activity</h3>
-        <p className="section-hint">
-          Independent resume and gallery download logs with daily, monthly, and yearly totals.
-        </p>
+        <div className="visitors-header">
+          <div>
+            <h3>Download Activity</h3>
+            <p className="section-hint">
+              Independent resume and gallery download logs with daily, monthly, and yearly totals.
+            </p>
+          </div>
+          <div className="visitors-actions">
+            <button
+              type="button"
+              className="clear-analytics-btn"
+              onClick={handleClearDownloadAnalytics}
+              disabled={isClearingDownloads}
+            >
+              <FaTrash /> {isClearingDownloads ? 'Clearing...' : 'Delete Download Analytics'}
+            </button>
+          </div>
+        </div>
         {downloadLoading ? (
           <p className="no-data">Loading download activity...</p>
         ) : downloadSummary ? (

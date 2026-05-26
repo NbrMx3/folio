@@ -1,7 +1,7 @@
 import express from 'express';
 import UAParser from 'ua-parser-js';
 import { verifyToken } from './middleware/auth.js';
-import { createDownloadLog, getDownloadLogs, getDownloadSummary } from '../utils/db.js';
+import { createDownloadLog, getDownloadLogs, getDownloadSummary, clearDownloadLogs } from '../utils/db.js';
 
 const router = express.Router();
 
@@ -66,6 +66,17 @@ router.get('/logs', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Download log list error:', error);
     res.status(500).json({ error: 'Failed to fetch download logs' });
+  }
+});
+
+// Admin delete action for download analytics.
+router.delete('/clear', verifyToken, async (req, res) => {
+  try {
+    await clearDownloadLogs();
+    res.json({ success: true, message: 'Download analytics cleared successfully' });
+  } catch (error) {
+    console.error('Clear download analytics error:', error);
+    res.status(500).json({ error: 'Failed to clear download analytics' });
   }
 });
 

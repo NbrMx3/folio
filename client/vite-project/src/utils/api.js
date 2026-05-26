@@ -413,6 +413,12 @@ export async function getDownloadLogs(page = 1, limit = 20) {
   return authFetch(`/downloads/logs?page=${page}&limit=${limit}`);
 }
 
+export async function clearDownloadAnalytics() {
+  return authFetch('/downloads/clear', {
+    method: 'DELETE',
+  });
+}
+
 // Track a visit (called from portfolio)
 export async function trackVisit(ref = 'direct', page = '/') {
   const payload = { ref, page };

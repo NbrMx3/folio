@@ -1092,6 +1092,17 @@ export async function getDownloadSummary() {
   return buildDownloadOverview(db.downloadLogs || []);
 }
 
+export async function clearDownloadLogs() {
+  if (usingPostgres && pool) {
+    await pool.query('DELETE FROM download_logs');
+    return;
+  }
+
+  const db = await readJsonDb();
+  db.downloadLogs = [];
+  await writeJsonDb(db);
+}
+
 export async function getTotalViews() {
   if (usingPostgres && pool) {
     const result = await pool.query('SELECT COUNT(*) as total FROM visitors');
