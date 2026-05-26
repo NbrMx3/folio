@@ -1,5 +1,61 @@
 # Folio Portfolio
 
+## Release Checklist
+
+Use this when handing the project off or doing a fresh production release.
+
+1. Push the latest changes to `main`.
+2. Deploy the frontend on Vercel with the project root set to `client/vite-project`.
+3. Deploy the backend on Render with the project root set to `server`.
+4. Set the frontend API base URL to the live backend URL.
+5. Verify the admin dashboard, gallery, projects, contact form, and case studies in the production build.
+
+### Frontend deploy steps
+
+- Install dependencies and build from `client/vite-project`.
+- Use `pnpm run build` with `dist` as the output directory.
+- On Vercel, the import template already points to the nested frontend folder.
+
+### Required environment variables
+
+Frontend:
+
+- `VITE_API_BASE_URL` - live backend URL used by the client.
+
+Backend:
+
+- `NODE_ENV=production`
+- `PORT=10000`
+- `JWT_SECRET`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `ADMIN_RECOVERY_EMAIL`
+- `DATABASE_URL`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `CLIENT_URL` - set this to the deployed Vercel URL.
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+- `TRACCAR_BASE_URL` (optional)
+- `TRACCAR_USERNAME` (optional)
+- `TRACCAR_PASSWORD` (optional)
+- `TRACCAR_SESSION_PATH` (optional)
+- `TRACCAR_TIMEOUT_MS` (optional)
+
+### Backend setup
+
+- Deploy the Express API separately from Vercel because Vercel is only hosting the frontend.
+- Use the `server` folder as the Render root directory.
+- `render.yaml` already defines the production service, build command, start command, and secret environment variables.
+- After deployment, confirm the backend health check passes and the frontend can reach the API.
+
+---
+
 ## Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/NbrMx3/folio/tree/main/client/vite-project)
