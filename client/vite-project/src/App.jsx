@@ -6,6 +6,7 @@ import ProjectCaseStudy from './pages/ProjectCaseStudy/ProjectCaseStudy';
 import AdminLogin from './pages/AdminLogin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import AdminResetPassword from './pages/AdminResetPassword/AdminResetPassword';
+import NotFound from './pages/NotFound/NotFound';
 import './App.css';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/reset-password" element={<AdminResetPassword />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
