@@ -124,7 +124,7 @@ const isPictureItem = (item) => {
   return /\.(png|jpe?g|webp|gif|svg)(\?|$)/.test(url);
 };
 
-const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
+const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
   const [chartData, setChartData] = useState([]);
   const [visitors, setVisitors] = useState([]);
   const [platforms, setPlatforms] = useState({});
@@ -289,6 +289,9 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                       <FaCheckCircle /> Profile data is complete.
                     </p>
                   )}
+                  <button type="button" className="content-health-card-action" onClick={() => onQuickEdit?.('profile')}>
+                    Quick edit profile
+                  </button>
                 </article>
 
                 {contentHealth.sections.map((section) => (
@@ -314,6 +317,9 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                       </div>
                     )}
                     <p className="content-health-message">{section.detail}</p>
+                    <button type="button" className="content-health-card-action" onClick={() => onQuickEdit?.(section.name.toLowerCase())}>
+                      Quick edit {section.name.toLowerCase()}
+                    </button>
                   </article>
                 ))}
               </div>
@@ -381,8 +387,47 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
     return 'Viewed portfolio';
   };
 
+  const missingSections = contentHealth?.missingSections || [];
+  const missingProfileFields = contentHealth?.missingProfileFields || [];
+  const hasContentWarnings = Boolean(contentHealth && (missingSections.length > 0 || missingProfileFields.length > 0));
+
+  const quickEditTargets = [
+    { label: 'Profile', tab: 'profile' },
+    { label: 'Projects', tab: 'projects' },
+    { label: 'Gallery', tab: 'gallery' },
+    { label: 'Skills', tab: 'skills' },
+  ];
+
   return (
     <div className="analytics-dashboard">
+      {hasContentWarnings && (
+        <div className="content-health-alert" role="status" aria-live="polite">
+          <div className="content-health-alert-copy">
+            <FaExclamationTriangle />
+            <div>
+              <strong>Content completeness needs attention.</strong>
+              <p>
+                {missingProfileFields.length > 0 && `${missingProfileFields.length} profile field${missingProfileFields.length === 1 ? '' : 's'} missing.`}
+                {missingProfileFields.length > 0 && missingSections.length > 0 && ' '}
+                {missingSections.length > 0 && `${missingSections.length} section${missingSections.length === 1 ? '' : 's'} still empty.`}
+              </p>
+            </div>
+          </div>
+          <div className="content-health-alert-actions">
+            {quickEditTargets.map((target) => (
+              <button
+                key={target.tab}
+                type="button"
+                className="content-health-action"
+                onClick={() => onQuickEdit?.(target.tab)}
+              >
+                Edit {target.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Platform Breakdown */}
       <div className="analytics-section">
         <h3>Platform Breakdown</h3>

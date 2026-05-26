@@ -13,6 +13,8 @@ import {
   FaKey,
   FaProjectDiagram,
   FaImages,
+  FaExternalLinkAlt,
+  FaPenNib,
 } from 'react-icons/fa';
 import { verifyAuth, removeToken } from '../../utils/api';
 import { useAdminStore } from '../../store/useAdminStore';
@@ -60,6 +62,14 @@ const AdminDashboard = () => {
     resetAdmin();
     removeToken();
     navigate('/admin/login');
+  };
+
+  const handleQuickEdit = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handlePreviewPublicSite = () => {
+    window.open('/', '_blank', 'noopener,noreferrer');
   };
 
   const getTabTitle = () => {
@@ -142,15 +152,27 @@ const AdminDashboard = () => {
       {/* Main content */}
       <main className="admin-main">
         <header className="admin-header">
-          <h1>{getTabTitle()}</h1>
-          <p className="admin-date">
-            {new Date().toLocaleDateString('en', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
+          <div className="admin-header-top">
+            <div>
+              <h1>{getTabTitle()}</h1>
+              <p className="admin-date">
+                {new Date().toLocaleDateString('en', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+            </div>
+            <div className="admin-header-actions">
+              <button type="button" className="admin-header-action" onClick={handlePreviewPublicSite}>
+                <FaExternalLinkAlt /> Preview Public Site
+              </button>
+              <button type="button" className="admin-header-action admin-header-action--ghost" onClick={() => handleQuickEdit('profile')}>
+                <FaPenNib /> Quick Edit
+              </button>
+            </div>
+          </div>
         </header>
 
         {/* Overview Stats */}
@@ -199,7 +221,11 @@ const AdminDashboard = () => {
 
         {/* Tab Content */}
         {activeTab === 'analytics' && (
-          <AnalyticsDashboard overview={overview} onAnalyticsCleared={loadOverview} />
+          <AnalyticsDashboard
+            overview={overview}
+            onAnalyticsCleared={loadOverview}
+            onQuickEdit={handleQuickEdit}
+          />
         )}
         {activeTab === 'profile' && <ProfileUpload />}
         {activeTab === 'skills' && <SkillsManager />}

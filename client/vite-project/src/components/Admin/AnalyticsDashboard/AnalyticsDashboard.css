@@ -18,6 +18,71 @@
   padding: 0.15rem;
 }
 
+.content-health-alert {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 63, 108, 0.26);
+  background: linear-gradient(135deg, rgba(255, 63, 108, 0.14), rgba(3, 10, 20, 0.84));
+  box-shadow: 0 12px 28px rgba(3, 8, 20, 0.42);
+}
+
+.content-health-alert-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: var(--cyber-text);
+}
+
+.content-health-alert-copy svg {
+  margin-top: 0.15rem;
+  color: #ff9eb6;
+}
+
+.content-health-alert-copy p {
+  margin: 0.2rem 0 0;
+  color: var(--cyber-muted);
+  font-size: 0.85rem;
+}
+
+.content-health-alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.content-health-action,
+.content-health-card-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.42rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 234, 255, 0.22);
+  background: rgba(0, 234, 255, 0.08);
+  color: #9befff;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.content-health-action:hover,
+.content-health-card-action:hover {
+  background: rgba(0, 234, 255, 0.14);
+}
+
+.content-health-card-action {
+  width: fit-content;
+  margin-top: 0.25rem;
+}
+
 .analytics-dashboard::before {
   content: '';
   position: absolute;
