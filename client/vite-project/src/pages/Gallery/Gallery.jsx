@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import Seo from '../../components/Seo/Seo';
 import { getGallery } from '../../utils/api';
 import './Gallery.css';
 
@@ -233,6 +234,20 @@ const Gallery = () => {
 
   return (
     <>
+      <Seo
+        title="Nbr's Gallery"
+        description="Browse CyberDev's gallery of photos, videos, and audio with a curated media experience."
+        url={`${window.location.origin}/gallery`}
+        image="/dk_portfolio_logo_light.svg"
+        type="website"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: "Nbr's Gallery",
+          description: "Browse CyberDev's gallery of photos, videos, and audio.",
+          url: `${window.location.origin}/gallery`,
+        }}
+      />
       <Navbar />
       <section className="gallery-section">
         <div className="gallery-container">

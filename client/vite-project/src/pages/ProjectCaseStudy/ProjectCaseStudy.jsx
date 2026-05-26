@@ -56,8 +56,9 @@ const ProjectCaseStudy = () => {
       <main className="case-study case-study-error">
         <Seo
           title="Project Case Study"
-          description="A detailed project case study from the portfolio."
-          url={window.location.href}
+          description="A detailed project case study from the CyberDev portfolio."
+          url={`${window.location.origin}/projects/${projectSlug}`}
+          image="/dk_portfolio_logo_light.svg"
         />
         <div className="case-study-shell">
           <Link className="case-study-back" to="/#projects">
@@ -77,8 +78,9 @@ const ProjectCaseStudy = () => {
       <main className="case-study case-study-loading">
         <Seo
           title="Project Case Study"
-          description="Loading portfolio project details."
-          url={window.location.href}
+          description="Loading CyberDev portfolio project details."
+          url={`${window.location.origin}/projects/${projectSlug}`}
+          image="/dk_portfolio_logo_light.svg"
         />
         <div className="case-study-shell">
           <div className="case-study-panel">
@@ -93,8 +95,8 @@ const ProjectCaseStudy = () => {
     <main className="case-study">
       <Seo
         title={`${project.title} Case Study`}
-        description={project.summary || project.description}
-        url={window.location.href}
+        description={project.summary || project.description || `A detailed case study for ${project.title}.`}
+        url={`${window.location.origin}/projects/${projectSlug}`}
         image="/dk_portfolio_logo_light.svg"
         type="article"
         schema={{
@@ -102,7 +104,7 @@ const ProjectCaseStudy = () => {
           '@type': 'CreativeWork',
           name: project.title,
           description: project.summary || project.description,
-          url: window.location.href,
+          url: `${window.location.origin}/projects/${projectSlug}`,
           creator: {
             '@type': 'Person',
             name: 'CyberDev',

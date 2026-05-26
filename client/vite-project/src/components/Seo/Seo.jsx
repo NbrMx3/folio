@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 
-const SITE_NAME = 'CyberDev';
+const SITE_NAME = 'CyberDev Portfolio';
+
+const toAbsoluteUrl = (value) => {
+  if (!value) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  if (typeof window === 'undefined') return value;
+  return new URL(value, window.location.origin).toString();
+};
 
 const setMetaTag = (key, value, property = false) => {
   if (!value) return null;
@@ -32,27 +39,31 @@ const Seo = ({
 }) => {
   useEffect(() => {
     const previousTitle = document.title;
+    const resolvedUrl = toAbsoluteUrl(url);
+    const resolvedImage = toAbsoluteUrl(image);
     document.title = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
 
     const existingCanonical = document.head.querySelector('link[rel="canonical"]');
     const canonical = existingCanonical || document.createElement('link');
     canonical.setAttribute('rel', 'canonical');
-    canonical.setAttribute('href', url);
+    canonical.setAttribute('href', resolvedUrl);
     if (!existingCanonical) {
       document.head.appendChild(canonical);
     }
 
     const tags = [
+      setMetaTag('robots', 'index,follow'),
+      setMetaTag('og:site_name', SITE_NAME, true),
       setMetaTag('description', description),
       setMetaTag('og:title', title, true),
       setMetaTag('og:description', description, true),
       setMetaTag('og:type', type, true),
-      setMetaTag('og:url', url, true),
-      setMetaTag('og:image', image, true),
+      setMetaTag('og:url', resolvedUrl, true),
+      setMetaTag('og:image', resolvedImage, true),
       setMetaTag('twitter:card', 'summary_large_image'),
       setMetaTag('twitter:title', title),
       setMetaTag('twitter:description', description),
-      setMetaTag('twitter:image', image),
+      setMetaTag('twitter:image', resolvedImage),
     ].filter(Boolean);
 
     const schemaScriptId = 'portfolio-schema-jsonld';

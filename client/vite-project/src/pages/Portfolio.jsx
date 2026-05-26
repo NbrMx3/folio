@@ -64,15 +64,16 @@ const Portfolio = () => {
   return (
     <>
       <Seo
-        title="Full-Stack Developer Portfolio"
-        description="CyberDev portfolio featuring motion-rich project showcases, case studies, writing, and direct contact options."
-        url={window.location.href}
+        title="CyberDev | Full-Stack Developer Portfolio"
+        description="CyberDev's portfolio featuring motion-rich project showcases, detailed case studies, writing, and direct contact options."
+        url={window.location.origin}
+        image="/dk_portfolio_logo_light.svg"
         schema={{
           '@context': 'https://schema.org',
           '@type': 'Person',
           name: 'CyberDev',
           jobTitle: 'Full-Stack Developer',
-          url: window.location.href,
+          url: window.location.origin,
           image: '/dk_portfolio_logo_light.svg',
           sameAs: ['https://github.com', 'https://linkedin.com', 'https://x.com'],
         }}
