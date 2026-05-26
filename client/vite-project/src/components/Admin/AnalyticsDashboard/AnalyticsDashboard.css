@@ -144,6 +144,66 @@
   color: #99ffd1;
 }
 
+.asset-preview-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.asset-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.asset-preview-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 234, 255, 0.18);
+  background: rgba(3, 10, 20, 0.82);
+  min-height: 86px;
+}
+
+.profile-frame {
+  width: min(100%, 180px);
+  aspect-ratio: 1 / 1;
+}
+
+.gallery-frame {
+  aspect-ratio: 1 / 1;
+}
+
+.asset-preview-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.asset-preview-empty {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  color: #ffcfda;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.asset-preview-empty svg {
+  font-size: 1rem;
+}
+
+.asset-preview-empty-wide {
+  grid-column: 1 / -1;
+  min-height: 86px;
+}
+
 .missing-chips {
   display: flex;
   flex-wrap: wrap;

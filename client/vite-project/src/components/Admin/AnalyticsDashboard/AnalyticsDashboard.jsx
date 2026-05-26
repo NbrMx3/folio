@@ -111,6 +111,19 @@ const isMissingValue = (value) => {
   return false;
 };
 
+const resolveAssetUrl = (value) => {
+  if (!value) return '';
+  if (value.startsWith('http')) return value;
+  return value;
+};
+
+const isPictureItem = (item) => {
+  const type = String(item?.type || '').toLowerCase();
+  if (type === 'photo' || type === 'image') return true;
+  const url = String(item?.url || '').toLowerCase();
+  return /\.(png|jpe?g|webp|gif|svg)(\?|$)/.test(url);
+};
+
 const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
   const [chartData, setChartData] = useState([]);
   const [visitors, setVisitors] = useState([]);
@@ -165,6 +178,7 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
         const skills = skillsResult.status === 'fulfilled' && Array.isArray(skillsResult.value) ? skillsResult.value : [];
         const projects = projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value) ? projectsResult.value : [];
         const gallery = galleryResult.status === 'fulfilled' && Array.isArray(galleryResult.value) ? galleryResult.value : [];
+        const galleryPhotos = gallery.filter(isPictureItem);
 
         const missingProfileFields = profile
           ? profileFields.filter(({ key }) => isMissingValue(profile[key])).map(({ label }) => label)
@@ -183,8 +197,8 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
           },
           {
             name: 'Gallery',
-            status: gallery.length > 0 ? 'ready' : 'missing',
-            detail: gallery.length > 0 ? `${gallery.length} gallery item${gallery.length === 1 ? '' : 's'} published` : 'No gallery media has been uploaded yet.',
+            status: galleryPhotos.length > 0 ? 'ready' : 'missing',
+            detail: galleryPhotos.length > 0 ? `${galleryPhotos.length} photo${galleryPhotos.length === 1 ? '' : 's'} published` : 'No gallery photos have been uploaded yet.',
           },
         ];
 
@@ -195,6 +209,12 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
           missingProfileFields,
           sections,
           missingSections,
+          profilePicture: profile?.picture ? resolveAssetUrl(profile.picture) : '',
+          galleryPhotos: galleryPhotos.slice(0, 6).map((item) => ({
+            id: item.id,
+            title: item.title || 'Untitled photo',
+            url: resolveAssetUrl(item.url),
+          })),
         });
       } finally {
         if (!cancelled) {
@@ -238,6 +258,18 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                     <span className="content-health-title">Profile</span>
                     <span className="content-health-badge">{contentHealth.profileStatus}</span>
                   </div>
+                  <div className="asset-preview-row">
+                    <div className="asset-preview-frame profile-frame">
+                      {contentHealth.profilePicture ? (
+                        <img src={contentHealth.profilePicture} alt="Profile preview" />
+                      ) : (
+                        <div className="asset-preview-empty">
+                          <FaExclamationTriangle />
+                          <span>No profile image uploaded</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   {contentHealth.missingProfileFields.length > 0 ? (
                     <>
                       <p className="content-health-message">
@@ -265,6 +297,22 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared }) => {
                       <span className="content-health-title">{section.name}</span>
                       <span className="content-health-badge">{section.status}</span>
                     </div>
+                    {section.name === 'Gallery' && (
+                      <div className="asset-preview-grid">
+                        {contentHealth.galleryPhotos.length > 0 ? (
+                          contentHealth.galleryPhotos.map((photo) => (
+                            <div className="asset-preview-frame gallery-frame" key={photo.id || photo.url} title={photo.title}>
+                              <img src={photo.url} alt={photo.title} />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="asset-preview-empty asset-preview-empty-wide">
+                            <FaExclamationTriangle />
+                            <span>No gallery photos uploaded</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <p className="content-health-message">{section.detail}</p>
                   </article>
                 ))}
