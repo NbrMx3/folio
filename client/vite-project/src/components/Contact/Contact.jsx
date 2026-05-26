@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle, FaDownload } from 'react-icons/fa';
 import { sendContactMessage, trackConversion } from '../../utils/api';
+import { fallbackProfile } from '../../data/offlineContent';
 import './Contact.css';
 
 const Contact = () => {
@@ -38,7 +39,7 @@ const Contact = () => {
   const quickActions = [
     {
       label: 'Resume',
-      href: profile.resume || '/resume.pdf',
+      href: fallbackProfile.resume || '/resume.pdf',
       track: 'resume',
       icon: <FaDownload />,
       download: true,

@@ -12,6 +12,9 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['dk_portfolio_logo_light.svg'],
       workbox: {
+          cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
