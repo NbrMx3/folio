@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "installCommand": "cd client/vite-project && pnpm install",
+  "buildCommand": "cd client/vite-project && pnpm run build",
+  "outputDirectory": "client/vite-project/dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://folioo-dxty.onrender.com/api/$1" },
+    { "source": "/uploads/(.*)", "destination": "https://folioo-dxty.onrender.com/uploads/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
