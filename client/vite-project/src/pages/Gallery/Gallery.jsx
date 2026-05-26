@@ -218,26 +218,23 @@ const Gallery = () => {
       .replace(/[^a-zA-Z0-9-_]/g, '')
       .toLowerCase();
 
-  const extensionFromType = (contentType) => {
-    if (!contentType) return '';
-    const map = {
-      'image/jpeg': 'jpg',
-      'image/png': 'png',
-      'image/webp': 'webp',
-      'image/svg+xml': 'svg',
-      'video/mp4': 'mp4',
-      'audio/mpeg': 'mp3',
-      'audio/wav': 'wav',
-      'audio/ogg': 'ogg',
-    };
-    return map[contentType] || '';
-  };
-
   const extensionFromUrl = (url) => {
     if (!url) return '';
     const clean = url.split('?')[0];
     const match = clean.match(/\.([a-zA-Z0-9]+)$/);
     return match ? match[1].toLowerCase() : '';
+  };
+
+  const downloadUrl = (url, filename) => {
+    const link = document.createElement('a');
+    link.href = url;
+    if (filename) {
+      link.download = filename;
+    }
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   const handleDownload = async (item) => {
@@ -248,23 +245,13 @@ const Gallery = () => {
       assetType: getMediaType(item),
       assetName: item?.title || 'Gallery item',
       assetUrl: url,
+      action: 'download',
     });
 
     try {
-      const response = await fetch(url, { mode: 'cors' });
-      if (!response.ok) throw new Error('Download failed');
-      const blob = await response.blob();
-      const contentType = response.headers.get('content-type') || '';
-      const ext = extensionFromType(contentType) || extensionFromUrl(url);
+      const ext = extensionFromUrl(url);
       const filename = `${sanitizeFilename(item?.title)}${ext ? `.${ext}` : ''}`;
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(blobUrl);
+      downloadUrl(url, filename);
     } catch {
       window.open(url, '_blank', 'noopener');
     }
@@ -273,6 +260,22 @@ const Gallery = () => {
   const handleSave = async (item) => {
     const url = resolveItemUrl(item);
     if (!url) return;
+
+    void trackDownload({
+      assetType: getMediaType(item),
+      assetName: item?.title || 'Gallery item',
+      assetUrl: url,
+      action: 'save',
+    });
+
+    try {
+      const ext = extensionFromUrl(url);
+      const filename = `${sanitizeFilename(item?.title)}${ext ? `.${ext}` : ''}`;
+      downloadUrl(url, filename);
+      return;
+    } catch {
+      // Fall back to opening the asset if the browser blocks direct downloads.
+    }
 
     if (navigator.share) {
       try {
