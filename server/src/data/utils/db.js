@@ -1,5 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
@@ -128,6 +129,79 @@ async function writeJsonDb(obj) {
   await fs.writeFile(DB_JSON_PATH, JSON.stringify(obj, null, 2), 'utf-8');
 }
 
+function normalizeDownloadType(value) {
+  const normalized = String(value || 'other').trim().toLowerCase();
+  if (normalized === 'resume' || normalized === 'gallery' || normalized === 'photo' || normalized === 'image') {
+    return normalized === 'image' ? 'gallery' : normalized;
+  }
+  return 'other';
+}
+
+function toDateKey(value, granularity = 'day') {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const iso = date.toISOString();
+  if (granularity === 'year') return iso.slice(0, 4);
+  if (granularity === 'month') return iso.slice(0, 7);
+  return iso.slice(0, 10);
+}
+
+function buildDownloadOverview(rows = []) {
+  const sorted = rows.slice().sort((a, b) => new Date(b.timestamp || b.created_at || 0) - new Date(a.timestamp || a.created_at || 0));
+  const now = Date.now();
+  const dayCutoff = now - 24 * 60 * 60 * 1000;
+  const monthCutoff = now - 30 * 24 * 60 * 60 * 1000;
+  const yearCutoff = now - 365 * 24 * 60 * 60 * 1000;
+
+  const totalDownloads = sorted.length;
+  const todayDownloads = sorted.filter((row) => new Date(row.timestamp || row.created_at || 0).getTime() >= dayCutoff).length;
+  const monthDownloads = sorted.filter((row) => new Date(row.timestamp || row.created_at || 0).getTime() >= monthCutoff).length;
+  const yearDownloads = sorted.filter((row) => new Date(row.timestamp || row.created_at || 0).getTime() >= yearCutoff).length;
+
+  const dailyMap = new Map();
+  const monthlyMap = new Map();
+  const yearlyMap = new Map();
+  const byType = { resume: 0, gallery: 0, other: 0 };
+
+  for (const row of sorted) {
+    const timestamp = row.timestamp || row.created_at || new Date().toISOString();
+    const dayKey = toDateKey(timestamp, 'day');
+    const monthKey = toDateKey(timestamp, 'month');
+    const yearKey = toDateKey(timestamp, 'year');
+    dailyMap.set(dayKey, (dailyMap.get(dayKey) || 0) + 1);
+    monthlyMap.set(monthKey, (monthlyMap.get(monthKey) || 0) + 1);
+    yearlyMap.set(yearKey, (yearlyMap.get(yearKey) || 0) + 1);
+    const normalizedType = normalizeDownloadType(row.assetType || row.asset_type);
+    byType[normalizedType] = (byType[normalizedType] || 0) + 1;
+  }
+
+  const dailyDownloads = Array.from(dailyMap.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .slice(-30)
+    .map(([label, count]) => ({ label, count }));
+
+  const monthlyDownloads = Array.from(monthlyMap.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .slice(-12)
+    .map(([label, count]) => ({ label, count }));
+
+  const yearlyDownloads = Array.from(yearlyMap.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([label, count]) => ({ label, count }));
+
+  return {
+    totalDownloads,
+    todayDownloads,
+    monthDownloads,
+    yearDownloads,
+    byType,
+    dailyDownloads,
+    monthlyDownloads,
+    yearlyDownloads,
+    recentDownloads: sorted.slice(0, 20),
+  };
+}
+
 // Initialize database tables
 export async function initDatabase() {
   // If Postgres is available, try to initialize the schema there.
@@ -252,6 +326,26 @@ export async function initDatabase() {
             latitude DOUBLE PRECISION,
             longitude DOUBLE PRECISION,
             page TEXT DEFAULT '/'
+          )
+        `);
+
+        // Create download logs table
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS download_logs (
+            id TEXT PRIMARY KEY,
+            asset_type TEXT DEFAULT 'other',
+            asset_name TEXT DEFAULT '',
+            asset_url TEXT DEFAULT '',
+            action TEXT DEFAULT 'download',
+            referrer TEXT DEFAULT 'direct',
+            page TEXT DEFAULT '/',
+            ip TEXT DEFAULT 'unknown',
+            browser TEXT DEFAULT 'Unknown',
+            os TEXT DEFAULT 'Unknown',
+            device TEXT DEFAULT 'desktop',
+            application TEXT DEFAULT 'Unknown',
+            user_agent TEXT DEFAULT '',
+            timestamp TIMESTAMP DEFAULT NOW()
           )
         `);
 
@@ -856,6 +950,7 @@ export async function addVisitor(visitor) {
   const db = await readJsonDb();
   db.visitors = db.visitors || [];
   db.platformStats = db.platformStats || {};
+  db.downloadLogs = db.downloadLogs || [];
   db.visitors.push({
     id,
     ip,
@@ -878,6 +973,123 @@ export async function addVisitor(visitor) {
   });
   db.platformStats[source] = (db.platformStats[source] || 0) + 1;
   await writeJsonDb(db);
+}
+
+export async function createDownloadLog(entry) {
+  const normalizedEntry = {
+    id: entry.id || randomUUID(),
+    assetType: normalizeDownloadType(entry.assetType || entry.asset_type),
+    assetName: entry.assetName || entry.asset_name || '',
+    assetUrl: entry.assetUrl || entry.asset_url || '',
+    action: entry.action || 'download',
+    referrer: entry.referrer || 'direct',
+    page: entry.page || '/',
+    ip: entry.ip || 'unknown',
+    browser: entry.browser || 'Unknown',
+    os: entry.os || 'Unknown',
+    device: entry.device || 'desktop',
+    application: entry.application || entry.browser || 'Unknown',
+    userAgent: entry.userAgent || entry.user_agent || '',
+    timestamp: entry.timestamp || new Date().toISOString(),
+  };
+
+  if (usingPostgres && pool) {
+    await pool.query(
+      `INSERT INTO download_logs (
+        id, asset_type, asset_name, asset_url, action, referrer, page, ip,
+        browser, os, device, application, user_agent, timestamp
+      )
+       VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8,
+        $9, $10, $11, $12, $13, $14
+      )`,
+      [
+        normalizedEntry.id,
+        normalizedEntry.assetType,
+        normalizedEntry.assetName,
+        normalizedEntry.assetUrl,
+        normalizedEntry.action,
+        normalizedEntry.referrer,
+        normalizedEntry.page,
+        normalizedEntry.ip,
+        normalizedEntry.browser,
+        normalizedEntry.os,
+        normalizedEntry.device,
+        normalizedEntry.application,
+        normalizedEntry.userAgent,
+        normalizedEntry.timestamp,
+      ]
+    );
+    return normalizedEntry;
+  }
+
+  const db = await readJsonDb();
+  db.downloadLogs = db.downloadLogs || [];
+  db.downloadLogs.push(normalizedEntry);
+  await writeJsonDb(db);
+  return normalizedEntry;
+}
+
+export async function getDownloadLogs(page = 1, limit = 20) {
+  const safePage = Math.max(1, parseInt(page, 10) || 1);
+  const safeLimit = Math.max(1, Math.min(100, parseInt(limit, 10) || 20));
+
+  if (usingPostgres && pool) {
+    const offset = (safePage - 1) * safeLimit;
+    const [logsResult, countResult] = await Promise.all([
+      pool.query('SELECT * FROM download_logs ORDER BY timestamp DESC LIMIT $1 OFFSET $2', [safeLimit, offset]),
+      pool.query('SELECT COUNT(*) as total FROM download_logs'),
+    ]);
+
+    return {
+      logs: logsResult.rows,
+      total: parseInt(countResult.rows[0].total, 10),
+      page: safePage,
+      pages: Math.max(1, Math.ceil(parseInt(countResult.rows[0].total, 10) / safeLimit)),
+    };
+  }
+
+  const db = await readJsonDb();
+  const logs = (db.downloadLogs || [])
+    .slice()
+    .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+  const total = logs.length;
+  const offset = (safePage - 1) * safeLimit;
+
+  return {
+    logs: logs.slice(offset, offset + safeLimit),
+    total,
+    page: safePage,
+    pages: Math.max(1, Math.ceil(total / safeLimit)),
+  };
+}
+
+export async function getDownloadSummary() {
+  if (usingPostgres && pool) {
+    const [rowsResult, dailyResult, monthlyResult, yearlyResult] = await Promise.all([
+      pool.query('SELECT * FROM download_logs ORDER BY timestamp DESC'),
+      pool.query(
+        `SELECT COUNT(*) as count FROM download_logs WHERE timestamp >= NOW() - INTERVAL '1 day'`
+      ),
+      pool.query(
+        `SELECT COUNT(*) as count FROM download_logs WHERE timestamp >= NOW() - INTERVAL '30 days'`
+      ),
+      pool.query(
+        `SELECT COUNT(*) as count FROM download_logs WHERE timestamp >= NOW() - INTERVAL '365 days'`
+      ),
+    ]);
+
+    const overview = buildDownloadOverview(rowsResult.rows);
+    return {
+      ...overview,
+      todayDownloads: parseInt(dailyResult.rows[0].count, 10),
+      monthDownloads: parseInt(monthlyResult.rows[0].count, 10),
+      yearDownloads: parseInt(yearlyResult.rows[0].count, 10),
+    };
+  }
+
+  const db = await readJsonDb();
+  return buildDownloadOverview(db.downloadLogs || []);
 }
 
 export async function getTotalViews() {

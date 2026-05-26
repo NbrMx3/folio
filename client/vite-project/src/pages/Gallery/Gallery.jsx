@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import Seo from '../../components/Seo/Seo';
-import { getGallery } from '../../utils/api';
+import { getGallery, trackDownload } from '../../utils/api';
 import './Gallery.css';
 
 const MEDIA_FILTERS = [
@@ -243,6 +243,12 @@ const Gallery = () => {
   const handleDownload = async (item) => {
     const url = resolveItemUrl(item);
     if (!url) return;
+
+    void trackDownload({
+      assetType: getMediaType(item),
+      assetName: item?.title || 'Gallery item',
+      assetUrl: url,
+    });
 
     try {
       const response = await fetch(url, { mode: 'cors' });

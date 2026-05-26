@@ -9,6 +9,7 @@ import skillsRoutes from './src/data/routes/skills.js';
 import projectsRoutes from './src/data/routes/projects.js';
 import contactRoutes from './src/data/routes/contact.js';
 import galleryRoutes from './src/data/routes/gallery.js';
+import downloadRoutes from './src/data/routes/downloads.js';
 import analyticsRoutes from './src/data/routes/analytics.js';
 import traccarRoutes from './src/data/routes/traccar.js';
 import trackRouter from './src/data/routes/middleware/tracker.js';
@@ -56,6 +57,7 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/downloads', downloadRoutes);
 app.use('/api/analytics', analyticsRoutes);
 // Example Traccar API integration routes.
 app.use('/api/traccar', traccarRoutes);

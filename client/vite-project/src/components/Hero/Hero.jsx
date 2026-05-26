@@ -10,7 +10,7 @@ import {
   FaWhatsapp,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
-import { getProfile, trackConversion } from '../../utils/api';
+import { getProfile, trackConversion, trackDownload } from '../../utils/api';
 import { fallbackProfile } from '../../data/offlineContent';
 import './Hero.css';
 
@@ -207,7 +207,16 @@ const Hero = () => {
                 href={action.href}
                 className="hero-quick-action"
                 download={action.download || undefined}
-                onClick={() => handleQuickAction(action.track)}
+                onClick={() => {
+                  handleQuickAction(action.track);
+                  if (action.download) {
+                    void trackDownload({
+                      assetType: 'resume',
+                      assetName: action.label,
+                      assetUrl: action.href,
+                    });
+                  }
+                }}
                 target={action.download ? undefined : '_blank'}
                 rel={action.download ? undefined : 'noreferrer'}
               >

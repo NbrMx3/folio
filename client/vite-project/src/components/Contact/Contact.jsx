@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle, FaDownload } from 'react-icons/fa';
-import { sendContactMessage, trackConversion } from '../../utils/api';
+import { sendContactMessage, trackConversion, trackDownload } from '../../utils/api';
 import { fallbackProfile } from '../../data/offlineContent';
 import './Contact.css';
 
@@ -227,7 +227,16 @@ const Contact = () => {
               href={action.href}
               className="contact-quick-action"
               download={action.download || undefined}
-              onClick={() => handleQuickAction(action.track)}
+              onClick={() => {
+                handleQuickAction(action.track);
+                if (action.download) {
+                  void trackDownload({
+                    assetType: 'resume',
+                    assetName: action.label,
+                    assetUrl: action.href,
+                  });
+                }
+              }}
               target={action.download ? undefined : '_blank'}
               rel={action.download ? undefined : 'noreferrer'}
             >

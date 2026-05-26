@@ -23,6 +23,8 @@ import {
   getVisitors,
   getPlatforms,
   getTraccarOverview,
+  getDownloadSummary,
+  getDownloadLogs,
   getProfile,
   getSkills,
   getProjectsList,
@@ -130,6 +132,9 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
   const [platforms, setPlatforms] = useState({});
   const [traccarOverview, setTraccarOverview] = useState(null);
   const [traccarLoading, setTraccarLoading] = useState(true);
+  const [downloadSummary, setDownloadSummary] = useState(null);
+  const [downloadLogs, setDownloadLogs] = useState([]);
+  const [downloadLoading, setDownloadLoading] = useState(true);
   const [contentHealth, setContentHealth] = useState(null);
   const [contentHealthLoading, setContentHealthLoading] = useState(true);
   const [visitorPage, setVisitorPage] = useState(1);
@@ -158,6 +163,38 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
     };
     loadData();
     return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadDownloads = async () => {
+      try {
+        const [summaryResult, logsResult] = await Promise.allSettled([
+          getDownloadSummary(),
+          getDownloadLogs(1, 10),
+        ]);
+
+        if (cancelled) return;
+
+        setDownloadSummary(summaryResult.status === 'fulfilled' ? summaryResult.value : null);
+        setDownloadLogs(
+          logsResult.status === 'fulfilled' && Array.isArray(logsResult.value?.logs)
+            ? logsResult.value.logs
+            : []
+        );
+      } finally {
+        if (!cancelled) {
+          setDownloadLoading(false);
+        }
+      }
+    };
+
+    loadDownloads();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -617,6 +654,76 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
           </div>
         </div>
       )}
+
+      <div className="analytics-section">
+        <h3>Download Activity</h3>
+        <p className="section-hint">
+          Independent resume and gallery download logs with daily, monthly, and yearly totals.
+        </p>
+        {downloadLoading ? (
+          <p className="no-data">Loading download activity...</p>
+        ) : downloadSummary ? (
+          <>
+            <div className="traccar-summary-grid">
+              <article className="traccar-summary-card">
+                <span>Total Downloads</span>
+                <strong>{downloadSummary.totalDownloads || 0}</strong>
+              </article>
+              <article className="traccar-summary-card">
+                <span>Today</span>
+                <strong>{downloadSummary.todayDownloads || 0}</strong>
+              </article>
+              <article className="traccar-summary-card">
+                <span>This Month</span>
+                <strong>{downloadSummary.monthDownloads || 0}</strong>
+              </article>
+              <article className="traccar-summary-card">
+                <span>This Year</span>
+                <strong>{downloadSummary.yearDownloads || 0}</strong>
+              </article>
+            </div>
+
+            <div className="visitors-table-wrapper">
+              <table className="visitors-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Asset</th>
+                    <th>Type</th>
+                    <th>Application</th>
+                    <th>OS</th>
+                    <th>IP</th>
+                    <th>Referrer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {downloadLogs.length > 0 ? (
+                    downloadLogs.map((log) => (
+                      <tr key={log.id}>
+                        <td>{log.timestamp ? new Date(log.timestamp).toLocaleString() : '-'}</td>
+                        <td>{log.assetName || log.asset_name || 'Unnamed asset'}</td>
+                        <td style={{ textTransform: 'capitalize' }}>{log.assetType || log.asset_type || 'other'}</td>
+                        <td>{log.application || log.browser || 'Unknown'}</td>
+                        <td>{log.os || 'Unknown'}</td>
+                        <td>{log.ip || '—'}</td>
+                        <td>{log.referrer || 'direct'}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="no-data">
+                        No download logs recorded yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <p className="no-data">Download activity could not be loaded.</p>
+        )}
+      </div>
 
       {/* Activity Logs */}
       <div className="analytics-section">

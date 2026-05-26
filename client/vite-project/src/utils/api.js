@@ -405,6 +405,14 @@ export async function clearAnalytics() {
   });
 }
 
+export async function getDownloadSummary() {
+  return authFetch('/downloads/summary');
+}
+
+export async function getDownloadLogs(page = 1, limit = 20) {
+  return authFetch(`/downloads/logs?page=${page}&limit=${limit}`);
+}
+
 // Track a visit (called from portfolio)
 export async function trackVisit(ref = 'direct', page = '/') {
   const payload = { ref, page };
@@ -428,6 +436,34 @@ export async function trackVisit(ref = 'direct', page = '/') {
 
 export async function trackConversion(ref = 'direct', category = 'cta', action = 'click') {
   return trackVisit(ref, `/${category}/${action}`);
+}
+
+export async function trackDownload(payload = {}) {
+  const body = {
+    referrer: payload.referrer || payload.ref || document.referrer || 'direct',
+    page: payload.page || window.location.pathname || '/',
+    assetType: payload.assetType || payload.asset_type || 'other',
+    assetName: payload.assetName || payload.asset_name || '',
+    assetUrl: payload.assetUrl || payload.asset_url || '',
+    action: payload.action || 'download',
+  };
+
+  try {
+    if (navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+      navigator.sendBeacon(`${API_BASE}/downloads/log`, blob);
+      return;
+    }
+
+    await fetch(`${API_BASE}/downloads/log`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      keepalive: true,
+    });
+  } catch {
+    // Silently ignore logging failures.
+  }
 }
 
 // Gallery
