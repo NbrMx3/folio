@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import Seo from '../../components/Seo/Seo';
 import { getGallery, trackDownload } from '../../utils/api';
+import { buildDownloadFilename, downloadMediaToDevice } from '../../utils/mediaDownloads';
 import './Gallery.css';
 
 const MEDIA_FILTERS = [
@@ -210,33 +211,6 @@ const Gallery = () => {
 
   const resolveItemUrl = (item) => item?.playbackUrl || item?.url || '';
 
-  const sanitizeFilename = (value) =>
-    (value || 'gallery-item')
-      .toString()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-zA-Z0-9-_]/g, '')
-      .toLowerCase();
-
-  const extensionFromUrl = (url) => {
-    if (!url) return '';
-    const clean = url.split('?')[0];
-    const match = clean.match(/\.([a-zA-Z0-9]+)$/);
-    return match ? match[1].toLowerCase() : '';
-  };
-
-  const downloadUrl = (url, filename) => {
-    const link = document.createElement('a');
-    link.href = url;
-    if (filename) {
-      link.download = filename;
-    }
-    link.rel = 'noopener';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  };
-
   const handleDownload = async (item) => {
     const url = resolveItemUrl(item);
     if (!url) return;
@@ -249,9 +223,8 @@ const Gallery = () => {
     });
 
     try {
-      const ext = extensionFromUrl(url);
-      const filename = `${sanitizeFilename(item?.title)}${ext ? `.${ext}` : ''}`;
-      downloadUrl(url, filename);
+      const filename = buildDownloadFilename(item);
+      await downloadMediaToDevice(url, filename);
     } catch {
       window.open(url, '_blank', 'noopener');
     }
@@ -269,10 +242,9 @@ const Gallery = () => {
     });
 
     try {
-      const ext = extensionFromUrl(url);
-      const filename = `${sanitizeFilename(item?.title)}${ext ? `.${ext}` : ''}`;
-      downloadUrl(url, filename);
-      return;
+      const filename = buildDownloadFilename(item);
+      const didDownload = await downloadMediaToDevice(url, filename, { openOnFail: false });
+      if (didDownload) return;
     } catch {
       // Fall back to opening the asset if the browser blocks direct downloads.
     }

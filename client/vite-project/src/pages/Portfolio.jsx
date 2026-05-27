@@ -5,6 +5,7 @@ import Skills from '../components/Skills/Skills';
 import Projects from '../components/Projects/Projects';
 import Testimonials from '../components/Testimonials/Testimonials';
 import Writing from '../components/Writing/Writing';
+import GalleryPreview from '../components/GalleryPreview/GalleryPreview';
 import Contact from '../components/Contact/Contact';
 import Footer from '../components/Footer/Footer';
 import Seo from '../components/Seo/Seo';
@@ -91,6 +92,7 @@ const Portfolio = () => {
       <div className="reveal-section"><Projects /></div>
       <div className="reveal-section"><Testimonials /></div>
       <div className="reveal-section"><Writing /></div>
+      <div className="reveal-section"><GalleryPreview /></div>
       <div className="reveal-section"><Contact /></div>
       <div className="reveal-section"><Footer /></div>
     </>

@@ -1,12 +1,30 @@
 import { memo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaImages, FaArrowRight } from 'react-icons/fa';
-import { getGallery } from '../../utils/api';
+import { getGallery, trackDownload } from '../../utils/api';
+import { buildDownloadFilename, downloadMediaToDevice } from '../../utils/mediaDownloads';
 import './GalleryPreview.css';
 
 const GalleryPreview = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const getMediaType = (item) => String(item?.type || 'photo').toLowerCase();
+
+  const handleDownload = async (item, action = 'download') => {
+    const url = item?.playbackUrl || item?.url || '';
+    if (!url) return;
+
+    void trackDownload({
+      assetType: getMediaType(item),
+      assetName: item?.title || 'Gallery item',
+      assetUrl: url,
+      action,
+    });
+
+    const filename = buildDownloadFilename(item);
+    await downloadMediaToDevice(url, filename);
+  };
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -49,13 +67,18 @@ const GalleryPreview = () => {
           <div className="gallery-preview-grid">
             {items.map((item) => (
               <div key={item.id} className="gallery-preview-item">
-                {item.type === 'video' ? (
+                {getMediaType(item) === 'video' ? (
                   <video
                     src={item.playbackUrl || item.url}
                     className="gallery-preview-media"
                     aria-label={item.title || 'Gallery video preview'}
                     preload="metadata"
                   />
+                ) : getMediaType(item) === 'audio' ? (
+                  <div className="gallery-preview-audio">
+                    <p>{item.title || 'Audio track'}</p>
+                    <span>Tap download to save this track.</span>
+                  </div>
                 ) : (
                   <img
                     src={item.url}
@@ -65,6 +88,22 @@ const GalleryPreview = () => {
                     decoding="async"
                   />
                 )}
+                <div className="gallery-preview-actions">
+                  <button
+                    type="button"
+                    className="gallery-preview-action gallery-preview-action--primary"
+                    onClick={() => handleDownload(item, 'download')}
+                  >
+                    Download
+                  </button>
+                  <button
+                    type="button"
+                    className="gallery-preview-action"
+                    onClick={() => handleDownload(item, 'save')}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             ))}
           </div>
