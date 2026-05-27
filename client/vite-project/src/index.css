@@ -39,6 +39,20 @@
   color-scheme: dark;
 }
 
+@media (max-width: 1024px) {
+  :root {
+    --page-gutter: clamp(0.85rem, 2.4vw, 1.5rem);
+    --section-pad-y: clamp(3rem, 7vw, 5rem);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-gutter: clamp(0.75rem, 3.8vw, 1rem);
+    --section-pad-y: clamp(2.6rem, 8vw, 4rem);
+  }
+}
+
 [data-theme="light"] {
   --bg: #eff6ff;
   --text: #0f2136;
@@ -130,6 +144,18 @@ img,
 video {
   max-width: 100%;
   height: auto;
+  display: block;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+body, #root, .app {
+  min-width: 0;
 }
 
 ::-webkit-scrollbar {
