@@ -202,6 +202,17 @@ function buildDownloadOverview(rows = []) {
   };
 }
 
+function normalizeGalleryHidden(value) {
+  return value === true || value === 'true' || value === 1 || value === '1';
+}
+
+function normalizeGalleryItem(item = {}) {
+  return {
+    ...item,
+    hidden: normalizeGalleryHidden(item.hidden ?? item.is_hidden),
+  };
+}
+
 // Initialize database tables
 export async function initDatabase() {
   // If Postgres is available, try to initialize the schema there.
@@ -287,10 +298,20 @@ export async function initDatabase() {
             type TEXT DEFAULT 'photo',
             title TEXT DEFAULT '',
             description TEXT DEFAULT '',
+            hidden BOOLEAN DEFAULT FALSE,
             sort_order INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT NOW()
           )
         `);
+
+        await client.query(`
+          DO $$ BEGIN
+            ALTER TABLE gallery ADD COLUMN hidden BOOLEAN DEFAULT FALSE;
+          EXCEPTION WHEN duplicate_column THEN NULL;
+          END $$
+        `);
+
+        await client.query('UPDATE gallery SET hidden = FALSE WHERE hidden IS NULL');
 
         // Create contact messages table
         await client.query(`
@@ -786,13 +807,22 @@ export async function deleteProject(id) {
 }
 
 // ─── Gallery queries ───────────────────────────────────────
-export async function getGallery() {
+export async function getGallery(options = {}) {
+  const includeHidden = Boolean(options.includeHidden);
+
   if (usingPostgres && pool) {
-    const result = await pool.query('SELECT * FROM gallery ORDER BY created_at DESC, id DESC');
-    return result.rows;
+    const result = await pool.query(
+      `SELECT * FROM gallery
+       ${includeHidden ? '' : 'WHERE COALESCE(hidden, FALSE) = FALSE'}
+       ORDER BY created_at DESC, id DESC`
+    );
+    return result.rows.map(normalizeGalleryItem);
   }
   const db = await readJsonDb();
-  return (db.gallery || []).sort((a, b) => {
+  return (db.gallery || [])
+    .map(normalizeGalleryItem)
+    .filter((item) => includeHidden || !item.hidden)
+    .sort((a, b) => {
     const aTime = a.created_at ? new Date(a.created_at).getTime() : null;
     const bTime = b.created_at ? new Date(b.created_at).getTime() : null;
 
@@ -806,17 +836,26 @@ export async function getGallery() {
 export async function createGalleryItem(data) {
   if (usingPostgres && pool) {
     const { url, type, title, description, sort_order } = data;
+    const hidden = normalizeGalleryHidden(data.hidden);
     const result = await pool.query(
-      'INSERT INTO gallery (url, type, title, description, sort_order) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [url, type || 'photo', title || '', description || '', sort_order || 0]
+      'INSERT INTO gallery (url, type, title, description, hidden, sort_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [url, type || 'photo', title || '', description || '', hidden, sort_order || 0]
     );
-    return result.rows[0];
+    return normalizeGalleryItem(result.rows[0]);
   }
 
   const db = await readJsonDb();
   db.gallery = db.gallery || [];
   const nextId = db.gallery.length ? Math.max(...db.gallery.map(g => g.id || 0)) + 1 : 1;
-  const item = { id: nextId, url: data.url, type: data.type || 'photo', title: data.title || '', description: data.description || '', sort_order: data.sort_order || 0 };
+  const item = {
+    id: nextId,
+    url: data.url,
+    type: data.type || 'photo',
+    title: data.title || '',
+    description: data.description || '',
+    hidden: normalizeGalleryHidden(data.hidden),
+    sort_order: data.sort_order || 0,
+  };
   db.gallery.push(item);
   await writeJsonDb(db);
   return item;
@@ -825,18 +864,25 @@ export async function createGalleryItem(data) {
 export async function updateGalleryItem(id, data) {
   if (usingPostgres && pool) {
     const { url, type, title, description, sort_order } = data;
+    const hidden = Object.prototype.hasOwnProperty.call(data, 'hidden')
+      ? normalizeGalleryHidden(data.hidden)
+      : null;
     const result = await pool.query(
-      'UPDATE gallery SET url = COALESCE($1, url), type = COALESCE($2, type), title = COALESCE($3, title), description = COALESCE($4, description), sort_order = COALESCE($5, sort_order) WHERE id = $6 RETURNING *',
-      [url, type, title, description, sort_order, id]
+      'UPDATE gallery SET url = COALESCE($1, url), type = COALESCE($2, type), title = COALESCE($3, title), description = COALESCE($4, description), sort_order = COALESCE($5, sort_order), hidden = COALESCE($6, hidden) WHERE id = $7 RETURNING *',
+      [url, type, title, description, sort_order, hidden, id]
     );
-    return result.rows[0];
+    return result.rows[0] ? normalizeGalleryItem(result.rows[0]) : null;
   }
 
   const db = await readJsonDb();
   db.gallery = db.gallery || [];
   const idx = db.gallery.findIndex(g => String(g.id) === String(id));
   if (idx === -1) return null;
-  db.gallery[idx] = { ...db.gallery[idx], ...data };
+  const nextData = { ...data };
+  if (Object.prototype.hasOwnProperty.call(nextData, 'hidden')) {
+    nextData.hidden = normalizeGalleryHidden(nextData.hidden);
+  }
+  db.gallery[idx] = normalizeGalleryItem({ ...db.gallery[idx], ...nextData });
   await writeJsonDb(db);
   return db.gallery[idx];
 }
