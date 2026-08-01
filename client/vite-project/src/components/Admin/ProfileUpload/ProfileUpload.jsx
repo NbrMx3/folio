@@ -210,6 +210,34 @@ const ProfileUpload = () => {
         />
       </div>
 
+      <div className="profile-card profile-contact-card">
+        <h2>Contact Details</h2>
+        <p className="profile-hint">
+          These values appear on the public Phone and WhatsApp contact cards. Edit them here, then save.
+        </p>
+        <div className="profile-field">
+          <label><FaPhoneAlt /> Phone Number</label>
+          <input
+            type="tel"
+            value={profile.phone || ''}
+            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+            placeholder="0710393746"
+          />
+        </div>
+        <div className="profile-field">
+          <label><FaWhatsapp /> WhatsApp Number</label>
+          <input
+            type="tel"
+            value={profile.whatsapp || ''}
+            onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })}
+            placeholder="0112267013"
+          />
+        </div>
+        <button className="save-btn" onClick={handleSave} disabled={saving}>
+          <FaSave /> {saving ? 'Saving...' : 'Save Contact Details'}
+        </button>
+      </div>
+
       <div className="profile-card">
         <h2>Profile Details</h2>
         <div className="profile-field">
@@ -291,24 +319,6 @@ const ProfileUpload = () => {
             value={profile.tiktok || ''}
             onChange={(e) => setProfile({ ...profile, tiktok: e.target.value })}
             placeholder="https://tiktok.com/@yourusername"
-          />
-        </div>
-        <div className="profile-field">
-          <label><FaPhoneAlt /> Phone Number</label>
-          <input
-            type="tel"
-            value={profile.phone || ''}
-            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-            placeholder="0710393746"
-          />
-        </div>
-        <div className="profile-field">
-          <label><FaWhatsapp /> WhatsApp Number</label>
-          <input
-            type="tel"
-            value={profile.whatsapp || ''}
-            onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })}
-            placeholder="0112267013"
           />
         </div>
         <div className="profile-field">
