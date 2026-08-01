@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle, FaDownload } from 'react-icons/fa';
 import { sendContactMessage, trackConversion, trackDownload } from '../../utils/api';
 import { fallbackProfile } from '../../data/offlineContent';
+import { getProfile } from '../../utils/api';
 import './Contact.css';
 
 const CONTACT_COOLDOWN_MS = 45 * 1000;
@@ -15,6 +16,17 @@ const Contact = () => {
   const [feedback, setFeedback] = useState('');
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [profile, setProfile] = useState(fallbackProfile);
+
+  useEffect(() => {
+    let isMounted = true;
+    getProfile()
+      .then((data) => { if (isMounted && data) setProfile((current) => ({ ...current, ...data })); })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
+  const whatsappLink = `https://wa.me/${String(profile.whatsapp || fallbackProfile.whatsapp).replace(/\D/g, '').replace(/^0/, '254')}`;
 
   useEffect(() => {
     const stored = Number(localStorage.getItem('folio_contact_cooldown_until') || 0);
@@ -57,20 +69,20 @@ const Contact = () => {
     {
       icon: <FaPhoneAlt />,
       label: 'Phone',
-      value: '0710393746',
-      href: 'tel:0710393746',
+      value: profile.phone || fallbackProfile.phone,
+      href: `tel:${profile.phone || fallbackProfile.phone}`,
     },
     {
       icon: <FaEnvelope />,
       label: 'Email',
-      value: 'kipkemoi386@gmail.com',
-      href: 'mailto:kipkemoi386@gmail.com',
+      value: profile.email || fallbackProfile.email,
+      href: `mailto:${profile.email || fallbackProfile.email}`,
     },
     {
       icon: <FaWhatsapp />,
       label: 'WhatsApp',
-      value: '+254112267013',
-      href: 'https://wa.me/254112267013',
+      value: profile.whatsapp || fallbackProfile.whatsapp,
+      href: whatsappLink,
     },
     {
       icon: <FaMapMarkerAlt />,
@@ -89,13 +101,13 @@ const Contact = () => {
     },
     {
       label: 'Email',
-      href: 'mailto:kipkemoi386@gmail.com',
+      href: `mailto:${profile.email || fallbackProfile.email}`,
       track: 'email',
       icon: <FaEnvelope />,
     },
     {
       label: 'WhatsApp',
-      href: 'https://wa.me/254112267013',
+      href: whatsappLink,
       track: 'whatsapp',
       icon: <FaWhatsapp />,
     },

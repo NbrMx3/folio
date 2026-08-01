@@ -113,6 +113,8 @@ router.put('/', verifyToken, async (req, res) => {
       facebook,
       instagram,
       tiktok,
+      phone,
+      whatsapp,
       resume,
       email,
     } = req.body;
@@ -126,6 +128,8 @@ router.put('/', verifyToken, async (req, res) => {
       facebook,
       instagram,
       tiktok,
+      phone,
+      whatsapp,
       resume,
       email,
     });

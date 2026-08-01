@@ -106,6 +106,8 @@ export function getDefaultProfile() {
     facebook: '',
     instagram: '',
     tiktok: '',
+    phone: '0710393746',
+    whatsapp: '0112267013',
     email: '',
   };
 }
@@ -226,6 +228,8 @@ export async function initDatabase() {
             facebook TEXT DEFAULT '',
             instagram TEXT DEFAULT '',
             tiktok TEXT DEFAULT '',
+            phone TEXT DEFAULT '',
+            whatsapp TEXT DEFAULT '',
             email TEXT DEFAULT '',
             updated_at TIMESTAMP DEFAULT NOW()
           )
@@ -241,6 +245,8 @@ export async function initDatabase() {
           'facebook',
           'instagram',
           'tiktok',
+          'phone',
+          'whatsapp',
           'email',
         ];
         for (const col of profileCols) {
@@ -406,9 +412,11 @@ export async function initDatabase() {
               facebook,
               instagram,
               tiktok,
+              phone,
+              whatsapp,
               email
             )
-            VALUES ('', '', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '')
+            VALUES ('', '', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '0710393746', '0112267013', '')
           `);
         }
 
@@ -576,7 +584,7 @@ export async function getProfile() {
   if (usingPostgres && pool) {
     try {
       const result = await pool.query(
-        'SELECT picture, resume, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, email FROM profile LIMIT 1'
+        'SELECT picture, resume, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, phone, whatsapp, email FROM profile LIMIT 1'
       );
       return result.rows[0] || getDefaultProfile();
     } catch (error) {
@@ -602,6 +610,8 @@ export async function updateProfile(data) {
       facebook,
       instagram,
       tiktok,
+      phone,
+      whatsapp,
       email,
     } = data;
     const updates = [];
@@ -619,6 +629,8 @@ export async function updateProfile(data) {
     if (facebook !== undefined) { updates.push(`facebook = $${paramCount++}`); values.push(facebook); }
     if (instagram !== undefined) { updates.push(`instagram = $${paramCount++}`); values.push(instagram); }
     if (tiktok !== undefined) { updates.push(`tiktok = $${paramCount++}`); values.push(tiktok); }
+    if (phone !== undefined) { updates.push(`phone = $${paramCount++}`); values.push(phone); }
+    if (whatsapp !== undefined) { updates.push(`whatsapp = $${paramCount++}`); values.push(whatsapp); }
     if (email !== undefined) { updates.push(`email = $${paramCount++}`); values.push(email); }
 
     if (updates.length > 0) {
@@ -644,6 +656,8 @@ export async function updateProfile(data) {
     facebook: '',
     instagram: '',
     tiktok: '',
+    phone: '0710393746',
+    whatsapp: '0112267013',
     email: '',
   };
   db.profile = { ...db.profile, ...data };

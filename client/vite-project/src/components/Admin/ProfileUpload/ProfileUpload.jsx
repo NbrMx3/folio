@@ -11,6 +11,8 @@ import {
   FaFacebook,
   FaInstagram,
   FaEnvelope,
+  FaPhoneAlt,
+  FaWhatsapp,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
 import { getProfile, updateProfile, uploadProfilePicture, uploadProfileResume } from '../../../utils/api';
@@ -28,6 +30,8 @@ const ProfileUpload = () => {
     facebook: '',
     instagram: '',
     tiktok: '',
+    phone: '',
+    whatsapp: '',
     email: '',
   });
   const [preview, setPreview] = useState('');
@@ -121,6 +125,8 @@ const ProfileUpload = () => {
         facebook: profile.facebook,
         instagram: profile.instagram,
         tiktok: profile.tiktok,
+        phone: profile.phone,
+        whatsapp: profile.whatsapp,
         email: profile.email,
       });
       setMessage('Profile saved!');
@@ -285,6 +291,24 @@ const ProfileUpload = () => {
             value={profile.tiktok || ''}
             onChange={(e) => setProfile({ ...profile, tiktok: e.target.value })}
             placeholder="https://tiktok.com/@yourusername"
+          />
+        </div>
+        <div className="profile-field">
+          <label><FaPhoneAlt /> Phone Number</label>
+          <input
+            type="tel"
+            value={profile.phone || ''}
+            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+            placeholder="0710393746"
+          />
+        </div>
+        <div className="profile-field">
+          <label><FaWhatsapp /> WhatsApp Number</label>
+          <input
+            type="tel"
+            value={profile.whatsapp || ''}
+            onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })}
+            placeholder="0112267013"
           />
         </div>
         <div className="profile-field">
