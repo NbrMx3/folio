@@ -81,6 +81,9 @@ const Navbar = () => {
           >
             <FaUserShield />
           </button>
+          <a href="#contact" className="nav-contact" onClick={() => setMenuOpen(false)}>
+            Get in touch
+          </a>
           <button
             type="button"
             className="menu-toggle"

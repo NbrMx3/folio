@@ -7,35 +7,35 @@
 }
 
 :root {
-  --bg: #010713;
-  --text: #d8f0ff;
-  --text-strong: #f4fbff;
-  --text-muted: #90b1cc;
-  --text-muted-2: #6f92b2;
-  --card: rgba(5, 27, 58, 0.54);
-  --card-soft: rgba(5, 29, 64, 0.4);
-  --card-border: rgba(138, 222, 255, 0.27);
-  --card-strong: rgba(8, 38, 78, 0.72);
-  --overlay: rgba(2, 11, 27, 0.7);
-  --accent: #73e6ff;
-  --accent-weak: rgba(115, 230, 255, 0.16);
-  --accent-strong: rgba(115, 230, 255, 0.38);
-  --accent-warm: #6ec9ff;
-  --accent-hot: #f7b37a;
-  --nav-bg: rgba(3, 20, 45, 0.78);
-  --shadow-accent: 0 16px 48px rgba(12, 111, 171, 0.34);
-  --shadow-soft: 0 14px 36px rgba(2, 9, 23, 0.28);
-  --shadow-strong: 0 28px 70px rgba(3, 11, 28, 0.45);
+  --bg: #172027;
+  --text: #c6ced0;
+  --text-strong: #f4f7f3;
+  --text-muted: #9ca9aa;
+  --text-muted-2: #778486;
+  --card: rgba(30, 40, 48, 0.9);
+  --card-soft: rgba(36, 47, 56, 0.82);
+  --card-border: rgba(205, 224, 215, 0.12);
+  --card-strong: rgba(41, 52, 61, 0.95);
+  --overlay: rgba(7, 14, 18, 0.78);
+  --accent: #19c49b;
+  --accent-weak: rgba(25, 196, 155, 0.14);
+  --accent-strong: rgba(56, 223, 181, 0.44);
+  --accent-warm: #72dbc4;
+  --accent-hot: #b7e8d4;
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --shadow-accent: 0 20px 52px rgba(4, 37, 34, 0.22);
+  --shadow-soft: 0 16px 36px rgba(3, 14, 19, 0.18);
+  --shadow-strong: 0 28px 70px rgba(2, 12, 16, 0.42);
   --container-max: 1200px;
   --page-gutter: clamp(0.9rem, 2.8vw, 2rem);
   --section-pad-y: clamp(3.4rem, 8vw, 6rem);
-  --scene-ink: #01040c;
-  --scene-deep: #010811;
-  --scene-haze: rgba(9, 43, 132, 0.42);
-  --scene-wave: rgba(14, 82, 196, 0.28);
-  --scene-spark: rgba(170, 239, 255, 0.88);
-  --scene-grid: rgba(66, 166, 255, 0.08);
-  --scene-streak: rgba(91, 188, 255, 0.58);
+  --scene-ink: #111a20;
+  --scene-deep: #18242b;
+  --scene-haze: rgba(16, 169, 137, 0.3);
+  --scene-wave: rgba(20, 128, 109, 0.24);
+  --scene-spark: rgba(165, 255, 224, 0.78);
+  --scene-grid: rgba(109, 240, 203, 0.06);
+  --scene-streak: rgba(68, 224, 180, 0.48);
   color-scheme: dark;
 }
 
@@ -267,4 +267,80 @@ body, #root, .app {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Editorial teal portfolio theme */
+.skills, .projects, .testimonials, .writing, .gallery-preview, .contact, .footer {
+  background: #1d272e !important;
+}
+
+.skills::before, .projects::before, .testimonials::before, .writing::before,
+.gallery-preview::before, .contact::before, .footer::before {
+  opacity: 0.16 !important;
+}
+
+.skills-container, .projects-container, .testimonials-container, .writing-container,
+.gallery-preview-container, .contact-container, .footer-container {
+  max-width: 1100px;
+}
+
+.section-title {
+  margin-bottom: 2rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  letter-spacing: -0.045em;
+}
+
+.section-title::after {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  box-shadow: none;
+}
+
+.skill-card, .project-card, .testimonial-card, .writing-card, .gallery-preview-card,
+.contact-card, .contact-form, .projects-toolbar {
+  background: #27323a !important;
+  border-color: rgba(225, 244, 237, 0.1) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.17) !important;
+}
+
+.skill-card::before, .project-card::after { opacity: 0.15; }
+.skill-card:hover, .project-card:hover, .testimonial-card:hover, .writing-card:hover,
+.gallery-preview-card:hover, .contact-card:hover {
+  border-color: rgba(57, 228, 183, 0.5) !important;
+  transform: translateY(-5px);
+}
+
+.skill-icon {
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(26, 207, 162, 0.32), rgba(26, 207, 162, 0.04));
+  box-shadow: none;
+}
+
+.project-card::before { background: var(--accent); }
+.tag, .project-card-type, .project-card-timeline, .project-featured-badge {
+  border-color: rgba(63, 224, 181, 0.22);
+  background: rgba(19, 197, 153, 0.1);
+}
+
+.btn-primary, .contact-submit {
+  border-radius: 999px !important;
+  background: #17bc92 !important;
+  color: #06241d !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:hover, .contact-submit:hover { background: #62e0c0 !important; }
+
+@media (max-width: 768px) {
+  .navbar-container { min-height: 68px; }
+  .nav-contact { min-height: 40px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }
+  .theme-toggle, .admin-icon { width: 40px; height: 40px; }
+  .visual-mode-toggle { padding: 0.4rem; }
+}
+
+@media (max-width: 480px) {
+  .nav-contact { display: none; }
 }
