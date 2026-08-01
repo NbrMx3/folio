@@ -58,7 +58,7 @@ const ProjectCaseStudy = () => {
           title="Project Case Study"
           description="A detailed project case study from the CyberDev portfolio."
           url={`${window.location.origin}/projects/${projectSlug}`}
-          image="/dk_portfolio_logo_light.svg"
+          image="/social-card.svg"
         />
         <div className="case-study-shell">
           <Link className="case-study-back" to="/#projects">
@@ -80,7 +80,7 @@ const ProjectCaseStudy = () => {
           title="Project Case Study"
           description="Loading CyberDev portfolio project details."
           url={`${window.location.origin}/projects/${projectSlug}`}
-          image="/dk_portfolio_logo_light.svg"
+          image="/social-card.svg"
         />
         <div className="case-study-shell">
           <div className="case-study-panel">
@@ -97,7 +97,7 @@ const ProjectCaseStudy = () => {
         title={`${project.title} Case Study`}
         description={project.summary || project.description || `A detailed case study for ${project.title}.`}
         url={`${window.location.origin}/projects/${projectSlug}`}
-        image="/dk_portfolio_logo_light.svg"
+        image="/social-card.svg"
         type="article"
         schema={{
           '@context': 'https://schema.org',

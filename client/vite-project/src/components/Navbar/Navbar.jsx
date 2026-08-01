@@ -1,7 +1,6 @@
 import { memo, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
-import { FaUserShield, FaMoon, FaSun, FaDesktop, FaPalette } from 'react-icons/fa';
+import { FaMoon, FaSun, FaDesktop, FaPalette } from 'react-icons/fa';
 import { useThemeStore } from '../../store/useThemeStore';
 import './Navbar.css';
 
@@ -9,7 +8,6 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { theme, visualMode, cycleTheme, cycleVisualMode, applyTheme } = useThemeStore();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -71,15 +69,6 @@ const Navbar = () => {
           >
             <FaPalette />
             <span>{visualModeLabel}</span>
-          </button>
-          <button
-            type="button"
-            className="admin-icon"
-            onClick={() => navigate('/admin/login')}
-            aria-label="Admin login"
-            title="Admin"
-          >
-            <FaUserShield />
           </button>
           <a href="#contact" className="nav-contact" onClick={() => setMenuOpen(false)}>
             Get in touch

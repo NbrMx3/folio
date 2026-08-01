@@ -188,6 +188,19 @@ const Projects = () => {
           <div className="projects-grid">
             {filteredProjects.map((project, index) => (
               <article className="project-card" key={project.slug || project.id}>
+                <div className="project-preview" aria-label={`${project.title} project preview`}>
+                  {project.image || project.thumbnail || project.coverImage ? (
+                    <img src={project.image || project.thumbnail || project.coverImage} alt={`${project.title} preview`} loading="lazy" decoding="async" />
+                  ) : (
+                    <div className="project-preview-fallback" aria-hidden="true">
+                      <span className="project-preview-bar"></span>
+                      <span className="project-preview-title">{project.type}</span>
+                      <span className="project-preview-copy"></span>
+                      <span className="project-preview-copy project-preview-copy--short"></span>
+                      <div className="project-preview-panels"><i></i><i></i><i></i></div>
+                    </div>
+                  )}
+                </div>
                 <div className="project-number">0{index + 1}</div>
                 <div className="project-card-top">
                   <span className="project-card-type">{project.type}</span>

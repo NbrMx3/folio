@@ -46,8 +46,8 @@ export default defineConfig({
         name: 'CyberDev Portfolio',
         short_name: 'Portfolio',
         description: 'CyberDev Full-Stack Developer Portfolio',
-        theme_color: '#22223b',
-        background_color: '#22223b',
+        theme_color: '#19c49b',
+        background_color: '#18242b',
         display: 'standalone',
         start_url: '/',
         icons: [

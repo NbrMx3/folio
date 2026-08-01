@@ -68,7 +68,7 @@ const Portfolio = () => {
         title="CyberDev | Full-Stack Developer Portfolio"
         description="CyberDev's portfolio featuring motion-rich project showcases, detailed case studies, writing, and direct contact options."
         url={window.location.origin}
-        image="/dk_portfolio_logo_light.svg"
+        image="/social-card.svg"
         schema={{
           '@context': 'https://schema.org',
           '@type': 'Person',

@@ -33,7 +33,7 @@ const Seo = ({
   title,
   description,
   url = window.location.href,
-  image = '/dk_portfolio_logo_light.svg',
+  image = '/social-card.svg',
   type = 'website',
   schema,
 }) => {
