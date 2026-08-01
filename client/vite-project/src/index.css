@@ -337,7 +337,8 @@ body, #root, .app {
 @media (max-width: 768px) {
   .navbar-container { min-height: 68px; }
   .nav-contact { min-height: 40px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }
-  .theme-toggle, .admin-icon { width: 40px; height: 40px; }
+  .theme-toggle { width: 40px; height: 40px; }
+  .admin-icon { min-height: 40px; padding: 0.35rem 0.65rem; }
   .visual-mode-toggle { padding: 0.4rem; }
 }
 
