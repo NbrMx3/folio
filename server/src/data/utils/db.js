@@ -228,8 +228,8 @@ export async function initDatabase() {
             facebook TEXT DEFAULT '',
             instagram TEXT DEFAULT '',
             tiktok TEXT DEFAULT '',
-            phone TEXT DEFAULT '',
-            whatsapp TEXT DEFAULT '',
+            phone TEXT DEFAULT '0710393746',
+            whatsapp TEXT DEFAULT '0112267013',
             email TEXT DEFAULT '',
             updated_at TIMESTAMP DEFAULT NOW()
           )
@@ -257,6 +257,15 @@ export async function initDatabase() {
             END $$
           `);
         }
+
+        // Seed the new editable contact fields for profiles created before these columns existed.
+        await client.query(`
+          UPDATE profile
+          SET
+            phone = COALESCE(NULLIF(BTRIM(phone), ''), '0710393746'),
+            whatsapp = COALESCE(NULLIF(BTRIM(whatsapp), ''), '0112267013')
+          WHERE phone IS NULL OR BTRIM(phone) = '' OR whatsapp IS NULL OR BTRIM(whatsapp) = ''
+        `);
 
         // Create skills table
         await client.query(`
@@ -586,7 +595,14 @@ export async function getProfile() {
       const result = await pool.query(
         'SELECT picture, resume, name, title, bio, github, linkedin, twitter, facebook, instagram, tiktok, phone, whatsapp, email FROM profile LIMIT 1'
       );
-      return result.rows[0] || getDefaultProfile();
+      const profile = result.rows[0];
+      if (!profile) return getDefaultProfile();
+      const defaults = getDefaultProfile();
+      return {
+        ...profile,
+        phone: String(profile.phone || '').trim() || defaults.phone,
+        whatsapp: String(profile.whatsapp || '').trim() || defaults.whatsapp,
+      };
     } catch (error) {
       console.warn('Postgres profile read failed, falling back to JSON DB:', error.message);
     }
