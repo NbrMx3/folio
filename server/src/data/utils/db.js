@@ -106,8 +106,8 @@ export function getDefaultProfile() {
     facebook: '',
     instagram: '',
     tiktok: '',
-    phone: '0710393746',
-    whatsapp: '0112267013',
+    phone: '',
+    whatsapp: '',
     email: '',
   };
 }
@@ -228,8 +228,8 @@ export async function initDatabase() {
             facebook TEXT DEFAULT '',
             instagram TEXT DEFAULT '',
             tiktok TEXT DEFAULT '',
-            phone TEXT DEFAULT '0710393746',
-            whatsapp TEXT DEFAULT '0112267013',
+            phone TEXT DEFAULT '',
+            whatsapp TEXT DEFAULT '',
             email TEXT DEFAULT '',
             updated_at TIMESTAMP DEFAULT NOW()
           )
@@ -258,14 +258,7 @@ export async function initDatabase() {
           `);
         }
 
-        // Seed the new editable contact fields for profiles created before these columns existed.
-        await client.query(`
-          UPDATE profile
-          SET
-            phone = COALESCE(NULLIF(BTRIM(phone), ''), '0710393746'),
-            whatsapp = COALESCE(NULLIF(BTRIM(whatsapp), ''), '0112267013')
-          WHERE phone IS NULL OR BTRIM(phone) = '' OR whatsapp IS NULL OR BTRIM(whatsapp) = ''
-        `);
+        // Contact fields are optional so an admin can remove a number from the profile.
 
         // Create skills table
         await client.query(`
@@ -425,7 +418,7 @@ export async function initDatabase() {
               whatsapp,
               email
             )
-            VALUES ('', '', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '0710393746', '0112267013', '')
+            VALUES ('', '', 'CyberDev', 'Full-Stack Developer', '', '', '', '', '', '', '', '', '', '')
           `);
         }
 
@@ -597,12 +590,7 @@ export async function getProfile() {
       );
       const profile = result.rows[0];
       if (!profile) return getDefaultProfile();
-      const defaults = getDefaultProfile();
-      return {
-        ...profile,
-        phone: String(profile.phone || '').trim() || defaults.phone,
-        whatsapp: String(profile.whatsapp || '').trim() || defaults.whatsapp,
-      };
+      return profile;
     } catch (error) {
       console.warn('Postgres profile read failed, falling back to JSON DB:', error.message);
     }
@@ -672,8 +660,8 @@ export async function updateProfile(data) {
     facebook: '',
     instagram: '',
     tiktok: '',
-    phone: '0710393746',
-    whatsapp: '0112267013',
+    phone: '',
+    whatsapp: '',
     email: '',
   };
   db.profile = { ...db.profile, ...data };

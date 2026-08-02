@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { FaEnvelope, FaExclamationCircle, FaMapMarkerAlt, FaPaperPlane, FaPhoneAlt, FaWhatsapp, FaCheckCircle, FaDownload } from 'react-icons/fa';
-import { sendContactMessage, trackConversion, trackDownload } from '../../utils/api';
-import { fallbackProfile } from '../../data/offlineContent';
-import { getProfile } from '../../utils/api';
+import { FaExclamationCircle, FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
+import { sendContactMessage } from '../../utils/api';
 import './Contact.css';
 
 const CONTACT_COOLDOWN_MS = 45 * 1000;
@@ -16,18 +14,6 @@ const Contact = () => {
   const [feedback, setFeedback] = useState('');
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const [profile, setProfile] = useState(fallbackProfile);
-
-  useEffect(() => {
-    let isMounted = true;
-    getProfile()
-      .then((data) => { if (isMounted && data) setProfile((current) => ({ ...current, ...data })); })
-      .catch(() => {});
-    return () => { isMounted = false; };
-  }, []);
-
-  const whatsappLink = `https://wa.me/${String(profile.whatsapp || fallbackProfile.whatsapp).replace(/\D/g, '').replace(/^0/, '254')}`;
-
   useEffect(() => {
     const stored = Number(localStorage.getItem('folio_contact_cooldown_until') || 0);
     if (stored && stored > Date.now()) {
@@ -64,54 +50,6 @@ const Contact = () => {
       }
     };
   }, [cooldownUntil]);
-
-  const contactDetails = [
-    {
-      icon: <FaPhoneAlt />,
-      label: 'Phone',
-      value: profile.phone || fallbackProfile.phone,
-      href: `tel:${profile.phone || fallbackProfile.phone}`,
-    },
-    {
-      icon: <FaEnvelope />,
-      label: 'Email',
-      value: profile.email || fallbackProfile.email,
-      href: `mailto:${profile.email || fallbackProfile.email}`,
-    },
-    {
-      icon: <FaWhatsapp />,
-      label: 'WhatsApp',
-      value: profile.whatsapp || fallbackProfile.whatsapp,
-      href: whatsappLink,
-    },
-    {
-      icon: <FaMapMarkerAlt />,
-      label: 'Location',
-      value: 'Eldoret, Kenya',
-    },
-  ];
-
-  const quickActions = [
-    {
-      label: 'Resume',
-      href: fallbackProfile.resume || '/resume.pdf',
-      track: 'resume',
-      icon: <FaDownload />,
-      download: true,
-    },
-    {
-      label: 'Email',
-      href: `mailto:${profile.email || fallbackProfile.email}`,
-      track: 'email',
-      icon: <FaEnvelope />,
-    },
-    {
-      label: 'WhatsApp',
-      href: whatsappLink,
-      track: 'whatsapp',
-      icon: <FaWhatsapp />,
-    },
-  ];
 
   const validateForm = () => {
     const nextErrors = {};
@@ -213,11 +151,6 @@ const Contact = () => {
     }
   };
 
-  const handleQuickAction = (action) => {
-    const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
-    void trackConversion(ref, 'cta', action);
-  };
-
   return (
     <section className="contact" id="contact">
       <div className="contact-container">
@@ -232,31 +165,6 @@ const Contact = () => {
             You can send another message in {cooldownSeconds}s.
           </div>
         )}
-        <div className="contact-quick-actions">
-          {quickActions.map((action) => (
-            <a
-              key={action.label}
-              href={action.href}
-              className="contact-quick-action"
-              download={action.download || undefined}
-              onClick={() => {
-                handleQuickAction(action.track);
-                if (action.download) {
-                  void trackDownload({
-                    assetType: 'resume',
-                    assetName: action.label,
-                    assetUrl: action.href,
-                  });
-                }
-              }}
-              target={action.download ? undefined : '_blank'}
-              rel={action.download ? undefined : 'noreferrer'}
-            >
-              {action.icon}
-              <span>{action.label}</span>
-            </a>
-          ))}
-        </div>
         <div className="contact-status-bar" aria-live="polite">
           {errors.form && (
             <div className="contact-status error">
@@ -282,23 +190,6 @@ const Contact = () => {
               <span>No message sent yet. Share a brief and I’ll reply with the next step.</span>
             </div>
           )}
-        </div>
-        <div className="contact-grid">
-          {contactDetails.map((item) => (
-            <div className="contact-card" key={item.label}>
-              <div className="contact-icon">{item.icon}</div>
-              <div className="contact-card-body">
-                <span className="contact-label">{item.label}</span>
-                {item.href ? (
-                  <a href={item.href} className="contact-value">
-                    {item.value}
-                  </a>
-                ) : (
-                  <span className="contact-value">{item.value}</span>
-                )}
-              </div>
-            </div>
-          ))}
         </div>
         <form className="contact-form" onSubmit={handleSubmit}>
           <div className="contact-form-note">

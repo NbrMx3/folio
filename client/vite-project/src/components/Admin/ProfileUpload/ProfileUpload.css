@@ -229,6 +229,26 @@
   min-height: 70px;
 }
 
+.profile-field-action {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.profile-field-action input { min-width: 0; }
+
+.clear-contact-btn {
+  flex-shrink: 0;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  border-radius: 8px;
+  background: transparent;
+  color: #ff8b8b;
+  cursor: pointer;
+  font: inherit;
+}
+
+.clear-contact-btn:hover { background: rgba(255, 107, 107, 0.12); }
+
 .profile-field label {
   display: flex;
   align-items: center;
@@ -294,6 +314,8 @@
 }
 
 @media (max-width: 600px) {
+  .profile-field-action { flex-direction: column; }
+
   .resume-actions {
     flex-direction: column;
   }

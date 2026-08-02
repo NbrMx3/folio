@@ -5,9 +5,7 @@ import {
   FaTwitter,
   FaFacebook,
   FaInstagram,
-  FaEnvelope,
   FaDownload,
-  FaWhatsapp,
 } from 'react-icons/fa';
 import { SiTiktok } from 'react-icons/si';
 import { getProfile, trackConversion, trackDownload } from '../../utils/api';
@@ -111,27 +109,15 @@ const Hero = () => {
     { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok /> },
   ];
 
-  const quickActions = [
+  const quickActions = profile.resume ? [
     {
       label: 'Download Resume',
-      href: profile.resume || '/resume.pdf',
+      href: profile.resume,
       icon: <FaDownload />,
       download: true,
       track: 'resume',
     },
-    {
-      label: 'Email',
-      href: 'mailto:kipkemoi386@gmail.com',
-      icon: <FaEnvelope />,
-      track: 'email',
-    },
-    {
-      label: 'WhatsApp',
-      href: 'https://wa.me/254112267013',
-      icon: <FaWhatsapp />,
-      track: 'whatsapp',
-    },
-  ];
+  ] : [];
 
   const handleQuickAction = (action) => {
     const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';

@@ -10,8 +10,8 @@ export const fallbackProfile = {
   facebook: 'https://facebook.com',
   instagram: 'https://instagram.com',
   tiktok: 'https://tiktok.com',
-  phone: '0710393746',
-  whatsapp: '0112267013',
+  phone: '',
+  whatsapp: '',
   email: 'kipkemoi386@gmail.com',
 };
 
