@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { FaExclamationCircle, FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
-import { sendContactMessage } from '../../utils/api';
+import { FaExclamationCircle, FaPaperPlane, FaCheckCircle, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
+import { getProfile, sendContactMessage } from '../../utils/api';
 import './Contact.css';
 
 const CONTACT_COOLDOWN_MS = 45 * 1000;
+
+const toPhoneHref = (number) => `tel:${String(number).replace(/[^+\d]/g, '')}`;
+const toWhatsAppHref = (number) => {
+  const normalized = String(number).replace(/\D/g, '');
+  return normalized ? `https://wa.me/${normalized}` : '';
+};
 
 const Contact = () => {
   const submittedAtRef = useRef(Date.now());
@@ -14,6 +20,21 @@ const Contact = () => {
   const [feedback, setFeedback] = useState('');
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [contactDetails, setContactDetails] = useState({ phone: '', whatsapp: '' });
+
+  useEffect(() => {
+    getProfile()
+      .then((profile) => {
+        setContactDetails({
+          phone: profile?.phone?.trim() || '',
+          whatsapp: profile?.whatsapp?.trim() || '',
+        });
+      })
+      .catch(() => {
+        // The contact form should remain available if the profile endpoint is unavailable.
+      });
+  }, []);
+
   useEffect(() => {
     const stored = Number(localStorage.getItem('folio_contact_cooldown_until') || 0);
     if (stored && stored > Date.now()) {
@@ -160,6 +181,33 @@ const Contact = () => {
         <p className="contact-subtitle">
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
+        {(contactDetails.phone || contactDetails.whatsapp) && (
+          <div className="contact-grid" aria-label="Direct contact options">
+            {contactDetails.phone && (
+              <a className="contact-card" href={toPhoneHref(contactDetails.phone)}>
+                <span className="contact-icon" aria-hidden="true"><FaPhoneAlt /></span>
+                <span className="contact-card-body">
+                  <span className="contact-label">Phone</span>
+                  <span className="contact-value">{contactDetails.phone}</span>
+                </span>
+              </a>
+            )}
+            {contactDetails.whatsapp && toWhatsAppHref(contactDetails.whatsapp) && (
+              <a
+                className="contact-card"
+                href={toWhatsAppHref(contactDetails.whatsapp)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="contact-icon" aria-hidden="true"><FaWhatsapp /></span>
+                <span className="contact-card-body">
+                  <span className="contact-label">WhatsApp</span>
+                  <span className="contact-value">{contactDetails.whatsapp}</span>
+                </span>
+              </a>
+            )}
+          </div>
+        )}
         {cooldownUntil > Date.now() && (
           <div className="contact-rate-limit">
             You can send another message in {cooldownSeconds}s.
