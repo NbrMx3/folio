@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -7,35 +5,35 @@
 }
 
 :root {
-  --bg: #172027;
-  --text: #c6ced0;
-  --text-strong: #f4f7f3;
-  --text-muted: #9ca9aa;
-  --text-muted-2: #778486;
-  --card: rgba(30, 40, 48, 0.9);
-  --card-soft: rgba(36, 47, 56, 0.82);
-  --card-border: rgba(205, 224, 215, 0.12);
-  --card-strong: rgba(41, 52, 61, 0.95);
-  --overlay: rgba(7, 14, 18, 0.78);
-  --accent: #19c49b;
-  --accent-weak: rgba(25, 196, 155, 0.14);
-  --accent-strong: rgba(56, 223, 181, 0.44);
-  --accent-warm: #72dbc4;
-  --accent-hot: #b7e8d4;
-  --nav-bg: rgba(255, 255, 255, 0.94);
-  --shadow-accent: 0 20px 52px rgba(4, 37, 34, 0.22);
-  --shadow-soft: 0 16px 36px rgba(3, 14, 19, 0.18);
-  --shadow-strong: 0 28px 70px rgba(2, 12, 16, 0.42);
+  --bg: #101827;
+  --text: #cad4df;
+  --text-strong: #f8fafc;
+  --text-muted: #9bacbf;
+  --text-muted-2: #74869b;
+  --card: #162235;
+  --card-soft: #1b2a40;
+  --card-border: #2b3c54;
+  --card-strong: #1b2a40;
+  --overlay: rgba(10, 16, 27, 0.8);
+  --accent: #20c997;
+  --accent-weak: rgba(32, 201, 151, 0.14);
+  --accent-strong: rgba(32, 201, 151, 0.48);
+  --accent-warm: #f4b860;
+  --accent-hot: #9ee7cf;
+  --nav-bg: rgba(16, 24, 39, 0.97);
+  --shadow-accent: 0 18px 42px rgba(0, 0, 0, 0.2);
+  --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.18);
+  --shadow-strong: 0 18px 38px rgba(0, 0, 0, 0.26);
   --container-max: 1200px;
   --page-gutter: clamp(0.9rem, 2.8vw, 2rem);
   --section-pad-y: clamp(3.4rem, 8vw, 6rem);
-  --scene-ink: #111a20;
-  --scene-deep: #18242b;
-  --scene-haze: rgba(16, 169, 137, 0.3);
-  --scene-wave: rgba(20, 128, 109, 0.24);
-  --scene-spark: rgba(165, 255, 224, 0.78);
-  --scene-grid: rgba(109, 240, 203, 0.06);
-  --scene-streak: rgba(68, 224, 180, 0.48);
+  --scene-ink: #101827;
+  --scene-deep: #101827;
+  --scene-haze: transparent;
+  --scene-wave: transparent;
+  --scene-spark: transparent;
+  --scene-grid: transparent;
+  --scene-streak: transparent;
   color-scheme: dark;
 }
 
@@ -112,14 +110,14 @@ html {
 }
 
 body {
-  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
@@ -344,4 +342,79 @@ body, #root, .app {
 
 @media (max-width: 480px) {
   .nav-contact { display: none; }
+}
+
+/* Shared public-site surface: solid layers are cheaper to paint than animated filters. */
+.skills, .projects, .testimonials, .writing, .gallery-preview, .gallery-preview-section, .contact, .footer {
+  background: var(--bg) !important;
+}
+
+.skills::before, .projects::before, .testimonials::before, .writing::before,
+.gallery-preview::before, .gallery-preview-section::before, .contact::before, .footer::before {
+  display: none !important;
+}
+
+.skills, .projects, .testimonials, .writing, .gallery-preview, .gallery-preview-section, .contact {
+  border-top: 1px solid var(--card-border);
+}
+
+.skill-card, .project-card, .testimonial-card, .writing-card, .gallery-preview-card,
+.gallery-preview-item, .contact-card, .contact-form, .projects-toolbar, .projects-empty,
+.skills-empty-state, .gallery-preview-empty {
+  background: var(--card) !important;
+  border-color: var(--card-border) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--shadow-soft) !important;
+  backdrop-filter: none !important;
+}
+
+.skill-card:hover, .project-card:hover, .testimonial-card:hover, .writing-card:hover,
+.gallery-preview-card:hover, .gallery-preview-item:hover, .contact-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-strong) !important;
+  box-shadow: var(--shadow-strong) !important;
+}
+
+.navbar, .navbar.scrolled {
+  background: var(--nav-bg);
+  backdrop-filter: none;
+  box-shadow: 0 1px 0 var(--card-border);
+}
+
+.navbar::after, .app::before, .app::after {
+  display: none !important;
+}
+
+.section-title {
+  font-family: inherit;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  letter-spacing: 0;
+  margin-bottom: 2rem;
+}
+
+.section-title::after {
+  width: 2.5rem;
+  height: 2px;
+  border-radius: 0;
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.btn-primary, .contact-submit, .nav-contact {
+  border-radius: 6px !important;
+  background: var(--accent) !important;
+  color: #06251e !important;
+  box-shadow: none !important;
+}
+
+.tag, .project-card-type, .project-card-timeline, .project-featured-badge,
+.project-links a, .gallery-link, .hero-status-pill {
+  border-radius: 4px !important;
+}
+
+@media (max-width: 768px) {
+  .reveal-section {
+    transform: translateY(12px);
+    transition-duration: 320ms;
+  }
 }

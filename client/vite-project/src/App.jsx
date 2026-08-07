@@ -7,12 +7,15 @@ import AdminLogin from './pages/AdminLogin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import AdminResetPassword from './pages/AdminResetPassword/AdminResetPassword';
 import NotFound from './pages/NotFound/NotFound';
+import { prefetchPortfolioContent } from './utils/api';
 import './App.css';
 
 function App() {
   const [isOnline, setIsOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine);
 
   useEffect(() => {
+    prefetchPortfolioContent();
+
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 

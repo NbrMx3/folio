@@ -24,6 +24,60 @@ function buildApiBase() {
 }
 
 const API_BASE = buildApiBase();
+const PUBLIC_CACHE_TTL = 2 * 60 * 1000;
+const pendingRequests = new Map();
+
+function cacheKey(path) {
+  return `folio:api:${path}`;
+}
+
+async function cachedPublicGet(path, transform = (value) => value) {
+  const key = cacheKey(path);
+  const now = Date.now();
+
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(key));
+    if (cached && now - cached.savedAt < PUBLIC_CACHE_TTL) return transform(cached.data);
+  } catch {
+    sessionStorage.removeItem(key);
+  }
+
+  if (!pendingRequests.has(path)) {
+    pendingRequests.set(path, (async () => {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
+        if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
+        const data = await res.json();
+        try {
+          sessionStorage.setItem(key, JSON.stringify({ savedAt: Date.now(), data }));
+        } catch {
+          // A full or unavailable storage must not block portfolio content.
+        }
+        return data;
+      } finally {
+        window.clearTimeout(timeout);
+        pendingRequests.delete(path);
+      }
+    })());
+  }
+
+  return transform(await pendingRequests.get(path));
+}
+
+export function clearPublicCache(path) {
+  pendingRequests.delete(path);
+  try {
+    sessionStorage.removeItem(cacheKey(path));
+  } catch {
+    // Storage can be disabled in private browsing.
+  }
+}
+
+export function prefetchPortfolioContent() {
+  void Promise.allSettled([getProfile(), getSkills(), getProjectsList(), getGallery()]);
+}
 
 // Make relative /uploads/... paths absolute so they load correctly from Vercel.
 export function resolveAssetUrl(path) {
@@ -133,92 +187,104 @@ export async function changeAdminPassword(currentPassword, newPassword) {
 
 // Profile
 export async function getProfile() {
-  const res = await fetch(`${API_BASE}/profile`);
-  if (!res.ok) throw new Error(`GET /profile failed: ${res.status}`);
-  const data = await res.json();
+  const data = await cachedPublicGet('/profile');
   // Make profile picture URL absolute so it loads correctly from Vercel
   if (data && data.picture) data.picture = resolveAssetUrl(data.picture);
   return data;
 }
 
 export async function updateProfile(data) {
-  return authFetch('/profile', {
+  const response = await authFetch('/profile', {
     method: 'PUT',
     body: JSON.stringify(data),
   });
+  clearPublicCache('/profile');
+  return response;
 }
 
 export async function uploadProfilePicture(file) {
   const formData = new FormData();
   formData.append('picture', file);
   // Route is POST /api/profile/upload — authFetch already prepends API_BASE
-  return authFetch('/profile/upload', {
+  const response = await authFetch('/profile/upload', {
     method: 'POST',
     body: formData,
   });
+  clearPublicCache('/profile');
+  return response;
 }
 
 export async function uploadProfileResume(file) {
   const formData = new FormData();
   formData.append('resume', file);
-  return authFetch('/profile/resume', {
+  const response = await authFetch('/profile/resume', {
     method: 'POST',
     body: formData,
   });
+  clearPublicCache('/profile');
+  return response;
 }
 
 // Skills
 export async function getSkills() {
-  const res = await fetch(`${API_BASE}/skills`);
-  if (!res.ok) throw new Error(`GET /skills failed: ${res.status}`);
-  return res.json();
+  return cachedPublicGet('/skills');
 }
 
 export async function createSkill(data) {
-  return authFetch('/skills', {
+  const response = await authFetch('/skills', {
     method: 'POST',
     body: JSON.stringify(data),
   });
+  clearPublicCache('/skills');
+  return response;
 }
 
 export async function updateSkill(id, data) {
-  return authFetch(`/skills/${id}`, {
+  const response = await authFetch(`/skills/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
+  clearPublicCache('/skills');
+  return response;
 }
 
 export async function deleteSkill(id) {
-  return authFetch(`/skills/${id}`, {
+  const response = await authFetch(`/skills/${id}`, {
     method: 'DELETE',
   });
+  clearPublicCache('/skills');
+  return response;
 }
 
 // Projects
 export async function getProjectsList() {
-  const res = await fetch(`${API_BASE}/projects`);
-  if (!res.ok) throw new Error(`GET /projects failed: ${res.status}`);
-  return res.json();
+  return cachedPublicGet('/projects');
 }
 
 export async function createProject(data) {
-  return authFetch('/projects', {
+  const response = await authFetch('/projects', {
     method: 'POST',
     body: JSON.stringify(data),
   });
+  clearPublicCache('/projects');
+  return response;
 }
 
 export async function updateProject(id, data) {
-  return authFetch(`/projects/${id}`, {
+  const response = await authFetch(`/projects/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
+  clearPublicCache('/projects');
+  return response;
 }
 
 export async function deleteProject(id) {
-  return authFetch(`/projects/${id}`, {
+  const response = await authFetch(`/projects/${id}`, {
     method: 'DELETE',
   });
+  clearPublicCache('/projects');
+  return response;
 }
 
 // Contact
@@ -474,9 +540,7 @@ export async function trackDownload(payload = {}) {
 
 // Gallery
 export async function getGallery() {
-  const res = await fetch(`${API_BASE}/gallery`);
-  if (!res.ok) throw new Error(`GET /gallery failed: ${res.status}`);
-  const items = await res.json();
+  const items = await cachedPublicGet('/gallery');
   // Make gallery URLs absolute so they load correctly from Vercel
   return items.map(item => ({
     ...item,
@@ -532,22 +596,28 @@ export async function uploadGalleryMedia(file, title = '', description = '', typ
   if (description) formData.append('description', description);
   if (type) formData.append('type', type);
   
-  return authFetch('/gallery/upload', {
+  const response = await authFetch('/gallery/upload', {
     method: 'POST',
     body: formData,
   });
+  clearPublicCache('/gallery');
+  return response;
 }
 
 export async function updateGalleryItem(id, data) {
-  return authFetch(`/gallery/${id}`, {
+  const response = await authFetch(`/gallery/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
+  clearPublicCache('/gallery');
+  return response;
 }
 
 export async function deleteGalleryItem(id) {
-  return authFetch(`/gallery/${id}`, {
+  const response = await authFetch(`/gallery/${id}`, {
     method: 'DELETE',
   });
+  clearPublicCache('/gallery');
+  return response;
 }
 
