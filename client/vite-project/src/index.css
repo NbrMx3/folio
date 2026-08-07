@@ -107,6 +107,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -150,6 +151,7 @@ input,
 select,
 textarea {
   font: inherit;
+  max-width: 100%;
 }
 
 body, #root, .app {

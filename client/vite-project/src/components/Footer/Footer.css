@@ -45,6 +45,17 @@
   }
 }
 
+@media (max-width: 400px) {
+  .footer-socials {
+    gap: 0.8rem;
+  }
+
+  .gallery-link {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .footer-logo {
   font-size: 1.45rem;
   font-family: 'Rajdhani', 'Space Grotesk', sans-serif;

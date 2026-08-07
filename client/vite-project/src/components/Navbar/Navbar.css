@@ -267,11 +267,35 @@
     display: none;
   }
 
+  .admin-icon span {
+    display: none;
+  }
+
   .menu-toggle {
     font-size: 1.45rem;
   }
 
   .nav-right {
     gap: 0.35rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar-container {
+    min-height: 60px;
+    padding-inline: 0.7rem;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+  }
+
+  .theme-toggle,
+  .visual-mode-toggle,
+  .admin-icon {
+    min-width: 36px;
+    min-height: 36px;
+    width: 36px;
+    height: 36px;
   }
 }
