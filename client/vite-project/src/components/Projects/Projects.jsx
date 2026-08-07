@@ -26,8 +26,15 @@ const Projects = () => {
       .then((data) => {
         if (isMounted) {
           const nextProjects = Array.isArray(data) ? data : [];
-          setProjects(nextProjects);
-          setDataSource(nextProjects.length > 0 ? 'api' : 'empty');
+          if (nextProjects.length > 0) {
+            setProjects(nextProjects);
+            setDataSource('api');
+          } else {
+            // An empty API response must not replace the visible showcase with
+            // a blank section (for example while the hosted data store warms).
+            setProjects([]);
+            setDataSource('fallback');
+          }
         }
       })
       .catch((err) => {
