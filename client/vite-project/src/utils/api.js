@@ -25,6 +25,7 @@ function buildApiBase() {
 
 const API_BASE = buildApiBase();
 const PUBLIC_CACHE_TTL = 2 * 60 * 1000;
+const PROJECTS_PERSISTED_CACHE_KEY = 'folio:api:/projects:last-successful';
 const pendingRequests = new Map();
 
 function cacheKey(path) {
@@ -74,6 +75,34 @@ export function clearPublicCache(path) {
     // Storage can be disabled in private browsing.
   }
 }
+
+function readPersistedProjects() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PROJECTS_PERSISTED_CACHE_KEY));
+    return Array.isArray(cached?.data) ? cached.data : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistProjects(projects) {
+  if (!Array.isArray(projects)) return;
+  try {
+    localStorage.setItem(PROJECTS_PERSISTED_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: projects }));
+  } catch {
+    // Storage can be disabled or full; the network response remains usable.
+  }
+}
+
+function clearPersistedProjects() {
+  try {
+    localStorage.removeItem(PROJECTS_PERSISTED_CACHE_KEY);
+  } catch {
+    // Storage can be disabled in private browsing.
+  }
+}
+
+const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
 export function prefetchPortfolioContent() {
   // Keep the first viewport responsive. Gallery media is fetched by its section
@@ -260,7 +289,24 @@ export async function deleteSkill(id) {
 
 // Projects
 export async function getProjectsList() {
-  return cachedPublicGet('/projects');
+  try {
+    const projects = await cachedPublicGet('/projects');
+    persistProjects(projects);
+    return projects;
+  } catch (firstError) {
+    // Mobile connections and cold API instances can miss the service worker's
+    // first network window. Retry once before falling back to saved data.
+    await wait(1200);
+    try {
+      const projects = await cachedPublicGet('/projects');
+      persistProjects(projects);
+      return projects;
+    } catch {
+      const savedProjects = readPersistedProjects();
+      if (savedProjects) return savedProjects;
+      throw firstError;
+    }
+  }
 }
 
 export async function createProject(data) {
@@ -269,6 +315,7 @@ export async function createProject(data) {
     body: JSON.stringify(data),
   });
   clearPublicCache('/projects');
+  clearPersistedProjects();
   return response;
 }
 
@@ -278,6 +325,7 @@ export async function updateProject(id, data) {
     body: JSON.stringify(data),
   });
   clearPublicCache('/projects');
+  clearPersistedProjects();
   return response;
 }
 
@@ -286,6 +334,7 @@ export async function deleteProject(id) {
     method: 'DELETE',
   });
   clearPublicCache('/projects');
+  clearPersistedProjects();
   return response;
 }
 
