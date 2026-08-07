@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaImages, FaArrowRight } from 'react-icons/fa';
 import { getGallery, trackDownload } from '../../utils/api';
@@ -6,8 +6,10 @@ import { buildDownloadFilename, downloadMediaToDevice } from '../../utils/mediaD
 import './GalleryPreview.css';
 
 const GalleryPreview = () => {
+  const sectionRef = useRef(null);
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getMediaType = (item) => String(item?.type || 'photo').toLowerCase();
 
@@ -27,22 +29,44 @@ const GalleryPreview = () => {
   };
 
   useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return undefined;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setShouldLoad(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '700px 0px' });
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoad) return undefined;
+
+    let cancelled = false;
     const fetchGallery = async () => {
+      setLoading(true);
       try {
         const data = await getGallery();
-        setItems(data.slice(0, 6)); // Show first 6 items
+        if (!cancelled) setItems(data.slice(0, 6)); // Show first 6 items
       } catch (error) {
         console.error('Failed to fetch gallery:', error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     void fetchGallery();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [shouldLoad]);
 
   return (
-    <section className="gallery-preview-section">
+    <section className="gallery-preview-section" ref={sectionRef}>
       <div className="gallery-preview-container">
         <div className="gallery-preview-header">
           <div className="gallery-preview-title">
@@ -58,10 +82,16 @@ const GalleryPreview = () => {
               <div key={index} className="skeleton skeleton-block gallery-preview-skeleton"></div>
             ))}
           </div>
-        ) : items.length === 0 ? (
+        ) : shouldLoad && items.length === 0 ? (
           <div className="gallery-preview-empty">
             <h3>No gallery items yet.</h3>
             <p>Upload a few photos or videos from the admin dashboard to populate this preview.</p>
+          </div>
+        ) : !shouldLoad ? (
+          <div className="gallery-preview-loading gallery-preview-loading--skeleton" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="skeleton skeleton-block gallery-preview-skeleton"></div>
+            ))}
           </div>
         ) : (
           <div className="gallery-preview-grid">

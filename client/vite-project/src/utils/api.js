@@ -76,7 +76,9 @@ export function clearPublicCache(path) {
 }
 
 export function prefetchPortfolioContent() {
-  void Promise.allSettled([getProfile(), getSkills(), getProjectsList(), getGallery()]);
+  // Keep the first viewport responsive. Gallery media is fetched by its section
+  // when visitors get close to it instead of competing with the hero data.
+  void Promise.allSettled([getProfile(), getSkills(), getProjectsList()]);
 }
 
 // Make relative /uploads/... paths absolute so they load correctly from Vercel.

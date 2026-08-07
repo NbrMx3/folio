@@ -14,7 +14,9 @@ import './Hero.css';
 
 const Hero = () => {
   const heroRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Render useful fallback content immediately. The published profile replaces it
+  // in the background, avoiding a blank hero while a cold API wakes up.
+  const [isLoading, setIsLoading] = useState(false);
   const [hasProfileData, setHasProfileData] = useState(true);
   const [profile, setProfile] = useState({
     ...fallbackProfile,
