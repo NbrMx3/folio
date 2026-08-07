@@ -7,8 +7,11 @@ import './Projects.css';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState('loading');
+  // Show the bundled showcase immediately, then replace it with the latest
+  // admin-managed projects once the public API responds. This keeps a cold API
+  // from leaving the section on a loading skeleton.
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataSource, setDataSource] = useState('fallback');
   const [filters, setFilters] = useState({
     stack: 'all',
     type: 'all',
