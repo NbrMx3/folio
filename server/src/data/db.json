@@ -1,6 +1,7 @@
 {
   "profile": {
     "picture": "",
+    "resume": "",
     "name": "CyberDev",
     "title": "Full-Stack Developer",
     "bio": "",
@@ -10,9 +11,9 @@
     "facebook": "",
     "instagram": "",
     "tiktok": "",
+    "email": "",
     "phone": "",
-    "whatsapp": "",
-    "email": ""
+    "whatsapp": ""
   },
   "visitors": [
     {
@@ -176,5 +177,15 @@
       "sort_order": 2
     }
   ],
-  "projects": []
+  "projects": [],
+  "gallery": [],
+  "contactMessages": [],
+  "adminAuth": {
+    "email": "admin@yourdomain.com",
+    "recoveryEmail": "kipkemoi386@gmail.com",
+    "passwordHash": "",
+    "resetTokenHash": "",
+    "resetTokenExpiresAt": null,
+    "updatedAt": null
+  }
 }
