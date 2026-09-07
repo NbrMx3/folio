@@ -1,0 +1,144 @@
+.activity {
+  padding: var(--section-pad-y) var(--page-gutter);
+}
+
+.activity-container {
+  width: min(var(--container-max), 100%);
+  margin: 0 auto;
+}
+
+.activity-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.activity-github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-3);
+}
+
+.activity-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+}
+
+.activity-dashboard,
+.activity-recent {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-1);
+  padding: 1rem;
+}
+
+.activity-indicators {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.activity-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.8rem;
+  background: var(--surface-3);
+}
+
+.activity-indicator-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.6rem;
+  display: inline-grid;
+  place-items: center;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+}
+
+.activity-indicator strong {
+  display: block;
+  color: var(--text-strong);
+}
+
+.activity-indicator span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.activity-heatmap {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.activity-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 0.3rem;
+  border: 1px solid var(--border-subtle);
+  background: color-mix(in oklab, var(--surface-3) 80%, black 20%);
+}
+
+.activity-cell.level-1 {
+  background: color-mix(in oklab, var(--accent) 26%, var(--surface-3));
+}
+
+.activity-cell.level-2 {
+  background: color-mix(in oklab, var(--accent) 48%, var(--surface-3));
+}
+
+.activity-cell.level-3 {
+  background: color-mix(in oklab, var(--accent) 78%, var(--surface-3));
+}
+
+.activity-recent h3 {
+  margin: 0 0 0.7rem;
+}
+
+.activity-recent ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.activity-recent li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.7rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-3);
+}
+
+.activity-recent strong {
+  color: var(--text-strong);
+}
+
+.activity-recent span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .activity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-indicators {
+    grid-template-columns: 1fr;
+  }
+}

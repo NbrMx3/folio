@@ -1,14 +1,17 @@
 import { memo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
-import { FaUserShield, FaMoon, FaSun, FaDesktop, FaPalette } from 'react-icons/fa';
+import { FaUserShield, FaMoon, FaSun, FaDesktop } from 'react-icons/fa';
 import { useThemeStore } from '../../store/useThemeStore';
+import { getProfile } from '../../utils/api';
+import { fallbackProfile } from '../../data/offlineContent';
 import './Navbar.css';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, visualMode, cycleTheme, cycleVisualMode, applyTheme } = useThemeStore();
+  const [resume, setResume] = useState(fallbackProfile.resume || '/resume.pdf');
+  const { theme, cycleTheme, applyTheme } = useThemeStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,31 +31,64 @@ const Navbar = () => {
     return () => media.removeEventListener('change', handleMedia);
   }, [theme, applyTheme]);
 
+  useEffect(() => {
+    let mounted = true;
+
+    getProfile()
+      .then((profile) => {
+        if (mounted && profile?.resume) {
+          setResume(profile.resume);
+        }
+      })
+      .catch(() => {
+        if (mounted) setResume(fallbackProfile.resume || '/resume.pdf');
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const themeIcon = theme === 'default' ? <FaDesktop /> : theme === 'dark' ? <FaMoon /> : <FaSun />;
   const themeLabel = theme === 'default' ? 'System' : theme === 'dark' ? 'Dark' : 'Light';
-  const visualModeLabel = visualMode === 'midnight' ? 'Midnight' : visualMode === 'aurora' ? 'Aurora' : 'Eclipse';
 
-  const links = ['Home', 'Skills', 'Projects', 'Writing', 'Contact'];
+  const links = [
+    { id: 'about', label: 'About' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'experience', label: 'Experience' },
+    { id: 'services', label: 'Services' },
+    { id: 'activity', label: 'Activity' },
+    { id: 'contact', label: 'Contact' },
+  ];
 
   return (
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-container">
         <a href="#home" className="logo">
-          Cyber<span>Dev</span>
+          Nbr<span>Dev</span>
         </a>
         <ul id="primary-navigation" className={`nav-links${menuOpen ? ' open' : ''}`}>
           {links.map((link) => (
-            <li key={link}>
+            <li key={link.id}>
               <a
-                href={`#${link.toLowerCase()}`}
+                href={`#${link.id}`}
                 onClick={() => setMenuOpen(false)}
               >
-                {link}
+                {link.label}
               </a>
             </li>
           ))}
         </ul>
         <div className="nav-right">
+          <a
+            href={resume || '/resume.pdf'}
+            className="nav-resume"
+            download
+            onClick={() => setMenuOpen(false)}
+          >
+            Resume
+          </a>
           <button
             type="button"
             className="theme-toggle"
@@ -64,16 +100,6 @@ const Navbar = () => {
           </button>
           <button
             type="button"
-            className="visual-mode-toggle"
-            onClick={cycleVisualMode}
-            aria-label={`Visual mode: ${visualModeLabel}`}
-            title={`Visual mode: ${visualModeLabel}`}
-          >
-            <FaPalette />
-            <span>{visualModeLabel}</span>
-          </button>
-          <button
-            type="button"
             className="admin-icon"
             onClick={() => navigate('/admin/login')}
             aria-label="Admin login"
@@ -82,9 +108,6 @@ const Navbar = () => {
             <FaUserShield />
             <span>Admin</span>
           </button>
-          <a href="#contact" className="nav-contact" onClick={() => setMenuOpen(false)}>
-            Get in touch
-          </a>
           <button
             type="button"
             className="menu-toggle"

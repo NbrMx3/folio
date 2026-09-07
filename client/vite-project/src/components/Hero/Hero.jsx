@@ -1,276 +1,93 @@
-import { memo, useState, useEffect, useRef } from 'react';
-import {
-  FaGithub,
-  FaLinkedin,
-  FaTwitter,
-  FaFacebook,
-  FaInstagram,
-  FaDownload,
-} from 'react-icons/fa';
-import { SiTiktok } from 'react-icons/si';
-import { getProfile, trackConversion, trackDownload } from '../../utils/api';
+import { memo, useEffect, useState } from 'react';
+import { FaDownload, FaGithub, FaLinkedin } from 'react-icons/fa';
 import { fallbackProfile } from '../../data/offlineContent';
+import { getProfile, trackConversion, trackDownload } from '../../utils/api';
 import './Hero.css';
 
 const Hero = () => {
-  const heroRef = useRef(null);
-  // Render useful fallback content immediately. The published profile replaces it
-  // in the background, avoiding a blank hero while a cold API wakes up.
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasProfileData, setHasProfileData] = useState(true);
-  const [profile, setProfile] = useState({
-    ...fallbackProfile,
-  });
-  const heroSnippet = [
-    'const buildExperience = async () => {',
-    "  const stack = ['React', 'Node', 'Security'];",
-    '  return launch({ motion: true, polish: true });',
-    '};',
-  ];
+  const [profile, setProfile] = useState({ ...fallbackProfile });
 
   useEffect(() => {
-    let isMounted = true;
-
+    let mounted = true;
     getProfile()
       .then((data) => {
-        if (isMounted && data && typeof data === 'object') {
-          const hasPublishedData = Object.keys(data).length > 0;
-          setHasProfileData(hasPublishedData);
+        if (mounted && data && typeof data === 'object') {
           setProfile((prev) => ({ ...prev, ...data }));
         }
       })
-      .catch((err) => {
-        console.error('Profile fetch error:', err.message);
-        if (isMounted) {
-          setProfile(fallbackProfile);
-          setHasProfileData(false);
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+      .catch(() => {
+        if (mounted) setProfile(fallbackProfile);
       });
-
     return () => {
-      isMounted = false;
+      mounted = false;
     };
   }, []);
 
-  useEffect(() => {
-    const element = heroRef.current;
-    if (!element) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      element.style.removeProperty('--hero-parallax-x');
-      element.style.removeProperty('--hero-parallax-y');
-      element.style.removeProperty('--hero-scroll-shift');
-      return undefined;
-    }
-
-    const updateFromPointer = (event) => {
-      const rect = element.getBoundingClientRect();
-      const offsetX = ((event.clientX - rect.left) / rect.width - 0.5) * 18;
-      const offsetY = ((event.clientY - rect.top) / rect.height - 0.5) * 18;
-      element.style.setProperty('--hero-parallax-x', `${offsetX.toFixed(2)}px`);
-      element.style.setProperty('--hero-parallax-y', `${offsetY.toFixed(2)}px`);
-    };
-
-    const resetMotion = () => {
-      element.style.setProperty('--hero-parallax-x', '0px');
-      element.style.setProperty('--hero-parallax-y', '0px');
-    };
-
-    const updateScroll = () => {
-      const offset = Math.min(window.scrollY * 0.03, 18);
-      element.style.setProperty('--hero-scroll-shift', `${offset.toFixed(2)}px`);
-    };
-
-    element.addEventListener('pointermove', updateFromPointer);
-    element.addEventListener('pointerleave', resetMotion);
-    window.addEventListener('scroll', updateScroll, { passive: true });
-    updateScroll();
-
-    return () => {
-      element.removeEventListener('pointermove', updateFromPointer);
-      element.removeEventListener('pointerleave', resetMotion);
-      window.removeEventListener('scroll', updateScroll);
-    };
-  }, []);
-
-  const titleWords = (profile.title || 'Full-Stack Developer').trim().split(/\s+/);
-  const titleLead = titleWords.length > 1 ? titleWords.slice(0, -1).join(' ') : 'Full-Stack';
-  const titleAccent = titleWords.length > 1 ? titleWords[titleWords.length - 1] : titleWords[0];
-  const socialLinks = [
-    { label: 'GitHub', href: profile.github || 'https://github.com', icon: <FaGithub /> },
-    { label: 'LinkedIn', href: profile.linkedin || 'https://linkedin.com', icon: <FaLinkedin /> },
-    { label: 'X', href: profile.twitter || 'https://x.com', icon: <FaTwitter /> },
-    { label: 'Facebook', href: profile.facebook || 'https://facebook.com', icon: <FaFacebook /> },
-    { label: 'Instagram', href: profile.instagram || 'https://instagram.com', icon: <FaInstagram /> },
-    { label: 'TikTok', href: profile.tiktok || 'https://tiktok.com', icon: <SiTiktok /> },
-  ];
-
-  const quickActions = profile.resume ? [
-    {
-      label: 'Download Resume',
-      href: profile.resume,
-      icon: <FaDownload />,
-      download: true,
-      track: 'resume',
-    },
-  ] : [];
-
-  const handleQuickAction = (action) => {
+  const handleCta = (action) => {
     const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
     void trackConversion(ref, 'cta', action);
   };
 
-  if (isLoading) {
-    return (
-      <section className="hero" id="home" ref={heroRef}>
-        <div className="hero-container hero-loading-state">
-          <div className="hero-loading-copy">
-            <div className="skeleton skeleton-line hero-loading-kicker"></div>
-            <div className="skeleton skeleton-line skeleton-line--lg hero-loading-title hero-loading-title-top"></div>
-            <div className="skeleton skeleton-line skeleton-line--lg hero-loading-title hero-loading-title-bottom"></div>
-            <div className="skeleton skeleton-line hero-loading-description"></div>
-            <div className="skeleton skeleton-line hero-loading-description hero-loading-description--short"></div>
-            <div className="hero-loading-actions">
-              <div className="skeleton skeleton-block hero-loading-button"></div>
-              <div className="skeleton skeleton-block hero-loading-avatar-row"></div>
-            </div>
-            <div className="hero-loading-metrics">
-              <div className="skeleton skeleton-block hero-loading-metric"></div>
-              <div className="skeleton skeleton-block hero-loading-metric"></div>
-              <div className="skeleton skeleton-block hero-loading-metric"></div>
-            </div>
-          </div>
-          <div className="hero-loading-visual">
-            <div className="skeleton skeleton-block hero-loading-card hero-loading-code"></div>
-            <div className="skeleton skeleton-block hero-loading-card hero-loading-status"></div>
-            <div className="skeleton skeleton-block hero-loading-card hero-loading-image"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="hero" id="home" ref={heroRef}>
+    <section className="hero" id="home" aria-labelledby="hero-title">
       <div className="hero-container">
         <div className="hero-content">
-          <p className="hero-kicker">Code-First Interfaces</p>
-          <h1 className="hero-title">
-            {titleLead}<br />
-            <span className="highlight">{titleAccent}</span>
+          <p className="hero-status">Available for opportunities</p>
+          <h1 id="hero-title">
+            Hi, I&apos;m {profile.name || 'Nbr'} - Software Developer
           </h1>
-          <p className="hero-description">
-            {profile.bio || 'Building digital experiences that merge creativity with technology.'}
+          <p className="hero-copy">
+            I build modern, scalable, and user-focused software with clean frontend systems,
+            reliable backend services, and production-ready engineering standards.
           </p>
-          <p className="hero-sub">
-            Specializing in modern web development and cyber systems
-          </p>
-          {!hasProfileData && (
-            <div className="hero-empty-note">
-              No published profile content yet. Showing the portfolio defaults until the backend is updated.
-            </div>
-          )}
           <div className="hero-actions">
-            <a href="#contact" className="btn-primary" onClick={() => handleQuickAction('contact')}>
-              Let's Connect
+            <a href="#projects" className="btn btn-primary" onClick={() => handleCta('view-work')}>
+              View My Work
             </a>
-            <div className="hero-socials">
-              {socialLinks.map((social) => (
-                <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
-                  {social.icon}
-                </a>
-              ))}
-            </div>
+            <a
+              href={profile.resume || '/resume.pdf'}
+              className="btn btn-ghost"
+              download
+              onClick={() => {
+                handleCta('download-resume');
+                void trackDownload({
+                  assetType: 'resume',
+                  assetName: 'Resume',
+                  assetUrl: profile.resume || '/resume.pdf',
+                });
+              }}
+            >
+              <FaDownload />
+              <span>Download Resume</span>
+            </a>
           </div>
-          <div className="hero-quick-actions">
-            {quickActions.map((action) => (
-              <a
-                key={action.label}
-                href={action.href}
-                className="hero-quick-action"
-                download={action.download || undefined}
-                onClick={() => {
-                  handleQuickAction(action.track);
-                  if (action.download) {
-                    void trackDownload({
-                      assetType: 'resume',
-                      assetName: action.label,
-                      assetUrl: action.href,
-                    });
-                  }
-                }}
-                target={action.download ? undefined : '_blank'}
-                rel={action.download ? undefined : 'noreferrer'}
-              >
-                {action.icon}
-                <span>{action.label}</span>
-              </a>
-            ))}
-          </div>
-          <div className="hero-metrics">
-            <article className="hero-metric">
-              <span>Focus</span>
-              <strong>Frontend Systems</strong>
-            </article>
-            <article className="hero-metric">
-              <span>Stack</span>
-              <strong>React + Node</strong>
-            </article>
-            <article className="hero-metric">
-              <span>Edge</span>
-              <strong>Secure Delivery</strong>
-            </article>
+          <div className="hero-socials" aria-label="Professional links">
+            <a href={profile.github || 'https://github.com'} target="_blank" rel="noreferrer">
+              <FaGithub />
+              <span>GitHub</span>
+            </a>
+            <a href={profile.linkedin || 'https://linkedin.com'} target="_blank" rel="noreferrer">
+              <FaLinkedin />
+              <span>LinkedIn</span>
+            </a>
           </div>
         </div>
-        <div className="hero-visual" aria-hidden="true">
+
+        <aside className="hero-visual" aria-hidden="true">
           <div className="hero-code-card">
-            <div className="hero-code-header">
-              <span className="code-dot code-dot-red"></span>
-              <span className="code-dot code-dot-amber"></span>
-              <span className="code-dot code-dot-cyan"></span>
-              <p>landing-page.jsx</p>
-            </div>
-            <div className="hero-code-lines">
-              {heroSnippet.map((line, index) => (
-                <div className="hero-code-line" key={line}>
-                  <span className="hero-code-index">0{index + 1}</span>
-                  <code>{line}</code>
-                </div>
-              ))}
-            </div>
+            <header>
+              <span></span><span></span><span></span>
+              <p>portfolio.tsx</p>
+            </header>
+            <pre>
+              <code>{`const developer = {\n  stack: ['React', 'TypeScript', 'Node.js'],\n  focus: 'Scalable product engineering',\n  status: 'Open to opportunities'\n};`}</code>
+            </pre>
           </div>
-
-          <div className="hero-status-card">
-            <span className="hero-status-pill">Live Build</span>
-            <h2>{profile.name || 'CyberDev'}</h2>
-            <p>{profile.title || 'Full-Stack Developer'}</p>
+          <div className="hero-profile-card">
+            <strong>{profile.title || 'Full-Stack Developer'}</strong>
+            <span>Building real-world products with clean architecture.</span>
           </div>
-
-          <div className="hero-image-card">
-            {profile.picture ? (
-              <img
-                src={profile.picture}
-                alt={profile.name || 'Developer portrait'}
-                className="hero-image"
-                loading="lazy"
-                decoding="async"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            ) : (
-              <div className="hero-image-placeholder">No profile image uploaded yet</div>
-            )}
-            <div className="hero-image-meta">
-              <strong>{profile.name || 'Ready to collaborate'}</strong>
-              <span>{profile.linkedin ? 'LinkedIn connected' : 'Open for new projects'}</span>
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </section>
   );

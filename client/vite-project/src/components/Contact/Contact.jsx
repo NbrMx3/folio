@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { FaExclamationCircle, FaPaperPlane, FaCheckCircle, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
+import { FaExclamationCircle, FaPaperPlane, FaCheckCircle, FaPhoneAlt, FaWhatsapp, FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import { getProfile, sendContactMessage } from '../../utils/api';
+import { fallbackProfile } from '../../data/offlineContent';
 import './Contact.css';
 
 const CONTACT_COOLDOWN_MS = 45 * 1000;
@@ -14,17 +15,19 @@ const toWhatsAppHref = (number) => {
 const Contact = () => {
   const submittedAtRef = useRef(Date.now());
   const cooldownTimerRef = useRef(null);
-  const [form, setForm] = useState({ name: '', email: '', message: '', website: '', company: '' });
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '', website: '', company: '' });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle');
   const [feedback, setFeedback] = useState('');
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [profile, setProfile] = useState({ ...fallbackProfile });
   const [contactDetails, setContactDetails] = useState({ phone: '', whatsapp: '' });
 
   useEffect(() => {
     getProfile()
       .then((profile) => {
+        setProfile((prev) => ({ ...prev, ...(profile || {}) }));
         setContactDetails({
           phone: profile?.phone?.trim() || '',
           whatsapp: profile?.whatsapp?.trim() || '',
@@ -152,7 +155,9 @@ const Contact = () => {
       const response = await sendContactMessage({
         name: form.name.trim(),
         email: form.email.trim(),
-        message: form.message.trim(),
+        message: form.subject.trim()
+          ? `Subject: ${form.subject.trim()}\n\n${form.message.trim()}`
+          : form.message.trim(),
         website: form.website.trim(),
         company: form.company.trim(),
         submittedAt: submittedAtRef.current,
@@ -160,7 +165,7 @@ const Contact = () => {
 
       setStatus('success');
       setFeedback(response?.message || 'Message sent successfully.');
-      setForm({ name: '', email: '', message: '', website: '', company: '' });
+      setForm({ name: '', email: '', subject: '', message: '', website: '', company: '' });
       setErrors({});
       beginCooldown();
     } catch (error) {
@@ -179,8 +184,31 @@ const Contact = () => {
           Get In <span className="highlight">Touch</span>
         </h2>
         <p className="contact-subtitle">
-          Have a project in mind or want to collaborate? Drop me a message.
+          Let&apos;s build something great together.
         </p>
+        <div className="contact-grid" aria-label="Primary contact details">
+          <a className="contact-card" href={`mailto:${profile.email || fallbackProfile.email}`}>
+            <span className="contact-icon" aria-hidden="true"><FaEnvelope /></span>
+            <span className="contact-card-body">
+              <span className="contact-label">Email</span>
+              <span className="contact-value">{profile.email || fallbackProfile.email}</span>
+            </span>
+          </a>
+          <a className="contact-card" href={profile.github || fallbackProfile.github} target="_blank" rel="noreferrer">
+            <span className="contact-icon" aria-hidden="true"><FaGithub /></span>
+            <span className="contact-card-body">
+              <span className="contact-label">GitHub</span>
+              <span className="contact-value">View profile</span>
+            </span>
+          </a>
+          <a className="contact-card" href={profile.linkedin || fallbackProfile.linkedin} target="_blank" rel="noreferrer">
+            <span className="contact-icon" aria-hidden="true"><FaLinkedin /></span>
+            <span className="contact-card-body">
+              <span className="contact-label">LinkedIn</span>
+              <span className="contact-value">Connect professionally</span>
+            </span>
+          </a>
+        </div>
         {(contactDetails.phone || contactDetails.whatsapp) && (
           <div className="contact-grid" aria-label="Direct contact options">
             {contactDetails.phone && (
@@ -271,6 +299,17 @@ const Contact = () => {
                 required
               />
               {errors.email && <span className="field-error">{errors.email}</span>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="subject">Subject</label>
+              <input
+                id="subject"
+                type="text"
+                name="subject"
+                placeholder="Project inquiry, contract, collaboration..."
+                value={form.subject}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="form-group">

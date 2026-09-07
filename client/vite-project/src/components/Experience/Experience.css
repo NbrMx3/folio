@@ -1,0 +1,75 @@
+.experience {
+  padding: var(--section-pad-y) var(--page-gutter);
+}
+
+.experience-container {
+  width: min(var(--container-max), 100%);
+  margin: 0 auto;
+}
+
+.experience-timeline {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+}
+
+.experience-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.52rem;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 1px;
+  background: linear-gradient(var(--border-strong), transparent);
+}
+
+.experience-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.9rem;
+}
+
+.experience-dot {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 1.15rem;
+  border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: color-mix(in oklab, var(--accent) 75%, white 10%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.experience-card {
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-1);
+}
+
+.experience-card h3 {
+  margin: 0.2rem 0;
+  color: var(--text-strong);
+}
+
+.experience-company,
+.experience-dates {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.experience-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+.experience-tech span {
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-3);
+  font-size: 0.8rem;
+}

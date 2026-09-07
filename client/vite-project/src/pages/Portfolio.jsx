@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 import Hero from '../components/Hero/Hero';
+import About from '../components/About/About';
 import Skills from '../components/Skills/Skills';
 import Projects from '../components/Projects/Projects';
-import Testimonials from '../components/Testimonials/Testimonials';
-import Writing from '../components/Writing/Writing';
-import GalleryPreview from '../components/GalleryPreview/GalleryPreview';
+import Experience from '../components/Experience/Experience';
+import Services from '../components/Services/Services';
+import DeveloperActivity from '../components/DeveloperActivity/DeveloperActivity';
 import Contact from '../components/Contact/Contact';
 import Footer from '../components/Footer/Footer';
 import Seo from '../components/Seo/Seo';
@@ -88,11 +89,12 @@ const Portfolio = () => {
       </div>
       <Navbar />
       <div className="reveal-section reveal-hero"><Hero /></div>
+      <div className="reveal-section"><About /></div>
       <div className="reveal-section"><Skills /></div>
       <div className="reveal-section"><Projects /></div>
-      <div className="reveal-section"><Testimonials /></div>
-      <div className="reveal-section"><Writing /></div>
-      <div className="reveal-section"><GalleryPreview /></div>
+      <div className="reveal-section"><Experience /></div>
+      <div className="reveal-section"><Services /></div>
+      <div className="reveal-section"><DeveloperActivity /></div>
       <div className="reveal-section"><Contact /></div>
       <div className="reveal-section"><Footer /></div>
     </>

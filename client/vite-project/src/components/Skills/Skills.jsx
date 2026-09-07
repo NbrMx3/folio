@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useMemo } from 'react';
 import {
   FaReact,
   FaNodeJs,
@@ -66,11 +66,27 @@ const Skills = () => {
     };
   }, []);
 
+  const skillCategories = useMemo(() => {
+    const fallback = [
+      { title: 'Frontend', items: ['React', 'TypeScript', 'JavaScript', 'Tailwind CSS'] },
+      { title: 'Backend', items: ['Node.js', 'Express.js', 'REST APIs'] },
+      { title: 'Database', items: ['PostgreSQL', 'Prisma', 'MongoDB'] },
+      { title: 'DevOps', items: ['Git', 'GitHub', 'Vercel', 'Render'] },
+    ];
+
+    if (!skills.length) return fallback;
+    const dynamicItems = skills.map((item) => item?.title).filter(Boolean);
+    return [
+      { title: 'Core Stack', items: dynamicItems.slice(0, 8) },
+      ...fallback.slice(1),
+    ];
+  }, [skills]);
+
   return (
     <section className="skills" id="skills">
       <div className="skills-container">
         <h2 className="section-title">
-          Technical <span className="highlight">Expertise</span>
+          Technology <span className="highlight">Stack</span>
         </h2>
         {isLoading ? (
           <div className="skills-grid skills-grid--loading" aria-busy="true" aria-live="polite">
@@ -89,15 +105,29 @@ const Skills = () => {
             <p>Add a few core skills in the admin dashboard to make this section visible.</p>
           </div>
         ) : (
-          <div className="skills-grid">
-            {skills.map((skill) => (
-              <div className="skill-card" key={skill.id}>
-                <div className="skill-icon">{iconMap[skill.icon] || <FaCode />}</div>
-                <h3>{skill.title}</h3>
-                <p>{skill.description}</p>
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="skills-categories">
+              {skillCategories.map((category) => (
+                <article className="skill-category-card" key={category.title}>
+                  <h3>{category.title}</h3>
+                  <div className="skill-badges">
+                    {category.items.map((item) => (
+                      <span key={item} className="skill-badge">{item}</span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="skills-grid">
+              {skills.map((skill) => (
+                <div className="skill-card" key={skill.id}>
+                  <div className="skill-icon">{iconMap[skill.icon] || <FaCode />}</div>
+                  <h3>{skill.title}</h3>
+                  <p>{skill.description}</p>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </section>
