@@ -108,7 +108,11 @@ async function geolocate(ip) {
   }
 }
 
-function buildVisitorBase(req, referer, ua) {
+function cleanEventValue(value, fallback = '') {
+  return String(value || fallback).replace(/[\r\n\t]+/g, ' ').trim().slice(0, 180);
+}
+
+function buildVisitorBase(req, referer, ua, campaignSource = '') {
   const rawIp = req.headers['x-forwarded-for']?.split(',')[0].trim()
     || req.socket.remoteAddress
     || 'unknown';
@@ -116,12 +120,14 @@ function buildVisitorBase(req, referer, ua) {
     id: uuidv4(),
     ip: rawIp,
     timestamp: new Date().toISOString(),
-    source: detectPlatform(referer),
+    source: detectPlatform(referer, campaignSource),
     referrer: referer,
     browser: ua.getBrowser().name || 'Unknown',
     os: ua.getOS().name || 'Unknown',
     device: ua.getDevice().type || 'desktop',
     page: '/',
+    eventType: 'page_view',
+    eventLabel: '',
   };
 }
 
@@ -131,7 +137,9 @@ router.get('/', async (req, res) => {
     const ua = new UAParser(req.headers['user-agent']);
     const referer = req.query.ref || req.headers.referer || 'direct';
     const base = buildVisitorBase(req, referer, ua);
-    base.page = req.query.page || '/';
+    base.page = cleanEventValue(req.query.page, '/');
+    base.eventType = cleanEventValue(req.query.eventType, 'page_view');
+    base.eventLabel = cleanEventValue(req.query.eventLabel);
     const geo = await geolocate(base.ip);
     addVisitor({ ...base, ...geo }).catch(err => console.error('Tracking save error:', err));
   } catch (error) {
@@ -144,8 +152,10 @@ router.post('/', async (req, res) => {
   try {
     const ua = new UAParser(req.headers['user-agent']);
     const referer = req.body.ref || req.query.ref || req.headers.referer || 'direct';
-    const base = buildVisitorBase(req, referer, ua);
-    base.page = req.body.page || req.query.page || '/';
+    const base = buildVisitorBase(req, referer, ua, req.body.campaignSource || req.query.campaignSource);
+    base.page = cleanEventValue(req.body.page || req.query.page, '/');
+    base.eventType = cleanEventValue(req.body.eventType || req.query.eventType, 'page_view');
+    base.eventLabel = cleanEventValue(req.body.eventLabel || req.query.eventLabel);
     const geo = await geolocate(base.ip);
     addVisitor({ ...base, ...geo }).catch(err => console.error('Tracking save error:', err));
   } catch (error) {
@@ -155,8 +165,8 @@ router.post('/', async (req, res) => {
 
 export default router;
 
-function detectPlatform(referer) {
-  const ref = referer.toLowerCase();
+function detectPlatform(referer, campaignSource = '') {
+  const ref = `${referer || ''} ${campaignSource || ''}`.toLowerCase();
   if (ref.includes('linkedin')) return 'LinkedIn';
   if (ref.includes('github')) return 'GitHub';
   if (ref.includes('twitter') || ref.includes('x.com')) return 'Twitter/X';
@@ -164,6 +174,9 @@ function detectPlatform(referer) {
   if (ref.includes('instagram')) return 'Instagram';
   if (ref.includes('youtube')) return 'YouTube';
   if (ref.includes('tiktok')) return 'TikTok';
+  if (ref.includes('whatsapp')) return 'WhatsApp';
+  if (ref.includes('telegram')) return 'Telegram';
+  if (ref.includes('discord')) return 'Discord';
   if (ref.includes('reddit')) return 'Reddit';
   if (ref.includes('google')) return 'Google';
   if (ref.includes('bing')) return 'Bing';

@@ -431,6 +431,11 @@ const AnalyticsDashboard = ({ overview, onAnalyticsCleared, onQuickEdit }) => {
   };
 
   const describeActivity = (visitor) => {
+    if (visitor?.event_type || visitor?.eventType) {
+      const type = String(visitor.event_type || visitor.eventType).replace(/_/g, ' ');
+      const label = String(visitor.event_label || visitor.eventLabel || '').trim();
+      return label ? `${type}: ${label}` : type;
+    }
     const pageValue = String(visitor?.page || '');
     if (pageValue.startsWith('/projects/') && pageValue.includes('link=')) {
       const linkType = pageValue.split('link=')[1] || '';

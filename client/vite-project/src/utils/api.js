@@ -538,7 +538,11 @@ export async function clearDownloadAnalytics() {
 
 // Track a visit (called from portfolio)
 export async function trackVisit(ref = 'direct', page = '/') {
-  const payload = { ref, page };
+  const payload = {
+    ref,
+    page,
+    campaignSource: new URLSearchParams(window.location.search).get('utm_source') || '',
+  };
   try {
     if (navigator.sendBeacon) {
       const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
@@ -554,6 +558,30 @@ export async function trackVisit(ref = 'direct', page = '/') {
     });
   } catch {
     // Silently fail tracking
+  }
+}
+
+export async function trackInteraction(eventType, eventLabel = '') {
+  const campaignSource = new URLSearchParams(window.location.search).get('utm_source') || '';
+  const body = {
+    ref: sessionStorage.getItem('folio_ref') || document.referrer || 'direct',
+    page: window.location.pathname,
+    eventType,
+    eventLabel,
+    campaignSource,
+  };
+
+  try {
+    const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+    if (navigator.sendBeacon(`${API_BASE}/track`, blob)) return;
+    await fetch(`${API_BASE}/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      keepalive: true,
+    });
+  } catch {
+    // Analytics must never interrupt a visitor action.
   }
 }
 

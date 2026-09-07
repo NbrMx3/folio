@@ -333,7 +333,9 @@ export async function initDatabase() {
             region TEXT DEFAULT 'Unknown',
             latitude DOUBLE PRECISION,
             longitude DOUBLE PRECISION,
-            page TEXT DEFAULT '/'
+            page TEXT DEFAULT '/',
+            event_type TEXT DEFAULT 'page_view',
+            event_label TEXT DEFAULT ''
           )
         `);
 
@@ -372,6 +374,15 @@ export async function initDatabase() {
           await client.query(`
             DO $$ BEGIN
               ALTER TABLE visitors ADD COLUMN ${col} DOUBLE PRECISION;
+            EXCEPTION WHEN duplicate_column THEN NULL;
+            END $$
+          `);
+        }
+
+        for (const col of ['event_type', 'event_label']) {
+          await client.query(`
+            DO $$ BEGIN
+              ALTER TABLE visitors ADD COLUMN ${col} TEXT DEFAULT '';
             EXCEPTION WHEN duplicate_column THEN NULL;
             END $$
           `);
@@ -919,18 +930,20 @@ export async function addVisitor(visitor) {
     latitude,
     longitude,
     page,
+    eventType,
+    eventLabel,
   } = visitor;
   if (usingPostgres && pool) {
     await pool.query(
       `INSERT INTO visitors (
         id, ip, timestamp, source, referrer, browser, os, device,
         continent, country, county, district, division, city, region,
-        latitude, longitude, page
+        latitude, longitude, page, event_type, event_label
       )
        VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8,
         $9, $10, $11, $12, $13, $14, $15,
-        $16, $17, $18
+        $16, $17, $18, $19, $20
       )`,
       [
         id,
@@ -951,6 +964,8 @@ export async function addVisitor(visitor) {
         latitude ?? null,
         longitude ?? null,
         page,
+        eventType || 'page_view',
+        eventLabel || '',
       ]
     );
 
@@ -988,6 +1003,8 @@ export async function addVisitor(visitor) {
     latitude: latitude ?? null,
     longitude: longitude ?? null,
     page: page || '/',
+    eventType: eventType || 'page_view',
+    eventLabel: eventLabel || '',
   });
   db.platformStats[source] = (db.platformStats[source] || 0) + 1;
   await writeJsonDb(db);

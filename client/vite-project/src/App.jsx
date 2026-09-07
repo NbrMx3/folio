@@ -7,7 +7,7 @@ import AdminLogin from './pages/AdminLogin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import AdminResetPassword from './pages/AdminResetPassword/AdminResetPassword';
 import NotFound from './pages/NotFound/NotFound';
-import { prefetchPortfolioContent } from './utils/api';
+import { prefetchPortfolioContent, trackInteraction } from './utils/api';
 import './App.css';
 
 function App() {
@@ -25,6 +25,32 @@ function App() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    const isPublicPath = () => !window.location.pathname.startsWith('/admin');
+    const labelFor = (element) => {
+      const text = element.getAttribute('aria-label') || element.getAttribute('title') || element.textContent || '';
+      return text.replace(/\s+/g, ' ').trim().slice(0, 180);
+    };
+    const onClick = (event) => {
+      if (!isPublicPath()) return;
+      const target = event.target.closest('a, button');
+      if (!target || target.hasAttribute('disabled')) return;
+      void trackInteraction(target.tagName === 'A' ? 'link_click' : 'button_click', labelFor(target));
+    };
+    const onSubmit = (event) => {
+      if (!isPublicPath()) return;
+      const form = event.target;
+      void trackInteraction('form_submit', labelFor(form) || 'form');
+    };
+
+    document.addEventListener('click', onClick);
+    document.addEventListener('submit', onSubmit);
+    return () => {
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('submit', onSubmit);
     };
   }, []);
 
