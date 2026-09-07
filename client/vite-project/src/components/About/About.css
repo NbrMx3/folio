@@ -58,32 +58,6 @@
   background: radial-gradient(circle at 20% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%), var(--surface-3);
 }
 
-.about-avatar-upload {
-  position: absolute;
-  inset-inline: 0.8rem;
-  bottom: 0.75rem;
-  min-height: 2rem;
-  border-radius: 999px;
-  border: 1px solid var(--accent-border);
-  background: color-mix(in oklab, var(--bg) 72%, transparent);
-  color: var(--text-strong);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-}
-
-.about-avatar-upload:hover {
-  background: color-mix(in oklab, var(--bg) 56%, transparent);
-}
-
-.about-upload-feedback {
-  margin: 0.7rem 0 0;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  text-align: center;
-}
-
 .about-stats {
   display: grid;
   gap: 0.9rem;
