@@ -74,6 +74,15 @@ const Hero = () => {
         </div>
 
         <aside className="hero-visual" aria-hidden="true">
+          <div className="hero-avatar-frame">
+            {profile.picture ? (
+              <img src={profile.picture} alt="" className="hero-avatar-image" loading="lazy" decoding="async" />
+            ) : (
+              <span className="hero-avatar-placeholder">
+                {String(profile.name || 'DK').split(' ').map((part) => part[0]).slice(0, 2).join('')}
+              </span>
+            )}
+          </div>
           <div className="hero-code-card">
             <header>
               <span></span><span></span><span></span>

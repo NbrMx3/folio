@@ -56,7 +56,7 @@ const ProjectCaseStudy = () => {
       <main className="case-study case-study-error">
         <Seo
           title="Project Case Study"
-          description="A detailed project case study from the CyberDev portfolio."
+          description="A detailed project case study from the Dennis Kipkemoi portfolio."
           url={`${window.location.origin}/projects/${projectSlug}`}
           image="/social-card.svg"
         />
@@ -78,7 +78,7 @@ const ProjectCaseStudy = () => {
       <main className="case-study case-study-loading">
         <Seo
           title="Project Case Study"
-          description="Loading CyberDev portfolio project details."
+          description="Loading Dennis Kipkemoi portfolio project details."
           url={`${window.location.origin}/projects/${projectSlug}`}
           image="/social-card.svg"
         />
@@ -107,7 +107,7 @@ const ProjectCaseStudy = () => {
           url: `${window.location.origin}/projects/${projectSlug}`,
           creator: {
             '@type': 'Person',
-            name: 'CyberDev',
+            name: 'Dennis Kipkemoi',
           },
           about: project.type,
           keywords: (project.tags || []).join(', '),

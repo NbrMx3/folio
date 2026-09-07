@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE_NAME = 'CyberDev Portfolio';
+const SITE_NAME = 'Dennis Kipkemoi Portfolio';
 
 const toAbsoluteUrl = (value) => {
   if (!value) return '';

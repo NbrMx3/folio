@@ -1,5 +1,5 @@
 export const fallbackProfile = {
-  name: 'CyberDev',
+  name: 'Dennis Kipkemoi',
   title: 'Full-Stack Developer',
   bio: 'Building digital experiences that merge creativity with technology.',
   picture: '',

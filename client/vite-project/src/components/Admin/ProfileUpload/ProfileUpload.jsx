@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   FaCamera,
   FaDownload,
+  FaFileExport,
   FaFilePdf,
   FaSave,
   FaUser,
@@ -40,13 +41,19 @@ const ProfileUpload = () => {
   const getImageUrl = (path) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    const base = import.meta.env.VITE_API_BASE_URL || '';
+    const base = import.meta.env.PROD ? 'https://folioo-dxty.onrender.com' : '';
     return `${base}${path}`;
   };
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const fileRef = useRef(null);
   const resumeRef = useRef(null);
+  const escapeHtml = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 
   useEffect(() => {
     loadProfile();
@@ -137,6 +144,59 @@ const ProfileUpload = () => {
     }
   };
 
+  const handleExportProfilePdf = () => {
+    const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
+    if (!printWindow) {
+      setMessage('Pop-up blocked. Please allow pop-ups and try again.');
+      return;
+    }
+
+    const fullName = escapeHtml(profile.name || 'Dennis Kipkemoi');
+    const title = escapeHtml(profile.title || 'Software Developer');
+    const safeBio = escapeHtml(profile.bio || 'No biography provided yet.');
+    const sections = [
+      ['Email', profile.email],
+      ['Phone', profile.phone],
+      ['WhatsApp', profile.whatsapp],
+      ['GitHub', profile.github],
+      ['LinkedIn', profile.linkedin],
+      ['X', profile.twitter],
+      ['Facebook', profile.facebook],
+      ['Instagram', profile.instagram],
+      ['TikTok', profile.tiktok],
+    ].filter(([, value]) => value);
+
+    const rows = sections.map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join('');
+    printWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>${fullName} Profile Export</title>
+          <style>
+            body { font-family: Inter, Arial, sans-serif; margin: 2rem; color: #0f172a; }
+            h1 { margin-bottom: 0.2rem; }
+            p { margin-top: 0; color: #334155; }
+            table { width: 100%; border-collapse: collapse; margin-top: 1.2rem; }
+            th, td { text-align: left; border: 1px solid #cbd5e1; padding: 0.55rem 0.65rem; }
+            th { width: 180px; background: #f8fafc; }
+            .bio { margin-top: 1rem; line-height: 1.65; white-space: pre-wrap; }
+          </style>
+        </head>
+        <body>
+          <h1>${fullName}</h1>
+          <p>${title}</p>
+          <div class="bio">${safeBio}</div>
+          <table>
+            <tbody>${rows || '<tr><td colspan="2">No contact links provided.</td></tr>'}</tbody>
+          </table>
+          <script>window.onload = () => window.print();</script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   return (
     <div className="profile-upload">
       <div className="profile-card">
@@ -193,6 +253,9 @@ const ProfileUpload = () => {
           <div className="resume-actions">
             <button type="button" className="resume-upload-btn" onClick={() => resumeRef.current?.click()} disabled={saving}>
               <FaDownload /> {profile.resume ? 'Replace Resume' : 'Upload Resume'}
+            </button>
+            <button type="button" className="resume-preview-link" onClick={handleExportProfilePdf}>
+              <FaFileExport /> Export Profile PDF
             </button>
             {profile.resume && (
               <a href={profile.resume} className="resume-preview-link" target="_blank" rel="noreferrer">

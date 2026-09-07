@@ -66,14 +66,14 @@ const Portfolio = () => {
   return (
     <>
       <Seo
-        title="CyberDev | Full-Stack Developer Portfolio"
-        description="CyberDev's portfolio featuring motion-rich project showcases, detailed case studies, writing, and direct contact options."
+        title="Dennis Kipkemoi | Full-Stack Developer Portfolio"
+        description="Dennis Kipkemoi's portfolio featuring modern project showcases, detailed case studies, and direct collaboration options."
         url={window.location.origin}
         image="/social-card.svg"
         schema={{
           '@context': 'https://schema.org',
           '@type': 'Person',
-          name: 'CyberDev',
+          name: 'Dennis Kipkemoi',
           jobTitle: 'Full-Stack Developer',
           url: window.location.origin,
           image: '/dk_portfolio_logo_light.svg',

@@ -8,7 +8,7 @@ const NotFound = () => {
     <main className="not-found">
       <Seo
         title="404 - Page Not Found"
-        description="The page you tried to open does not exist. Return to the CyberDev portfolio homepage or explore the gallery."
+        description="The page you tried to open does not exist. Return to the Dennis Kipkemoi portfolio homepage or explore the gallery."
         url={window.location.href}
         image="/dk_portfolio_logo_light.svg"
       />

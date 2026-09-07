@@ -43,9 +43,9 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'CyberDev Portfolio',
+        name: 'Dennis Kipkemoi Portfolio',
         short_name: 'Portfolio',
-        description: 'CyberDev Full-Stack Developer Portfolio',
+        description: 'Dennis Kipkemoi Full-Stack Developer Portfolio',
         theme_color: '#19c49b',
         background_color: '#18242b',
         display: 'standalone',

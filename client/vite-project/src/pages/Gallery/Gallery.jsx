@@ -276,7 +276,7 @@ const Gallery = () => {
     <>
       <Seo
         title="Nbr's Gallery"
-        description="Browse CyberDev's gallery of photos, videos, and audio with a curated media experience."
+        description="Browse Dennis Kipkemoi's gallery of photos, videos, and audio with a curated media experience."
         url={`${window.location.origin}/gallery`}
         image="/dk_portfolio_logo_light.svg"
         type="website"
@@ -284,7 +284,7 @@ const Gallery = () => {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
           name: "Nbr's Gallery",
-          description: "Browse CyberDev's gallery of photos, videos, and audio.",
+          description: "Browse Dennis Kipkemoi's gallery of photos, videos, and audio.",
           url: `${window.location.origin}/gallery`,
         }}
       />

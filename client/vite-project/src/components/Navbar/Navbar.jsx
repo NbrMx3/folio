@@ -66,7 +66,7 @@ const Navbar = () => {
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-container">
         <a href="#home" className="logo">
-          Nbr<span>Dev</span>
+          Dennis <span>Kipkemoi</span>
         </a>
         <ul id="primary-navigation" className={`nav-links${menuOpen ? ' open' : ''}`}>
           {links.map((link) => (
@@ -89,6 +89,16 @@ const Navbar = () => {
           >
             Resume
           </a>
+          <button
+            type="button"
+            className="nav-resume"
+            onClick={() => {
+              setMenuOpen(false);
+              window.print();
+            }}
+          >
+            Export PDF
+          </button>
           <button
             type="button"
             className="theme-toggle"
