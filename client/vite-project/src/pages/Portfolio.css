@@ -67,6 +67,15 @@
 }
 
 @media (max-width: 640px) {
+  /* Do not depend on IntersectionObserver to reveal content on phones. Some
+     mobile browsers can miss the observer callback after dynamic layout work. */
+  .reveal-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
   .portfolio-welcome-toast {
     right: max(0.75rem, env(safe-area-inset-right));
     left: max(0.75rem, env(safe-area-inset-left));
