@@ -59,11 +59,14 @@ const Projects = () => {
     () => (dataSource === 'fallback' ? buildProjectCollection([]) : buildProjectCollection(projects)),
     [dataSource, projects],
   );
-  const stackOptions = useMemo(() => ['all', ...new Set(normalizedProjects.flatMap((project) => project.stack || []))], [normalizedProjects]);
-  const typeOptions = useMemo(() => ['all', ...new Set(normalizedProjects.map((project) => project.type).filter(Boolean))], [normalizedProjects]);
-  const timelineOptions = useMemo(() => ['all', ...new Set(normalizedProjects.map((project) => project.timeline).filter(Boolean))], [normalizedProjects]);
+  // Keep the section populated even if a cached or remote response is malformed.
+  // The bundled showcase is intentionally available on every screen size.
+  const displayProjects = normalizedProjects.length ? normalizedProjects : buildProjectCollection([]);
+  const stackOptions = useMemo(() => ['all', ...new Set(displayProjects.flatMap((project) => project.stack || []))], [displayProjects]);
+  const typeOptions = useMemo(() => ['all', ...new Set(displayProjects.map((project) => project.type).filter(Boolean))], [displayProjects]);
+  const timelineOptions = useMemo(() => ['all', ...new Set(displayProjects.map((project) => project.timeline).filter(Boolean))], [displayProjects]);
 
-  const filteredProjects = useMemo(() => normalizedProjects
+  const filteredProjects = useMemo(() => displayProjects
     .filter((project) => {
       const stackMatch = filters.stack === 'all' || (project.stack || []).some((stack) => String(stack).toLowerCase() === filters.stack.toLowerCase());
       const typeMatch = filters.type === 'all' || String(project.type).toLowerCase() === filters.type.toLowerCase();
@@ -91,7 +94,7 @@ const Projects = () => {
           }
           return String(left.title).localeCompare(String(right.title));
       }
-    }), [filters.sort, filters.stack, filters.timeline, filters.type, normalizedProjects]);
+    }), [displayProjects, filters.sort, filters.stack, filters.timeline, filters.type]);
 
   const handleProjectClick = (project, linkType) => {
     const ref = sessionStorage.getItem('folio_ref') || document.referrer || 'direct';
