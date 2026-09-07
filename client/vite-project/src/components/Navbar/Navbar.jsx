@@ -91,16 +91,6 @@ const Navbar = () => {
           </a>
           <button
             type="button"
-            className="nav-resume"
-            onClick={() => {
-              setMenuOpen(false);
-              window.print();
-            }}
-          >
-            Export PDF
-          </button>
-          <button
-            type="button"
             className="theme-toggle"
             onClick={cycleTheme}
             aria-label={`Theme: ${themeLabel}`}
