@@ -1,7 +1,6 @@
 import express from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { verifyToken } from './middleware/auth.js';
 import { getGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem } from '../utils/db.js';
 
@@ -11,33 +10,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: (req, file) => {
-    const mimeType = file?.mimetype || '';
-    const isVideo = mimeType.startsWith('video/');
-    const params = {
-      folder: 'folio-gallery',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv', 'webm', 'mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'],
-      resource_type: 'auto',
-    };
-
-    if (isVideo) {
-      return {
-        ...params,
-        eager: [{ width: 1920, height: 1080, crop: 'limit', quality: 'auto:best', fetch_format: 'auto' }],
-        eager_async: true,
-      };
-    }
-
-    return params;
-  },
-});
-
 const MAX_GALLERY_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: MAX_GALLERY_UPLOAD_BYTES },
   fileFilter: (req, file, cb) => {
     const isMedia =
@@ -49,6 +25,21 @@ const upload = multer({
     }
     return cb(null, true);
   },
+});
+
+const uploadGalleryMedia = (file) => new Promise((resolve, reject) => {
+  const isVideo = file.mimetype.startsWith('video/');
+  const options = {
+    folder: 'folio-gallery',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv', 'webm', 'mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'],
+    resource_type: 'auto',
+    ...(isVideo ? {
+      eager: [{ width: 1920, height: 1080, crop: 'limit', quality: 'auto:best', fetch_format: 'auto' }],
+      eager_async: true,
+    } : {}),
+  };
+  const stream = cloudinary.uploader.upload_stream(options, (error, result) => (error ? reject(error) : resolve(result)));
+  stream.end(file.buffer);
 });
 
 const uploadSingleMedia = (req, res, next) => {
@@ -77,17 +68,21 @@ router.get('/', async (req, res) => {
 // POST /api/gallery/upload — admin only
 router.post('/upload', verifyToken, uploadSingleMedia, async (req, res) => {
   try {
-    const rawUrl = req.file?.secure_url || req.file?.path || req.file?.url || '';
+    if (!req.file?.buffer) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    const uploadedMedia = await uploadGalleryMedia(req.file);
+    const rawUrl = uploadedMedia.secure_url || uploadedMedia.url || '';
     if (!rawUrl) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
     const { title, description, type } = req.body;
     const mimeType = req.file.mimetype || '';
-    const isVideo = req.file.resource_type === 'video' || mimeType.startsWith('video/');
+    const isVideo = uploadedMedia.resource_type === 'video' || mimeType.startsWith('video/');
     const isAudio = mimeType.startsWith('audio/');
     const mediaType = type || (isVideo ? 'video' : isAudio ? 'audio' : 'photo');
-    const eagerUrl = req.file?.eager?.[0]?.secure_url || req.file?.eager?.[0]?.url || '';
+    const eagerUrl = uploadedMedia.eager?.[0]?.secure_url || uploadedMedia.eager?.[0]?.url || '';
     const preferredUrl = isVideo && eagerUrl ? eagerUrl : rawUrl;
     const mediaUrl = preferredUrl.startsWith('http://') ? preferredUrl.replace('http://', 'https://') : preferredUrl;
 

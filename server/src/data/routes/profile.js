@@ -1,8 +1,6 @@
 import express from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { PassThrough } from 'stream';
 import { verifyToken } from '../routes/middleware/auth.js';
 import { getDefaultProfile, getProfile, updateProfile } from '../utils/db.js';
 
@@ -12,16 +10,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'folio-profile',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-    transformation: [{ width: 400, height: 400, crop: 'limit' }],
-  },
+const IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => cb(null, IMAGE_MIME_TYPES.has(file.mimetype)),
 });
-
-const upload = multer({ storage });
 const resumeUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 },
@@ -45,9 +39,20 @@ const uploadResumeBuffer = (buffer) => new Promise((resolve, reject) => {
     }
   );
 
-  const passthrough = new PassThrough();
-  passthrough.end(buffer);
-  passthrough.pipe(stream);
+  stream.end(buffer);
+});
+
+const uploadProfileImage = (buffer) => new Promise((resolve, reject) => {
+  const stream = cloudinary.uploader.upload_stream(
+    {
+      folder: 'folio-profile',
+      resource_type: 'image',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+      transformation: [{ width: 400, height: 400, crop: 'limit' }],
+    },
+    (error, result) => (error ? reject(error) : resolve(result))
+  );
+  stream.end(buffer);
 });
 
 const router = express.Router();
@@ -64,14 +69,21 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/profile/upload — admin only
-router.post('/upload', verifyToken, upload.single('picture'), async (req, res) => {
+router.post('/upload', verifyToken, (req, res, next) => {
+  upload.single('picture')(req, res, (error) => {
+    if (!error) return next();
+    const status = error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    return res.status(status).json({ error: status === 413 ? 'File too large. Max size is 10MB.' : 'Only JPG, PNG, GIF, and WebP images are allowed.' });
+  });
+}, async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
+    if (!req.file?.buffer) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    // req.file.path is the Cloudinary URL
-    await updateProfile({ picture: req.file.path });
-    res.json({ picture: req.file.path });
+    const result = await uploadProfileImage(req.file.buffer);
+    const picture = result.secure_url || result.url;
+    await updateProfile({ picture });
+    return res.json({ picture });
   } catch (error) {
     res.status(500).json({ error: 'Upload failed' });
   }
