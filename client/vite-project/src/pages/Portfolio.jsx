@@ -7,6 +7,7 @@ import Projects from '../components/Projects/Projects';
 import Experience from '../components/Experience/Experience';
 import Services from '../components/Services/Services';
 import DeveloperActivity from '../components/DeveloperActivity/DeveloperActivity';
+import Contact from '../components/Contact/Contact';
 import Footer from '../components/Footer/Footer';
 import Seo from '../components/Seo/Seo';
 import { trackVisit } from '../utils/api';
@@ -94,6 +95,7 @@ const Portfolio = () => {
       <div className="reveal-section"><Experience /></div>
       <div className="reveal-section"><Services /></div>
       <div className="reveal-section"><DeveloperActivity /></div>
+      <div className="reveal-section"><Contact /></div>
       <div className="reveal-section"><Footer /></div>
     </>
   );
