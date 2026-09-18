@@ -107,8 +107,8 @@ export function getDefaultProfile() {
     instagram: '',
     tiktok: '',
     phone: '',
-    whatsapp: '',
-    email: '',
+    whatsapp: '+254112267013',
+    email: 'kipkemoi386@gmail.com',
   };
 }
 
@@ -502,7 +502,9 @@ export async function initDatabase() {
         facebook: '',
         instagram: '',
         tiktok: '',
-        email: '',
+        phone: '',
+        whatsapp: '+254112267013',
+        email: 'kipkemoi386@gmail.com',
       };
       db.profile = { ...defaultProfile, ...(db.profile || {}) };
       if (!db.skills) db.skills = [
@@ -672,8 +674,8 @@ export async function updateProfile(data) {
     instagram: '',
     tiktok: '',
     phone: '',
-    whatsapp: '',
-    email: '',
+    whatsapp: '+254112267013',
+    email: 'kipkemoi386@gmail.com',
   };
   db.profile = { ...db.profile, ...data };
   await writeJsonDb(db);

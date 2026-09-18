@@ -9,8 +9,12 @@ const CONTACT_COOLDOWN_MS = 45 * 1000;
 const toPhoneHref = (number) => `tel:${String(number).replace(/[^+\d]/g, '')}`;
 const toWhatsAppHref = (number) => {
   const normalized = String(number).replace(/\D/g, '');
-  return normalized ? `https://wa.me/${normalized}` : '';
+  return normalized
+    ? `https://wa.me/${normalized}?text=${encodeURIComponent('Hello Dennis, I would like to get in touch.')}`
+    : '';
 };
+
+const toEmailHref = (email) => `mailto:${email}?subject=${encodeURIComponent('Portfolio enquiry')}`;
 
 const Contact = () => {
   const submittedAtRef = useRef(Date.now());
@@ -22,21 +26,22 @@ const Contact = () => {
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [profile, setProfile] = useState({ ...fallbackProfile });
-  const [contactDetails, setContactDetails] = useState({ phone: '', whatsapp: '' });
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
     getProfile()
       .then((profile) => {
         setProfile((prev) => ({ ...prev, ...(profile || {}) }));
-        setContactDetails({
-          phone: profile?.phone?.trim() || '',
-          whatsapp: profile?.whatsapp?.trim() || '',
-        });
+        setProfileLoaded(true);
       })
       .catch(() => {
         // The contact form should remain available if the profile endpoint is unavailable.
       });
   }, []);
+
+  const contactEmail = profileLoaded ? profile.email?.trim() : fallbackProfile.email;
+  const whatsappNumber = profileLoaded ? profile.whatsapp?.trim() : fallbackProfile.whatsapp;
+  const linkedInUrl = profile.linkedin?.trim();
 
   useEffect(() => {
     const stored = Number(localStorage.getItem('folio_contact_cooldown_until') || 0);
@@ -187,13 +192,15 @@ const Contact = () => {
           Let&apos;s build something great together.
         </p>
         <div className="contact-grid" aria-label="Primary contact details">
-          <a className="contact-card" href={`mailto:${profile.email || fallbackProfile.email}`}>
-            <span className="contact-icon" aria-hidden="true"><FaEnvelope /></span>
-            <span className="contact-card-body">
-              <span className="contact-label">Email</span>
-              <span className="contact-value">{profile.email || fallbackProfile.email}</span>
-            </span>
-          </a>
+          {contactEmail && (
+            <a className="contact-card" href={toEmailHref(contactEmail)}>
+              <span className="contact-icon" aria-hidden="true"><FaEnvelope /></span>
+              <span className="contact-card-body">
+                <span className="contact-label">Email</span>
+                <span className="contact-value">{contactEmail}</span>
+              </span>
+            </a>
+          )}
           <a className="contact-card" href={profile.github || fallbackProfile.github} target="_blank" rel="noreferrer">
             <span className="contact-icon" aria-hidden="true"><FaGithub /></span>
             <span className="contact-card-body">
@@ -201,36 +208,38 @@ const Contact = () => {
               <span className="contact-value">View profile</span>
             </span>
           </a>
-          <a className="contact-card" href={profile.linkedin || fallbackProfile.linkedin} target="_blank" rel="noreferrer">
-            <span className="contact-icon" aria-hidden="true"><FaLinkedin /></span>
-            <span className="contact-card-body">
-              <span className="contact-label">LinkedIn</span>
-              <span className="contact-value">Connect professionally</span>
-            </span>
-          </a>
+          {linkedInUrl && (
+            <a className="contact-card" href={linkedInUrl} target="_blank" rel="noreferrer">
+              <span className="contact-icon" aria-hidden="true"><FaLinkedin /></span>
+              <span className="contact-card-body">
+                <span className="contact-label">LinkedIn</span>
+                <span className="contact-value">Connect professionally</span>
+              </span>
+            </a>
+          )}
         </div>
-        {(contactDetails.phone || contactDetails.whatsapp) && (
+        {(profile.phone?.trim() || whatsappNumber) && (
           <div className="contact-grid" aria-label="Direct contact options">
-            {contactDetails.phone && (
-              <a className="contact-card" href={toPhoneHref(contactDetails.phone)}>
+            {profile.phone?.trim() && (
+              <a className="contact-card" href={toPhoneHref(profile.phone)}>
                 <span className="contact-icon" aria-hidden="true"><FaPhoneAlt /></span>
                 <span className="contact-card-body">
                   <span className="contact-label">Phone</span>
-                  <span className="contact-value">{contactDetails.phone}</span>
+                  <span className="contact-value">{profile.phone}</span>
                 </span>
               </a>
             )}
-            {contactDetails.whatsapp && toWhatsAppHref(contactDetails.whatsapp) && (
+            {whatsappNumber && toWhatsAppHref(whatsappNumber) && (
               <a
                 className="contact-card"
-                href={toWhatsAppHref(contactDetails.whatsapp)}
+                href={toWhatsAppHref(whatsappNumber)}
                 target="_blank"
                 rel="noreferrer"
               >
                 <span className="contact-icon" aria-hidden="true"><FaWhatsapp /></span>
                 <span className="contact-card-body">
                   <span className="contact-label">WhatsApp</span>
-                  <span className="contact-value">{contactDetails.whatsapp}</span>
+                  <span className="contact-value">{whatsappNumber}</span>
                 </span>
               </a>
             )}

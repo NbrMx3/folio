@@ -276,8 +276,24 @@ const ProfileUpload = () => {
       <div className="profile-card profile-contact-card">
         <h2>Contact Details</h2>
         <p className="profile-hint">
-          Add or edit these numbers here. To delete one, clear its field and save.
+          Add, edit, or remove public contact methods here. Changes are only saved through this protected admin dashboard.
         </p>
+        <div className="profile-field">
+          <label><FaEnvelope /> Contact Email</label>
+          <div className="profile-field-action">
+            <input
+              type="email"
+              value={profile.email || ''}
+              onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+              placeholder="you@example.com"
+            />
+            {profile.email && (
+              <button type="button" className="clear-contact-btn" onClick={() => setProfile({ ...profile, email: '' })}>
+                Remove
+              </button>
+            )}
+          </div>
+        </div>
         <div className="profile-field">
           <label><FaPhoneAlt /> Phone Number</label>
           <div className="profile-field-action">
@@ -305,6 +321,22 @@ const ProfileUpload = () => {
             />
             {profile.whatsapp && (
               <button type="button" className="clear-contact-btn" onClick={() => setProfile({ ...profile, whatsapp: '' })}>
+                Remove
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="profile-field">
+          <label><FaLinkedin /> LinkedIn Profile URL</label>
+          <div className="profile-field-action">
+            <input
+              type="url"
+              value={profile.linkedin || ''}
+              onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
+              placeholder="https://linkedin.com/in/yourusername"
+            />
+            {profile.linkedin && (
+              <button type="button" className="clear-contact-btn" onClick={() => setProfile({ ...profile, linkedin: '' })}>
                 Remove
               </button>
             )}
@@ -354,15 +386,6 @@ const ProfileUpload = () => {
           />
         </div>
         <div className="profile-field">
-          <label><FaLinkedin /> LinkedIn URL</label>
-          <input
-            type="text"
-            value={profile.linkedin || ''}
-            onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
-            placeholder="https://linkedin.com/in/yourusername"
-          />
-        </div>
-        <div className="profile-field">
           <label><FaTwitter /> X (Twitter) URL</label>
           <input
             type="text"
@@ -396,15 +419,6 @@ const ProfileUpload = () => {
             value={profile.tiktok || ''}
             onChange={(e) => setProfile({ ...profile, tiktok: e.target.value })}
             placeholder="https://tiktok.com/@yourusername"
-          />
-        </div>
-        <div className="profile-field">
-          <label><FaEnvelope /> Contact Email</label>
-          <input
-            type="email"
-            value={profile.email || ''}
-            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-            placeholder="you@example.com"
           />
         </div>
         <button className="save-btn" onClick={handleSave} disabled={saving}>

@@ -5,13 +5,13 @@ export const fallbackProfile = {
   picture: '',
   resume: '/resume.pdf',
   github: 'https://github.com',
-  linkedin: 'https://linkedin.com',
+  linkedin: '',
   twitter: 'https://x.com',
   facebook: 'https://facebook.com',
   instagram: 'https://instagram.com',
   tiktok: 'https://tiktok.com',
   phone: '',
-  whatsapp: '',
+  whatsapp: '+254112267013',
   email: 'kipkemoi386@gmail.com',
 };
 
