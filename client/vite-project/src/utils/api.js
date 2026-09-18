@@ -1,3 +1,5 @@
+import { fallbackProfile } from '../data/offlineContent';
+
 // Production backend URL (Render). VITE_API_BASE env var overrides this at build time.
 const RENDER_BACKEND = 'https://folioo-dxty.onrender.com/api';
 const RENDER_ORIGIN = 'https://folioo-dxty.onrender.com';
@@ -219,8 +221,11 @@ export async function changeAdminPassword(currentPassword, newPassword) {
 // Profile
 export async function getProfile() {
   const data = await cachedPublicGet('/profile');
-  // Make profile picture URL absolute so it loads correctly from Vercel
-  if (data && data.picture) data.picture = resolveAssetUrl(data.picture);
+  if (!data) return data;
+
+  // A blank database value should not hide the existing bundled profile image.
+  // Relative upload paths are made absolute so this works on Vercel and locally.
+  data.picture = resolveAssetUrl(data.picture || fallbackProfile.picture);
   return data;
 }
 

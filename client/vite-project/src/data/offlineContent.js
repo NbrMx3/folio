@@ -2,7 +2,7 @@ export const fallbackProfile = {
   name: 'Dennis Kipkemoi',
   title: 'Full-Stack Developer',
   bio: 'Building digital experiences that merge creativity with technology.',
-  picture: '',
+  picture: '/uploads/profile-1771755747348.png',
   resume: '/resume.pdf',
   github: 'https://github.com',
   linkedin: '',
