@@ -268,9 +268,6 @@ const Contact = () => {
           )}
         </div>
         <form className="contact-form" onSubmit={handleSubmit}>
-          <div className="contact-form-note">
-            Messages are validated before sending. A hidden trap field blocks bot submissions.
-          </div>
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="name">Name</label>
