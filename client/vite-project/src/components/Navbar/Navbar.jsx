@@ -59,7 +59,6 @@ const Navbar = () => {
     { id: 'experience', label: 'Experience' },
     { id: 'services', label: 'Services' },
     { id: 'activity', label: 'Activity' },
-    { id: 'contact', label: 'Contact' },
   ];
 
   return (
